@@ -53,12 +53,12 @@ def get_pos(p, num):
                    lexendpos=span[1])
 
 
+# TODO(Cholerae): unary operator precedence
 precedence = (
-    ('left', 'PLUS', 'MINUS'),
-    ('left', 'STAR', 'SLASH'),
-    ('left', 'DIV', 'MOD'),
     ('left', 'EQUAL', 'NOTEQUAL', 'LE', 'LT', 'GT', 'GE'),
-    ('left', 'OR', 'AND')
+    ('left', 'PLUS', 'MINUS', 'OR'),
+    ('left', 'STAR', 'SLASH', 'DIV', 'MOD', 'AND'),
+    # ('left', 'NOT'),
 )
 
 # -------------- RULES ----------------
