@@ -95,6 +95,61 @@ class IR ():
         d.print_funcs ("function", self.defuns);
 
 class Stmt ():
+    def __init__ (self, loc):
+        self.location = loc;
+
+    def location(self):
+        return self.location;
+
+    def dump (self, d):
+        d.print_class (self, self.location);
+        self._dump (self, d);
+
+    def _dump (self, d):
+        return;
+
+class Expr():
+
+    def __init__ (self, type):
+        self.type = type;
+
+    def type (self):
+        return self.type;
+
+    def is_var(self):
+        return False;
+
+    def is_addr (self):
+        return False;
+
+    def is_constant (self):
+        return False;
+
+    def asm_value (self):
+        print ("Expr#asm_value called\n");
+
+    def address (self):
+        print("Expr#address called\n");
+
+    def mem_ref (self):
+        print("Expr#memref called\n");
+
+    def address_node (self, type):
+        print ("unexpected node for LHS: " + str (type));
+
+    def det_entity_force(self):
+        return False;
+
+    def accept (self, visitor):
+        return;
+
+    def dump (self, d):
+        d.print_class (self);
+        d.print_member ("type", self.type);
+        self._dump (self, d);
+
+    def _dump (self, d):
+        return;
 
 
 
