@@ -1,3 +1,115 @@
+import expr;
+import stmt;
+import dumper;
+from enum import Enum;
+
+class Op (Enum):
+    ADD = 0,
+    SUB = 1,
+    MUL = 2,
+    S_DIV = 3,
+    U_DIV = 4,
+    S_MOD = 5,
+    U_MOD = 6,
+    BIT_AND = 7,
+    BIT_OR = 8,
+    BIT_XOR = 9,
+    BIT_LSHIFT = 10,
+    BIT_RSHIFT = 11,
+    ARITH_RSHIFT = 12,
+
+    EQ = 13,
+    NEQ = 14,
+    S_GT = 15,
+    S_GTEQ = 16,
+    S_LT = 17,
+    S_LTEQ = 18,
+    U_GT = 19,
+    U_GTEQ = 20,
+    U_LT = 21,
+    U_LTEQ = 22,
+
+    UMINUS = 23,
+    BIT_NOT = 24,
+    NOT = 25,
+
+    S_CAST = 26,
+    U_CAST = 27;
+
+
+    def intern_binary (op, is_signed = False):
+        if op == "+":
+            return Op.ADD;
+        elif op == "-" :
+            return Op.SUB;
+        elif op == "*":
+            return Op.MUL;
+        elif op == "/":
+            if is_signed:
+                return Op.S_DIV;
+            else:
+                return Op.U_DIV;
+        elif op == "%":
+            if is_signed:
+                return Op.S_MOD;
+            else:
+                return Op.U_MOD;
+        elif op == "&":
+            return Op.BIT_AND;
+        elif op == "|":
+            return Op.BIT_OR;
+        elif op == "^":
+            return Op.BIT_XOR;
+        elif op == "<<":
+            return Op.BIT_LSHIFT;
+        elif op == ">>":
+            if is_signed:
+                return Op.ARITH_RSHIFT;
+            else:
+                return Op.BIT_RSHIFT;
+        elif op == "==":
+            return Op.EQ;
+        elif op == "!=":
+            return Op.NEQ;
+        elif op == "<":
+            if is_signed:
+                return Op.S_LT;
+            else:
+                return Op.U_LF;
+        elif op == "<=":
+            if is_signed:
+                return Op.S_LTEQ;
+            else:
+                return Op.U_LTEQ;
+        elif op == ">":
+            if is_signed:
+                return Op.S_GT;
+            else:
+                return Op.U_GT;
+        elif op == ">=":
+            if is_signed:
+                return Op.S_GTEQ;
+            else:
+                return Op.U_GTEQ;
+        else:
+            print ("unknown binary op: " + op);
+
+    @staticmethod
+    def intern_unary (op):
+        if op == "+":
+            print ("unary + should not be in the IR");
+        elif op == "-":
+            return Op.UMINUS;
+        elif op == "~":
+            return Op.BIT_NOT;
+        elif op == "!":
+            return Op.NOT;
+        else:
+            print ("unknown unary op: " + op);
+
+
+
+
 class IR ():
     def __init__ (self, source,
                   defvars,
@@ -89,67 +201,23 @@ class IR ():
         return self.constant_table;
 
     def dump (self):
-        d = Dumper();
+        d = dumper.Dumper();
         d.print_class (self, self.source);
         d.print_vars ("variables", self.defvars);
         d.print_funcs ("function", self.defuns);
 
-class Stmt ():
-    def __init__ (self, loc):
-        self.location = loc;
-
-    def location(self):
-        return self.location;
-
-    def dump (self, d):
-        d.print_class (self, self.location);
-        self._dump (self, d);
-
-    def _dump (self, d):
-        return;
-
-class Expr():
-
-    def __init__ (self, type):
-        self.type = type;
-
-    def type (self):
-        return self.type;
-
-    def is_var(self):
-        return False;
-
-    def is_addr (self):
-        return False;
-
-    def is_constant (self):
-        return False;
-
-    def asm_value (self):
-        print ("Expr#asm_value called\n");
-
-    def address (self):
-        print("Expr#address called\n");
-
-    def mem_ref (self):
-        print("Expr#memref called\n");
-
-    def address_node (self, type):
-        print ("unexpected node for LHS: " + str (type));
-
-    def det_entity_force(self):
-        return False;
-
-    def accept (self, visitor):
-        return;
+class Case():
+    def __init__(self, value, label):
+        self.value = value;
+        self.label = label;
 
     def dump (self, d):
         d.print_class (self);
-        d.print_member ("type", self.type);
-        self._dump (self, d);
+        d.print_member ("value", self.value);
+        d.print_member ("label", self.label);
 
-    def _dump (self, d):
-        return;
+
+
 
 
 
