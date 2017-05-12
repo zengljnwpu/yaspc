@@ -91,7 +91,7 @@ class CallInst(Instruction):
 class RetureInst(Instruction):
     def __init__(self, name, context, lineNum, param):
         super(RetureInst, self).__init__(name, context, lineNum)
-        self.param = param # what param?
+        self.param = param
 
 class LabelInst(Instruction):
     def __init__(self, name, context, lineNum, label):
