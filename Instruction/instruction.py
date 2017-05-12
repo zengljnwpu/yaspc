@@ -3,7 +3,7 @@
 """
 Created on Thu May 11 19:37:34 2017
 
-@author: axiqia
+@author: axiqia hellolzc
 """
 from enum import Enum
 
@@ -19,13 +19,13 @@ class BinaryOpertor(Enum):
 class UnaryOperator(Enum):
     """Enumeration defination of unary operator"""
     INVERT = 1
-    
+
 class Operand(object):
     """The struct of operand"""
     def __init__(self, opValue, opType):
         self.opValue = opValue
         self.opType = opType
-        
+
 #defination of instructions
 class Instruction(object):
     """The base class of all instructions"""
@@ -33,15 +33,15 @@ class Instruction(object):
         self.name = name
         self.context = context
         self.lineNum = lineNum
-        
-    
+
+
 class CJumpInst(Instruction):
     def __init__(self, name, context, lineNum, condition, label):
         super(CJumpInst, self).__init__(name, context, lineNum)
         self.condition = condition
         self.gotoLabel = label
-        
-       
+
+
 class JumpInst(Instruction):
     def __init__(self, name, context, lineNum, label):
         super(JumpInst, self).__init__(name, context, lineNum)
@@ -49,26 +49,26 @@ class JumpInst(Instruction):
 
 class BinaryInst(Instruction):
     def __init__(self, name, context, lineNum, operator, lOperand, rOperand, result):
-        super(BinaryInst, self).__init__(name, context, lineNum) 
+        super(BinaryInst, self).__init__(name, context, lineNum)
         self.operator = operator
         self.lOperand = lOperand
         self.rOperand = rOperand
         self.result = result
-    
-    
+
+
 class UnaryInst(Instruction):
     def __init__(self, name, context, lineNum, operator, operand, result):
-        super(UnaryInst, self).__init__(name, context, lineNum) 
+        super(UnaryInst, self).__init__(name, context, lineNum)
         self.operator = operator
         self.operand = operand
         self.result = result
-        
+
 class LoadInst(Instruction):
     def __init__(self, name, context, lineNum, srcAddress, dst):
         super(LoadInst, self).__init__(name, context, lineNum)
         self.srcAddress = srcAddress
         self.dst = dst
-        
+
 class StoreInst(Instruction):
     def __init__(self, name, context, lineNum, src, dstAddress):
         super(StoreInst, self).__init__(name, context, lineNum)
@@ -85,7 +85,7 @@ class CallInst(Instruction):
     def __init__(self, name, context, lineNum, paramNum, paramList):
         super(CallInst, self).__init__(name, context, lineNum)
         self.paramNum = paramNum
-        self.paramList
+        self.paramList = paramList
         # TODO: add the function address
 
 class RetureInst(Instruction):

@@ -15,5 +15,3 @@ class BasicBlock:
         self.no = 0
         self.instList = []
 
-    def set():
-        return None
