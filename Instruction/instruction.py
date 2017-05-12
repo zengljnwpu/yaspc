@@ -39,13 +39,13 @@ class CJumpInst(Instruction):
     def __init__(self, name, context, lineNum, condition, label):
         super(CJumpInst, self).__init__(name, context, lineNum)
         self.condition = condition
-        self.label = label
+        self.gotoLabel = label
         
        
 class JumpInst(Instruction):
     def __init__(self, name, context, lineNum, label):
         super(JumpInst, self).__init__(name, context, lineNum)
-        self.label = label
+        self.gotoLabel = label
 
 class BinaryInst(Instruction):
     def __init__(self, name, context, lineNum, operator, lOperand, rOperand, result):
