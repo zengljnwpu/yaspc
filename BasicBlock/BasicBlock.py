@@ -3,7 +3,7 @@
 """
 Created on Fri May 12 10:54:38 2017
 
-@author: axiqia
+@author: axiqia hellolzc
 """
 
 
@@ -14,3 +14,6 @@ class BasicBlock:
         self.succBasicBlock = set()
         self.no = 0
         self.instList = []
+
+    def set():
+        return None
