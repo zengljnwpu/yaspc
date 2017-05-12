@@ -52,7 +52,7 @@ class BinaryInst(Instruction):
         super(BinaryInst, self).__init__(name, context, lineNum) 
         self.operator = operator
         self.lOperand = lOperand
-        self.rOperand = lOperand
+        self.rOperand = rOperand
         self.result = result
     
     
@@ -64,27 +64,29 @@ class UnaryInst(Instruction):
         self.result = result
         
 class LoadInst(Instruction):
-    def __init__(self, name, context, lineNum, src, dst):
+    def __init__(self, name, context, lineNum, srcAddress, dst):
         super(LoadInst, self).__init__(name, context, lineNum)
-        self.src = src
+        self.srcAddress = srcAddress
         self.dst = dst
         
 class StoreInst(Instruction):
-    def __init__(self, name, context, lineNum, src, dst):
+    def __init__(self, name, context, lineNum, src, dstAddress):
         super(StoreInst, self).__init__(name, context, lineNum)
         self.src = src
-        self.dst = dst
+        self.dstAddress = dstAddress
 
 class AllocaInst(Instruction):
     def __init__(self, name, context, lineNum, ptr):
         super(AllocaInst, self).__init__(name, context, lineNum)
         self.ptr = ptr
+        # TODO : add the size of the memory to allocate
 
 class CallInst(Instruction):
     def __init__(self, name, context, lineNum, paramNum, paramList):
         super(CallInst, self).__init__(name, context, lineNum)
         self.paramNum = paramNum
         self.paramList
+        # TODO: add the function address
 
 class RetureInst(Instruction):
     def __init__(self, name, context, lineNum, param):
