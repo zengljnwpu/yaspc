@@ -18,7 +18,7 @@ def ConstructInstList():
 '''
 def ConstructBlockList(instList):
     #instList = ConstructInstList()
-
+    '''TODO: There is a big logical problem here which need fix'''
     block = None
     number = 0
     blockDict = {}      #key is the number of instruction, and map to inst
