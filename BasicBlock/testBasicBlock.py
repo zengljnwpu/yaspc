@@ -1,6 +1,6 @@
 #/bin/env python
 
-# Author : lzc80234@qq.com (liuzhaoci)
+# Author : axiqia, lzc80234@qq.com (liuzhaoci)
 # Created : 2017/5/12
 '''
 read input.txt and print basicblock.json
@@ -24,9 +24,9 @@ def instParser(instString,lineNum):
     TODO: need support for more instruction
     '''
     split = re.split(r'\s', instString)
-    if instString[-1] == ':':
+    if instString.find(':') != -1:
         print('label')
-        label = instString[0:-2]
+        label = split[0][0:-1]          #split out ':'
         return instruction.LabelInst('label', instString, lineNum, label)
     elif split[-2] == 'goto':
         print('branch')
