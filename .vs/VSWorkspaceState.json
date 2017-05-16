@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\backend"
+    "\\backend_in_py",
+    "\\backend_in_py\\asm"
   ],
-  "SelectedNode": "\\backend\\entity.py",
+  "SelectedNode": "\\backend_in_py\\asm\\Operand.py",
   "PreviewInSolutionExplorer": false
 }
