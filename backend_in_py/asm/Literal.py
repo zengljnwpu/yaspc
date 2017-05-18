@@ -1,8 +1,5 @@
 class Literal ():
-    def to_source (self):
-        return;
-
-    def to_source (self, table):
+    def to_source (self, table = 0):
         return;
 
     def dump (self):
@@ -17,16 +14,7 @@ class Literal ():
     def plus (self, diff):
         return;
 
-    def cmp (self, i = IntegerLiteral):
-        return;
-
-    def cmp (self, sym = NamedSymbol):
-        return;
-
-    def cmp (self, sym = UnnamedSymbol):
-        return;
-
-    def cmp (self, sym = SuffixedSymbol):
+    def cmp (self, sym):
         return;
 
 class IntegerLiteral (Literal):
@@ -49,26 +37,23 @@ class IntegerLiteral (Literal):
     def integer_literal (self):
         return self;
 
-    def to_source (self):
-        return str(self.value); 
+    def to_source (self, table):
+        return str(self.value);
 
-    def to_source(self, table):
-        return to_source();
+    def compare_to (self, lit):
+        return (lit.cmp (self));
 
-    def compare_to (self, lit = IntegerLiteral):
-        return lit.cmp (self);
-
-    def cmp (self, i = IntegerLiteral):
-        return i.value() == self.value();
-
-    def cmp (self, sym = NamedSymbol):
-        return False;
-
-    def cmp (self, sym = UnnamedSymbol):
-        return False;
-
-    def cmp (self, sym = SuffixedSymbol):
-        return False;
+    def cmp (self, i ):
+        if isinstance(i, IntegerLiteral):
+            return self.value ==  i.value;
+        elif isinstance(i, NamedSymbol):
+            return False;
+        elif isinstance(i, UnnamedSymbol):
+            return False;
+        elif isinstance(i, SuffixedSymbol):
+            return False;
+        else:
+            raise Exception;
 
     def dump (self):
         return "(IntegerLiteral " + str(self.value) + ")";
@@ -100,10 +85,8 @@ class NamedSymbol (BaseSymbol):
     def name(self):
         return self.name;
 
-    def to_source(self):
-        return self.name;
+    def to_source(self, table):
 
-    def to_source (self, table):
         return self.name;
 
     def to_string (self):
