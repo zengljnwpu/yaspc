@@ -2,8 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\backend_in_py",
-    "\\backend_in_py\\asm"
+    "\\backend_in_py\\asm",
+    "\\backend_in_py\\ir",
+    "\\backend_in_py\\sys_dep",
+    "\\backend_in_py\\sys_dep\\x86"
   ],
-  "SelectedNode": "\\backend_in_py\\asm",
+  "SelectedNode": "\\backend_in_py\\sys_dep\\x86\\CodeGenerator.py",
   "PreviewInSolutionExplorer": false
 }

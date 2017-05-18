@@ -14,7 +14,7 @@ class Stmt ():
 
 class Assign (Stmt):
 	def __init__ (self, loc, lhs, rhs):
-		super().__init__ (loc);
+		super(Stmt, loc).__init__;
 		self.lhs = lhs;
 		self.rhs = rhs;
 
