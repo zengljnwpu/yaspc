@@ -92,6 +92,15 @@
 	"variable": "a"
 }
 ```
+### const
+```JSON
+{
+    "object": "entity",
+    "type": "int8",
+    "name": "const",
+	"variable": "a"
+}
+```
 
 ### value
 ```JSON
