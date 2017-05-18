@@ -133,7 +133,7 @@ class Instruction (Assembly):
         buf = "";
         buf = buf + "(Instruction " + self.mnemonic + " " + self.suffix;
         for i in self.operands:
-            buf = bud + " " + i.dump();
+            buf = buf + " " + i.dump();
         buf = buf + ")";
         return buf;
 
