@@ -6,6 +6,56 @@ from frontend import log
 from frontend.ast import *
 from frontend.explain import *
 
+
+#function definition
+def functionExc(funcdata,funcNode)
+	funcdata['object'] = "function_definition"
+	funcdata['filename'] = funcNode.position().path
+    funcdata['line_number'] = funcNode.position().lineno
+	funcdata['name'] = funcNode.header
+	funcdata['type'] = funcNode.type()
+	paralist=[]
+	varlistExplain(paralist,funcNode.attr)
+	funcdata['parameterlsit'] = paralist
+	labellist=[]
+	body=[]
+	bodyExplain(labellist,body,funcNode.block)
+	funcdata['labellist'] = labellist
+	funcdata['body'] = body
+
+```
+{
+    "object": "function_definition",
+    "filename": "test.cl",
+    "line_number": 2,
+    "name": "main",
+    "type": "int32(int32,int8**)",
+	"parameterlist": [
+		{
+			"object": "var",
+			"type": int32,
+			"name": "a"
+		},
+		...
+	],
+	"labellist": [
+		{
+			"object": "label",
+			"pos": 2
+		},
+		...
+	]
+	"body": [
+		{
+			"object": "label",
+			"pos": 2
+		},
+		...
+	]
+}
+```
+
+
 #blockExc is used in main module, function or  process
 def blockExc(blockdata,blockNode):
     blockdata['object']="block"
@@ -47,7 +97,7 @@ block
 
 
 
-def constExc(constdata,constNode):
+def constdefExc(constdata,constNode):
     constdata['object']="const_definition"
     constdata['filename']=constNode.position().path
     constdata['line_number']=constNode.position().lineno
@@ -65,8 +115,7 @@ const
 }
 '''
 
-
-def varExc(vardata,varNode):
+def vardefExc(vardata,varNode):
     vardata['object']="variable_definition"
     vardata['filename']=varNode.position().path
     vardata['line_number']=varNode.position().lineno
@@ -82,15 +131,6 @@ variable
     "type": "int8",
 }
 '''
-
-
-def exprExc(exprdata,exprNode)
-	exprdata['object']="expression"
-    exprdata['type']=exprNode.type
-	templist=[]
-	stmtExc(templist,exprNode)
-	instruction=templist[0]
-	exprdata['instruction']=instruction
 
 
 # assign lhs rhs

@@ -14,82 +14,51 @@ def store(data):
 
 
 #programNode is given by user
-def programExc(programNode):
+def programEplain(programNode):
 	data = {}
-	data['object']="program_definition"
-	data['name']=programNode.identifier
 	functionlist = []
 	functionlsitExplain(functionlist,programNode.block.func)
 	mainfunctiondata = {}
-	mainfunctionExc(mainfunctiondata,programNode.block)
+	mainfunctionExplain(mainfunctiondata,programNode.block)
     functionlist.append(mainfunctiondata)
-    data['functionlist'] = functionlist
+	programExc(data,programNode.identifier,functionlist)
     store(data)
 
+#main function is not exist real, but only used to def programNode.block.stmt
+def mainfunctionExplain(mainfunctiondata,blockNode):
+	mainfunctionNode=FunctionNode("main",blockNode)
+	functionExc(mainfunctiondata,mainfunctionNode)
+
+#Explain the body by block
+def bodyExplain(labellist,bodylist,blockNode)
+	labellistExplain(labellist,blockNode.label_list)
+	constlistExplain(bodylist,blockNode.const_list)
+	varlistExplain(bodylist,blockNode.var_list)
+	stmtlistExplain(labellist,bodylist,blockNode.stmt)
 
 
 #const definition
 def constlistExplain(constlist,constlistNode)
     for i in range(len(constlistNode))
-		templist={}
-		constExc(templist,constlistNode[i])
-		constlist[i]=templist
-'''
-"const":[
-	{
-		"object":"const_definition"
-		...
-	},
-	...
-]
-'''
-
-
+		tempdata={}
+		constdefExc(tempdata,constlistNode[i])
+		constlist.append(templist)
 
 #variable definition
 def varlistExplain(varlist,varlistNode)
     for i in range(len(varlistNode))
-		templist={}
-		varExc(templist,varlistNode[i])
-		varlist[i]=templist
-'''
-"var":[
-	{
-		"object":"var_definition"
-		...
-	},
-	...
-]
-'''
+		tempdata={}
+		vardefExc(tempdata,varlistNode[i])
+		varlist.append(templist)
 
-'''
-for i in range(len(blockNode.type_list))
-	templist={}
-    typeExc(templist,blockNode.type_list[i])
-	typelist[i]=templist
-'''
-    
-
-'''
-for i in range(len(blockNode.label_list))
-		templist={}
-        labelExc(templist,blockNode.label_list[i])
-		labellist[i]=templist
-    
-for i in range(len(blockNode.func))
-		templist={}
-        funcExc(templist,blockNode.func[i])
-		funclist[i]=templist
-''' 
-
-  
-def stmtlistExplain(stmtlist,stmtlistNode)
+#stmtlist
+def stmtlistExplain(labellist,bodylist,stmtlistNode)
 for i in range(len(stmtlistNode))
-		stmtExplain(stmtlist,stmtlistNode[i])
+		stmtExplain(labellist,bodylist,stmtlistNode[i])
 
 
 #clasify the stmtNode
-def stmtExplain(stmtlist,stmtNode):
+def stmtExplain(labellist,bodylist,stmtNode):
 	if isinstance(stmtNode, AssignmentNode):
 		stmtdata={}
 		asignExc(stmtdata,stmtNode.var_access,stmtNode.expr)
