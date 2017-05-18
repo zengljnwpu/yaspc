@@ -44,7 +44,6 @@
     "filename": "test.cl",
     "line_number": 2,
     "name": "main",
-    "is_private": true, 
     "type": "int32(int32,int8**)",
 	"parameterlist": [
 		{
