@@ -26,7 +26,17 @@ def ConstructBlockList(instList):
     blockDict = {}      #key is the number of instruction, and map to inst
     labelDict = {}      #key is the label of instruction, and map to block
     blockList = []
-    i = -1                    #
+    labelSet = set()    #a set for valid label              
+    
+    ''' find the valid label '''
+    for inst in instList:
+        if isinstance(inst, instruction.CJumpInst):
+            labelSet.add(inst.gotoLabel)
+        elif isinstance(inst, instruction.JumpInst):
+            labelSet.add(inst.gotoLabel)
+        
+    i = -1
+    labelFlag = 0
     for inst in instList:
         i += 1
         if i == 0:
@@ -36,10 +46,16 @@ def ConstructBlockList(instList):
             blockDict[number] = block
             number += 1
 
-            if isinstance(inst, instruction.LabelInst):
-                """the first instruction is a label, only map labe to block no."""
+            if (isinstance(inst, instruction.LabelInst)) and (inst.label in labelSet) :
+                """ the first instruction is a label
+                    and label is branch destination
+                    and not a successive label inst
+                    map labe to block no.
+                """
+                if block != None: block.instList.append(inst)
                 labelDict[inst.label] = block.blockNum
-
+                labelFlag = 1
+                continue
 
             if isinstance(inst, instruction.CJumpInst):
                 """ the first instruction is a conditional inst
@@ -51,25 +67,30 @@ def ConstructBlockList(instList):
                 blockList.append(block)
                 blockDict[number] = block
                 number += 1
-
+                labelFlag = 0
+                
                 continue
 
             if isinstance(inst, instruction.JumpInst):
                 """ non-conditional branch inst, the next inst do not belong to block"""
                 block.instList.append(inst)
                 block = None
-
+                labelFlag = 0
+                
                 continue
         else: #i!=0  not the first instruction
-            if isinstance(inst, instruction.LabelInst):
+            if (isinstance(inst, instruction.LabelInst)) and (inst.label in labelSet) :
                 """ the label instruction, map the label to number of block"""
-                block = BasicBlock.BasicBlock(number)
+                if labelFlag == 0: block = BasicBlock.BasicBlock(number)
                 blockList.append(block)
 
                 blockDict[number] = block
                 labelDict[inst.label] = block.blockNum
+                if block != None: block.instList.append(inst)
                 #print inst.label
                 number += 1
+                labelFlag = 1
+                continue
 
             if isinstance(inst, instruction.CJumpInst):
                 """the conditional branch inst"""
@@ -80,7 +101,7 @@ def ConstructBlockList(instList):
 
                 blockDict[number] = block
                 number += 1
-
+                labelFlag = 0
                 continue
 
             if isinstance(inst, instruction.JumpInst):
@@ -88,12 +109,14 @@ def ConstructBlockList(instList):
                 if block != None: block.instList.append(inst)
                 #print "gotoLabel", inst.gotoLabel
                 block = None
+                labelFlag = 0
                 continue
 
         #end if i==0
         if block != None:
             """add the inst to current block, unless the block is not none"""
             block.instList.append(inst)
+            labelFlag = 0
 
 
     if(DEBUG):
