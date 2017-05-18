@@ -149,6 +149,9 @@
 `variable_definition variablename var_type`
 定义变量，`variablename` 为string, `var_type` 为type
 
+`const_definition constname var_type`
+定义变量，`constname` 为string, `var_type` 为type
+
 `return ret`
 返回，`ret` 为entity
 
