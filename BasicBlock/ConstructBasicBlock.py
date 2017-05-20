@@ -10,10 +10,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
-sys.path.append("..")
-import Instruction.instruction as instruction
-import BasicBlock
+import yaspc.Instruction.instruction as instruction
+import yaspc.BasicBlock.BasicBlock as BasicBlock
 
 
 DEBUG = True
@@ -26,15 +24,15 @@ def ConstructBlockList(instList):
     blockDict = {}      #key is the number of instruction, and map to inst
     labelDict = {}      #key is the label of instruction, and map to block
     blockList = []
-    labelSet = set()    #a set for valid label              
-    
+    labelSet = set()    #a set for valid label
+
     ''' find the valid label '''
     for inst in instList:
         if isinstance(inst, instruction.CJumpInst):
             labelSet.add(inst.gotoLabel)
         elif isinstance(inst, instruction.JumpInst):
             labelSet.add(inst.gotoLabel)
-        
+
     i = -1
     labelFlag = 0
     for inst in instList:
@@ -68,7 +66,7 @@ def ConstructBlockList(instList):
                 blockDict[number] = block
                 number += 1
                 labelFlag = 0
-                
+
                 continue
 
             if isinstance(inst, instruction.JumpInst):
@@ -76,7 +74,7 @@ def ConstructBlockList(instList):
                 block.instList.append(inst)
                 block = None
                 labelFlag = 0
-                
+
                 continue
         else: #i!=0  not the first instruction
             if (isinstance(inst, instruction.LabelInst)) and (inst.label in labelSet) :
