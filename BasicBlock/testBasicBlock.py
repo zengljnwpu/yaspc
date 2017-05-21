@@ -9,14 +9,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
+
 import re
-import BasicBlock
-import ConstructBasicBlock
-sys.path.append("..")
-import Instruction.instruction as instruction
 
-
+import yaspc.Instruction.instruction as instruction
+import yaspc.BasicBlock.BasicBlock as BasicBlock
+import yaspc.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
 
 def instParser(instString,lineNum):
     '''
