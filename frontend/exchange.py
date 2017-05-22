@@ -19,6 +19,8 @@ def programExc(programdata,name,filename,line_number,varlist,funclist,labellist,
 	programdata['body'] = body
 
 
+
+
 #function definition
 def functionExc(funcdata,name,filename,line_number,functype,paralist,varlist,labellist,body)
 	funcdata['object'] = "function_definition"
@@ -40,11 +42,11 @@ def labelExc(labeldata,name,pos)
 
 
 #variable
-def variableExc(vardata,name,vartype,const)
+def variableExc(vardata,varname,vartype,const)
 	vardata['object'] = "entity"
 	vardata['type'] = vartype
 	vardata['name'] = "variable"
-	vardata['variable'] = name
+	vardata['variable'] = varname
 	vardata['const'] = const
 
 
