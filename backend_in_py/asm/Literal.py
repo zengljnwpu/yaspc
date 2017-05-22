@@ -1,181 +1,190 @@
 class Literal ():
-    def to_source (self, table = 0):
-        return;
+    def to_source (self, table = None):
+        return
 
     def dump (self):
-        return;
+        return
 
-    def collect_statistics (self):
-        return;
+    def collect_statistics (self, stats):
+        return
 
     def is_zero (self):
-        return;
+        return
 
     def plus (self, diff):
-        return;
+        return
 
     def cmp (self, sym):
-        return;
+        return
+
 
 class IntegerLiteral (Literal):
     def __init__ (self, n):
-        self.value = 0;
-        self.value = n;
+        self.value = n
+
+    def __eq__ (self, other):
+        if not isinstance(other, IntegerLiteral):
+            return False
+        else:
+            return other.value == self.value
 
     def equals (self, other):
-        return self.value == other.value;
-
-    def value(self):
-        return self.value;
+        return self.__eq__(other)
 
     def is_zero(self):
-        return self.value == 0;
+        return self.value == 0
+
+    def __add__ (self, diff):
+        return IntegerLiteral (self.value + diff)
 
     def plus (self, diff):
-        return IntegerLiteral (self.value + diff);
+        return self.plus (diff)
 
     def integer_literal (self):
-        return self;
+        return self
 
-    def to_source (self, table):
-        return str(self.value);
+    def to_source (self, table = None):
+        return str (self.value)
+
+    def collect_statistics(self, stats):
+        return
 
     def compare_to (self, lit):
-        return (lit.cmp (self));
+        return -(lit.cmp (self))
 
-    def cmp (self, i ):
+    def cmp (self, i):
         if isinstance(i, IntegerLiteral):
-            return self.value ==  i.value;
+            return self.cmp(i.value)
         elif isinstance(i, NamedSymbol):
-            return False;
+            return -1
         elif isinstance(i, UnnamedSymbol):
-            return False;
+            return -1
         elif isinstance(i, SuffixedSymbol):
-            return False;
-        else:
-            raise Exception;
+            return -1
+        elif isinstance(i, int):
+            if self.value > i:
+                return 1
+            elif self.value == i:
+                return 0
+            else:
+                return -1
 
     def dump (self):
-        return "(IntegerLiteral " + str(self.value) + ")";
+        return "(IntegerLiteral " + str(self.value) + ")"
+
 
 class Symbol (Literal):
-    def name (self):
-        return;
+    def __init__ (self):
+        return
 
-    def to_string (self):
-        return;
+    def name (self):
+        return
 
     def dump (self):
-        return;
+        return
 
 class BaseSymbol (Symbol):
     def is_zero(self):
-        return False;
+        return False
 
     def collect_statistics(self, stats):
-        return stats.symbol_used (self);
+        return stats.symbol_used (self)
+
+    def __str__(self):
+        return str (hash (self))
 
     def plus (self, n):
-        print ("must not happen: BaseSymbol.plus called");
+        raise Exception("must not happen: BaseSymbol.plus called")
 
 class NamedSymbol (BaseSymbol):
     def __init__(self, name):
-        self.name = name;
+        super().__init__()
+        self.name = str(name)
 
-    def name(self):
-        return self.name;
+    def to_source(self, table = None):
+        return self.name
 
-    def to_source(self, table):
-
-        return self.name;
-
-    def to_string (self):
-        return "#" + self.name;
+    def __str__ (self):
+        return "#" + self.name
 
     def compare_to (self, lit):
-        return - (lit.compare_to (self));
-    
-    def cmp (i = IntegerLiteral):
-        return False;
-    def cmp (self, sym = NamedSymbol):
-        return self.name == sym.name;
-    def cmp (self, sym = UnnamedSymbol):
-        return False;
-    def cmp (self, sym = SuffixedSymbol):
-        return to_string() == sym.to_string();
+        return - (lit.cmp (self))
+
+    def cmp (self, i):
+        if isinstance(i, IntegerLiteral):
+            return 1
+        elif isinstance(i, NamedSymbol):
+            return (self.name > i.name) - (self.name < i.name)
+        elif isinstance(i, UnnamedSymbol):
+            return -1
+        elif isinstance(i, SuffixedSymbol):
+            return (str(self) > str(i)) - (str(self) < str(i))
+
     def dump (self):
-        return "(NamedSymbol " + self.name + ")";
+        return "(NamedSymbol " + self.name + ")"
 
 class UnnamedSymbol (BaseSymbol):
-    def __init__(self):
-        super().__init__();
-
     def name(self):
-        print ("unnamed symbol");
+        raise Exception("unnamed symbol")
 
-    def to_source(self):
-        print ("UnnamedSymbol#to_source called");
+    def to_source(self, tabke = None):
+        raise Exception("UnnamedSymbol#to_source called")
 
-    def to_source (self, table):
-        return table.symbol_string (self);
-
-    def to_string (self):
-        return super().to_string();
+    def __str__ (self):
+        return super().__str__()
     
-    def compare_to (self, lit = Literal):
-        return False
-    def cmp (self, i = IntegerLiteral):
-        return False;
-    def cmp (self, sym = NamedSymbol):
-        return False;
-    def cmp (self, sym = UnnamedSymbol):
-        return to_string() == sym.to_string();
-    def cmp (self, sym = SuffixedSymbol):
-        return False;
+    def compare_to (self, lit):
+        return - (lit.cmp (self))
+
+    def cmp (self, i):
+       if isinstance(i, IntegerLiteral):
+           return 1
+       elif isinstance(i, NamedSymbol):
+           return 1
+       elif isinstance(i, UnnamedSymbol):
+           return (str(self) > str(i)) - (str(self) < str (i))
+       else:
+           return 1
+
     def dump (self):
-        return "(UnnamedSymbol @" + str (hash (self)) + ")";
+        return "(UnnamedSymbol @" + str (hash (self)) + ")"
 
 class SuffixedSymbol (Symbol):
     def __init__(self, base, suffix):
-       self.base = Symbol (base);
-       self.suffix = str (suffix);
+       self.base = base
+       self.suffix = suffix
 
     def is_zero (self):
-        return False;
+        return False
 
     def collect_statistics(self, stats):
-        return self.base.collect_statistics (stats);
+        return self.base.collect_statistics (stats)
 
     def plus (self, n):
-        print ("must not happen: SuffixedSymbol.plus called");
+        raise Exception("must not happen: SuffixedSymbol.plus called")
 
     def name(self):
-        return self.base.name();
+        return self.base.name
 
-    def to_source(self):
-        return self.base.to_source () + self.suffix;
+    def to_source (self, table = None):
+        return self.base.to_source (table) + self.suffix
 
-    def to_source (self, table):
-        return self.base.to_source (table) + self.suffix;
-
-    def to_string (self):
-        return self.base.to_string() + self.suffix;
+    def __str__ (self):
+        return str(self.base) + self.suffix
 
     def compare_to (self, lit):
-        return lit.compare_to (self);
+        return -(lit.cmp (self))
 
-    def cmp (self, i = IntegerLiteral):
-        return False;
-
-    def cmp (self, sym = NamedSymbol):
-        return to_string() == sym.to_string();
-
-    def cmp (self, sym = UnnamedSymbol):
-        return False;
-    
-    def cmp (self, sym = SuffixedSymbol):
-        return to_string == sym.to_string();
+    def cmp (self, i):
+        if isinstance(i, IntegerLiteral):
+            return 1
+        elif isinstance(i, NamedSymbol):
+            return (str(self) > str(i)) - (str(self) < str (i))
+        elif isinstance(i, UnnamedSymbol):
+            return -1
+        elif isinstance(i, SuffixedSymbol):
+            return (str(self) > str(i)) - (str(self) < str(i))
 
     def dump(self):
         return "(SuffixedSymbol " + self.base.dump() + \
-            " " + self.suffix + ")";
+            " " + self.suffix + ")"

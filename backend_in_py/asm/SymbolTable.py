@@ -1,32 +1,29 @@
+from backend_in_py.asm.Literal import *
 
 
 class SymbolTable ():
-    __DUMMY_SYMBOL_BASE = "L";
-    __dummy = SymbolTable(DUMMY_SYMBOL_BASE);
-
     def __init__(self, base):
-        self.__base = base;
-        self.__map = dict ({});
-        self.__seq = 0;
+        self.base = base
+        self.map = dict ({})
+        self.seq= 0
 
-
-    def dummy (self):
-        return self.__dummy;
-
-    def __new_string(self):
-        new_str = self.__base + str(self.__seq);
-        self.__seq += 1;
-        return new_str;
+    def _new_string(self):
+        new_str = self.base + str(self.seq)
+        self.seq += 1
+        return new_str
 
     def new_symbol (self):
-        return NamedSymbol (__new_string());
+        return NamedSymbol (self._new_string())
 
     def symbol_string (self, sym):
-        str = self.__map.get (sym);
+        str = self.map.get (sym)
         if str:
-            return str;
+            return str
         else:
-            new_str = __new_string(self);
-            self.__map[sym] = new_str;
-            return new_str;
+            new_str = self._new_string()
+            self.map[sym] = new_str
+            return new_str
 
+
+__DUMMY_SYMBOL_BASE = "L"
+dummy = SymbolTable(__DUMMY_SYMBOL_BASE)

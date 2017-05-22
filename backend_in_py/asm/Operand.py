@@ -1,159 +1,172 @@
-from asm import *
+from backend_in_py.asm.SymbolTable import *
+
 
 class Operand ():
-    def __init__ (self):
-        return;
     def to_source (self, table):
-        return;
+        return
+
     def dump (self):
-        return;
+        return
+
+    def __eq (self):
+        return False
+
     def is_register (self):
-        return False;
+        return False
+
     def is_memory_reference (self):
-        return False;
+        return False
+
     def integer_literal (self):
-        return None;
+        return None
+
     def collect_statistics (self, stats):
-        return;
-    def __eq__ (self, operand):
-        return False;
+        return
+
     def match (self, operand):
-        return operand == self;
+        return False
+
 
 class ImmediateValue (Operand):
-    def __init__ (self, n: int):
-        self.__expr = IntegerLiteral (n);
+    def __init__ (self, expr):
+        if isinstance(expr, int):
+            self.expr = IntegerLiteral (expr)
+        else:
+            self.expr = expr
 
     def __eq__(self, other):
-        result = isinstance (other, ImmediateValue);
-        if result == False:
-                return False;
-        imm = ImmediateValue (other);
-        return self.__expr == other.__expr;
-    def expr (self):
-        return self.__expr;
+        if not isinstance (other, ImmediateValue):
+            return False
+        imm = ImmediateValue (other)
+        return self.expr == imm.expr
+
     def collect_statistics (self, stats):
-        return;
+        return
+
     def to_source(self, table):
-        return "$" + self.__expr.to_source (table);
+        return "$" + self.expr.to_source (table)
+
     def dump (self):
-        return "(ImmediateValue " + self.__expr.dump() + ")";
+        return "(ImmediateValue " + self.expr.dump() + ")"
+
 
 class MemoryReference (Operand):
-    def __init__ (self):
-        super().__init__();
     def is_memory_reference(self):
-        return True;
+        return True
+
     def fix_offset (self, diff):
-        return;
+        return
+
     def cmp (self, mem):
-        return;
+        return
+
 
 class IndirectMemoryReference (MemoryReference):
     def __init__(self, offset, base, fixed = True):
-        self.__offset = IntegerLiteral (offset);
-        self.__base = Register (base);
-        self.__fixed = fixed;
+        super().__init__()
+        if isinstance(offset, int):
+            self.offset = IntegerLiteral (offset)
+        else:
+            self.offset = offset
+        self.base = base
+        self.fixed = fixed
 
     @staticmethod
-    def reloca_table (offset, base):
-        return IndirectMemoryReference (IntegerLiteral (offset), base ,False);
-    
-    def offset(self):
-        return self.__offset;
+    def reloca_table (cls, offset, base):
+        return IndirectMemoryReference (IntegerLiteral (offset), base , False)
 
     def fix_offset(self, diff):
-        if self.__fixed:
-            raise AttributeError;
-        curr = IntegerLiteral (offset).value;
-        self.__offset = IntegerLiteral (curr + diff);
-        self.__fixed = True;
-
-    def base(self):
-        return self.__base;
+        if self.fixed:
+            raise Exception("must not happen: fixed = True")
+        curr = IntegerLiteral (self.offset).value
+        self.offset = IntegerLiteral (curr + diff)
+        self.fixed = True
 
     def collect_statistics(self, stats):
-        return self.__base.collect_statistics (stats);
+        return self.base.collect_statistics (stats)
 
-    def to_string (self):
-        return to_source (SymbolTable.dummy ());
+    def __str__ (self):
+        return self.to_source (dummy)
 
     def to_source (self, table):
-        if self.__fixed == False:
-            raise Exception;
-        if self.__offset.is_zero ():
-            return "";
+        if not self.fixed:
+            raise Exception ("must not happen: writing unfixed variable")
+        if self.offset.is_zero ():
+            return ""
         else:
-            return self.__offset.to_source (table) + "(" + self.__base.to_source (table) + ")";
+            return self.offset.to_source (table) + "(" + self.base.to_source (table) + ")"
             
     def compare_to (self, mem):
-        return - (mem.__cmp (self));
+        return -(mem.cmp (self))
 
-    def __cmp (self, mem):
+    def cmp (self, mem):
         if isinstance (mem, DirectMemoryReference):
-            return -1;
+            return -1
         elif isinstance(mem, IndirectMemoryReference):
-            return self.__offset.compare_to (mem.__offset);
-        else:
-            raise ArithmeticError;
+            return self.offset.compare_to (mem.offset)
 
     def dump (self):
-        str = "(IndirectMemoryReference ";
-        if self.__fixed:
-            str += "";
+        str = "(IndirectMemoryReference "
+        if self.fixed:
+            str += ""
         else:
-            str += "*";
-        str = str +self.__offset.dump() + " " + self.__base.dump() + ")";
+            str += "*"
+        str = str +self.offset.dump() + " " + self.base.dump() + ")"
+        return str
 
 class DirectMemoryReference (MemoryReference):
     def __init__ (self, val):
-        self.__value = val;
-    def value (self):
-        return self.__value;
+        super().__init__()
+        self.value = val
+
     def collect_statistics(self, stats):
-        self.__value.collect_statistics (stats);
+        self.value.collect_statistics (stats)
+
     def fix_offset(self, diff):
-        raise Exception;
-    def to_string (self):
-        return to_source (SymbolTable.dummp());
+        raise Exception ("DirectMemoryReference#fixoffset")
+
+    def __str__ (self):
+        return self.to_source (dummy)
+
     def to_source (self, table):
-        return self.__value.to_source (table);
+        return self.value.to_source (table)
+
     def compare_to (self, mem):
-        return -(mem.cmp (self));
+        return -(mem.cmp (self))
+
     def cmp (self, mem):
         if isinstance (mem, IndirectMemoryReference):
-            return 1;
+            return 1
         elif isinstance (mem, DirectMemoryReference):
-            return self.__value.compare_to (mem.__value);
-        else:
-            raise BaseException;
+            return self.value.compare_to (mem.value)
+
     def dump (self):
-        return "(DirectMemoryReference " + self.__value.dump () + ")";
+        return "(DirectMemoryReference " + self.value.dump () + ")"
 
 
 class Register (Operand):
     def is_register(self):
-        return True;
+        return True
+
     def collect_statistics(self, stats):
-        return stats.register_used (self);
+        return stats.register_used (self)
+
     def to_source(self, table):
-        return super().to_source(table);
+        return
+
     def dump(self):
-        return super().dump();
+        return
 
 class AbsoluteAddress (Operand):
     def __init__(self, reg):
-        super().__init__();
-        self.__register = reg;
-
-    def register(self):
-        return self.__register;
+        super().__init__()
+        self.register = reg
 
     def collect_statistics(self, stats):
-        self.__register.collect_statistics (stats);
+        self.register.collect_statistics (stats)
 
     def to_source (self, table):
-        return "*" + self.__register.to_source (table);
+        return "*" + self.register.to_source (table)
 
     def dump (self):
-        return "AbsoluteAddress " + self.__register.dump() + ")";
+        return "AbsoluteAddress " + self.register.dump() + ")"
