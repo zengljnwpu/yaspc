@@ -28,12 +28,13 @@ And removed some extra rules according to:
 #  */
 # 
 # %}
+from __future__ import absolute_import, print_function
+
 from ply import yacc
 
 from frontend import log
 from frontend.ast import *
 from frontend.lexer import *
-import frontend.type
 
 
 def get_pos(p, num):
@@ -45,35 +46,29 @@ def get_pos(p, num):
             self.__dict__ = kwargs
 
         def __str__(self):
-            return str(self.path[-1]) + ':' + str(self.lineno)
+            return str(self.lineno)
 
-    return PosInfo(path=line[0],
-                   lineno=line[1],
+    return PosInfo(lineno=line,
                    lexpos=span[0],
                    lexendpos=span[1])
 
-
-# -------------- RULES ----------------
 
 def p_file_1(p):
     '''file : program'''
     p[0] = p[1]
 
 
-def p_file_2(p):
-    '''file : module'''
-    p[0] = p[1]
-
-
 def p_program_1(p):
-    '''program : PROGRAM identifier semicolon block DOT'''
-    p[0] = ProgramNode(p[2], p[4])
+    '''
+    program : PROGRAM identifier LPAREN identifier_list RPAREN semicolon block DOT
+    '''
+    p[0] = ProgramNode(p[2], p[7], p[4])
     p[0].pos_info = get_pos(p, 0)
 
 
-def p_program_1(p):
-    '''program : PROGRAM identifier LPAREN identifier_list RPAREN semicolon block DOT'''
-    p[0] = ProgramNode(p[2], p[7], p[4])
+def p_program_2(p):
+    '''program : PROGRAM identifier semicolon block DOT'''
+    p[0] = ProgramNode(p[2], p[4])
     p[0].pos_info = get_pos(p, 0)
 
 
@@ -102,7 +97,7 @@ def p_label_declaration_part_1(p):
 
 
 def p_label_declaration_part_2(p):
-    '''label_declaration_part : '''
+    '''label_declaration_part : empty'''
     pass
 
 
@@ -130,7 +125,7 @@ def p_constant_definition_part_1(p):
 
 
 def p_constant_definition_part_2(p):
-    '''constant_definition_part : '''
+    '''constant_definition_part : empty'''
     pass
 
 
@@ -199,7 +194,6 @@ def p_cfactor_2(p):
 def p_cprimary_1(p):
     '''cprimary : identifier'''
     p[0] = VarAccessNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
 
 
 def p_cprimary_2(p):
@@ -275,7 +269,7 @@ def p_type_definition_part_1(p):
 
 
 def p_type_definition_part_2(p):
-    '''type_definition_part : '''
+    '''type_definition_part : empty'''
     pass
 
 
@@ -350,11 +344,11 @@ def p_new_structured_type_1(p):
     p[0] = p[1]
 
 
-# TODO(Cholerae): packed structure
 def p_new_structured_type_2(p):
     '''new_structured_type : PACKED structured_type'''
     p[0] = p[2]
-    
+    # TODO: packed structures
+
 
 def p_structured_type_1(p):
     '''structured_type : array_type'''
@@ -371,10 +365,10 @@ def p_structured_type_3(p):
     p[0] = p[1]
 
 
-# TODO(Cholerae): file type
 def p_structured_type_4(p):
     '''structured_type : file_type'''
     p[0] = p[1]
+    # TODO: implement file support
 
 
 def p_array_type_1(p):
@@ -408,7 +402,6 @@ def p_ordinal_type_1(p):
 def p_ordinal_type_2(p):
     '''ordinal_type : identifier'''
     p[0] = TypeNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
 
 
 def p_component_type_1(p):
@@ -418,7 +411,7 @@ def p_component_type_1(p):
 
 def p_record_type_1(p):
     '''record_type : RECORD record_section_list END'''
-    p[0] = RecordTypeNode(p[2])
+    p[0] = RecordTypeNode(p[2], None)
     p[0].pos_info = get_pos(p, 0)
 
 
@@ -450,23 +443,6 @@ def p_record_section_1(p):
     '''record_section : identifier_list COLON type_denoter'''
     p[0] = RecordSectionNode(p[1], p[3])
     p[0].pos_info = get_pos(p, 0)
-
-
-def p_variant_part_1(p):
-    '''variant_part : CASE variant_selector OF variant_list'''
-    p[0] = VariantPartNode(p[2], p[4])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_variant_part_2(p):
-    '''variant_part : CASE variant_selector OF variant_list semicolon'''
-    p[0] = VariantPartNode(p[2], p[4])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_variant_part_3(p):
-    '''variant_part : '''
-    pass
 
 
 def p_variant_selector_1(p):
@@ -509,6 +485,23 @@ def p_variant_3(p):
     '''variant : case_constant_list COLON LPAREN variant_part RPAREN'''
     p[0] = VariantNode(p[1], None, p[4])
     p[0].pos_info = get_pos(p, 0)
+
+
+def p_variant_part_1(p):
+    '''variant_part : CASE variant_selector OF variant_list'''
+    p[0] = VariantPartNode(p[2], p[4])
+    p[0].pos_info = get_pos(p, 0)
+
+
+def p_variant_part_2(p):
+    '''variant_part : CASE variant_selector OF variant_list semicolon'''
+    p[0] = VariantPartNode(p[2], p[4])
+    p[0].pos_info = get_pos(p, 0)
+
+
+def p_variant_part_3(p):
+    '''variant_part : empty'''
+    pass
 
 
 def p_case_constant_list_1(p):
@@ -580,7 +573,7 @@ def p_variable_declaration_part_1(p):
 
 
 def p_variable_declaration_part_2(p):
-    '''variable_declaration_part : '''
+    '''variable_declaration_part : empty'''
     pass
 
 
@@ -608,7 +601,7 @@ def p_procedure_and_function_declaration_part_1(p):
 
 
 def p_procedure_and_function_declaration_part_2(p):
-    '''procedure_and_function_declaration_part : '''
+    '''procedure_and_function_declaration_part : empty'''
     pass
 
 
@@ -703,16 +696,16 @@ def p_variable_parameter_specification_1(p):
     p[0].pos_info = get_pos(p, 0)
 
 
-# TODO(Cholerae): procedure as argument
 def p_procedural_parameter_specification_1(p):
     '''procedural_parameter_specification : procedure_heading'''
     p[0] = p[1]
+    # TODO: procedure as argument
 
 
-# TODO(Cholerae): function as argument
 def p_functional_parameter_specification_1(p):
     '''functional_parameter_specification : function_heading'''
     p[0] = p[1]
+    # TODO: function as argument
 
 
 def p_procedure_identification_1(p):
@@ -822,71 +815,6 @@ def p_closed_statement_2(p):
     p[0] = p[1]
 
 
-def p_non_labeled_closed_statement_1(p):
-    '''non_labeled_closed_statement : assignment_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_2(p):
-    '''non_labeled_closed_statement : procedure_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_3(p):
-    '''non_labeled_closed_statement : goto_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_4(p):
-    '''non_labeled_closed_statement : compound_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_5(p):
-    '''non_labeled_closed_statement : case_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_6(p):
-    '''non_labeled_closed_statement : repeat_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_7(p):
-    '''non_labeled_closed_statement : closed_with_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_8(p):
-    '''non_labeled_closed_statement : closed_if_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_9(p):
-    '''non_labeled_closed_statement : closed_while_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_10(p):
-    '''non_labeled_closed_statement : closed_for_statement'''
-    p[0] = StatementListNode(p[1])
-    p[0].pos_info = get_pos(p, 0)
-
-
-def p_non_labeled_closed_statement_11(p):
-    '''non_labeled_closed_statement : '''
-    pass
-
-
 def p_non_labeled_open_statement_1(p):
     '''non_labeled_open_statement : open_with_statement'''
     p[0] = p[1]
@@ -905,6 +833,25 @@ def p_non_labeled_open_statement_3(p):
 def p_non_labeled_open_statement_4(p):
     '''non_labeled_open_statement : open_for_statement'''
     p[0] = p[1]
+
+
+def p_non_labeled_closed_statement(p):
+    """
+    non_labeled_closed_statement : assignment_statement
+    | procedure_statement
+    | goto_statement
+    | compound_statement
+    | case_statement
+    | repeat_statement
+    | closed_with_statement
+    | closed_if_statement
+    | closed_while_statement
+    | closed_for_statement
+    | empty
+    """
+    if len(p) == 2:
+        p[0] = StatementListNode(p[1])
+        p[0].pos_info = get_pos(p, 0)
 
 
 def p_repeat_statement_1(p):
@@ -1053,29 +1000,24 @@ def p_actual_parameter_list_2(p):
     p[0].pos_info = get_pos(p, 0)
 
 
-#/*
-# * this forces you to check all this to be sure that only write and
-# * writeln use the 2nd and 3rd forms, you really can't do it easily in
-# * the grammar, especially since write and writeln aren't reserved
-# */
 def p_actual_parameter_1(p):
     '''actual_parameter : expression'''
     p[0] = ArgumentNode(p[1])
     p[0].pos_info = get_pos(p, 0)
 
 
-# TODO(Cholerae): parameter formatting
 def p_actual_parameter_2(p):
     '''actual_parameter : expression COLON expression'''
     p[0] = ArgumentNode(p[1])
     p[0].pos_info = get_pos(p, 0)
+    # TODO: parameter formatting
 
 
-# TODO(Cholerae): parameter formatting
 def p_actual_parameter_3(p):
     '''actual_parameter : expression COLON expression COLON expression'''
     p[0] = ArgumentNode(p[1])
     p[0].pos_info = get_pos(p, 0)
+    # TODO: parameter formatting
 
 
 def p_goto_statement_1(p):
@@ -1326,7 +1268,6 @@ def p_unsigned_real_1(p):
     p[0].pos_info = get_pos(p, 0)
 
 
-#/* functions with no params will be handled by plain identifier */
 def p_function_designator_1(p):
     '''function_designator : identifier params'''
     p[0] = FunctionCallNode(p[1], p[2])
@@ -1346,7 +1287,9 @@ def p_set_constructor_2(p):
 
 
 def p_member_designator_list_1(p):
-    '''member_designator_list : member_designator_list comma member_designator'''
+    '''
+    member_designator_list : member_designator_list comma member_designator
+    '''
     p[0] = SetMemberListNode(p[3], p[1])
     p[0].pos_info = get_pos(p, 0)
 
@@ -1482,13 +1425,18 @@ def p_error(p):
         log.e("grammar", "unknown error")
 
 
+def p_empty_1(p):
+    '''empty : '''
+    pass
+
+
 def parser(debug=False):
     if debug:
         logger = yacc.PlyLogger(sys.stderr)
     else:
         logger = yacc.NullLogger()
 
-    tab = "frontend.parsetab"
+    tab = "frontend.parsetable"
     mod = sys.modules[__name__]
     return yacc.yacc(debuglog=logger,
                      errorlog=logger,

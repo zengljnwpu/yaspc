@@ -4,6 +4,7 @@ Tokens and lexer for Pascal-1973.
 Lexer rules originally taken from:
   http://www.pascal-central.com/docs/pascal1973.pdf
 '''
+from __future__ import absolute_import, print_function
 
 import sys
 import os
@@ -12,127 +13,124 @@ from ply import lex
 
 from frontend import log
 
-
-t_QUOTE = r'(\'|")'
-
+QUOTE = r'(\'|")'
 
 tokens = ('AND',
-      'ARRAY',
-      'BOOLEAN',
-      'CASE',
-      'CONST',
-      'DIV',
-      'DO',
-      'DOWNTO',
-      'ELSE',
-      'END',
-      'FOR',
-      'FORWARD',
-      'FUNCTION',
-      'GOTO',
-      'IF',
-      'IN',
-      'LABEL',
-      'MOD',
-      'NIL',
-      'NOT',
-      'OF',
-      'OR',
-      'OTHERWISE',
-      'PACKED',
-      'PBEGIN',
-      'PFILE',
-      'PROCEDURE',
-      'PROGRAM',
-      'RECORD',
-      'REPEAT',
-      'SET',
-      'THEN',
-      'TO',
-      'TYPE',
-      'UNTIL',
-      'VAR',
-      'WHILE',
-      'WITH',
-      'IDENTIFIER',
-      'ASSIGNMENT',
-      'COLON',
-      'COMMA',
-      'DIGSEQ',
-      'DOT',
-      'DOTDOT',
-      'EQUAL',
-      'GE',
-      'GT',
-      'LBRAC',
-      'LE',
-      'LPAREN',
-      'LT',
-      'MINUS',
-      'NOTEQUAL',
-      'PLUS',
-      'RBRAC',
-      'REALNUMBER',
-      'RPAREN',
-      'SEMICOLON',
-      'SLASH',
-      'STAR',
-      'STARSTAR',
-      'UPARROW',
-      
-      'COMMENT',
-      'CHAR',
-      'STRING',
-)
-
+           'ARRAY',
+           'ASSIGNMENT',
+           'BINDIGSEQ',
+           'CASE',
+           'CHAR',
+           'COLON',
+           'COMMA',
+           'COMMENT',
+           'CONST',
+           'DIGSEQ',
+           'DIV',
+           'DO',
+           'DOT',
+           'DOTDOT',
+           'DOWNTO',
+           'ELSE',
+           'END',
+           'EQUAL',
+           'FOR',
+           'FORWARD',
+           'FUNCTION',
+           'GE',
+           'GOTO',
+           'GT',
+           'HEXDIGSEQ',
+           'IDENTIFIER',
+           'IF',
+           'IN',
+           'LABEL',
+           'LBRAC',
+           'LE',
+           'LPAREN',
+           'LT',
+           'MINUS',
+           'MOD',
+           'NIL',
+           'NOT',
+           'NOTEQUAL',
+           'OCTDIGSEQ',
+           'OF',
+           'OR',
+           'OTHERWISE',
+           'PACKED',
+           'PBEGIN',
+           'PFILE',
+           'PLUS',
+           'PROCEDURE',
+           'PROGRAM',
+           'RBRAC',
+           'REALNUMBER',
+           'RECORD',
+           'REPEAT',
+           'RPAREN',
+           'SEMICOLON',
+           'SET',
+           'SLASH',
+           'STAR',
+           'STARSTAR',
+           'STRING',
+           'THEN',
+           'TO',
+           'TYPE',
+           'UNTIL',
+           'UPARROW',
+           'UNPACKED',
+           'VAR',
+           'WHILE',
+           'WITH')
 
 reserved_keywords = {
     'and':        'AND',
-'array':      'ARRAY',
-'boolean':    'BOOLEAN',
-'case':       'CASE',
-'div':        'DIV',
-'do':         'DO',
-'downto':     'DOWNTO',
-'else':       'ELSE',
-'end':        'END',
-'for':        'FOR',
-'forward':    'FORWARD',
-'function':   'FUNCTION',
-'goto':       'GOTO',
-'if':         'IF',
-'in':         'IN',
-'label':      'LABEL',
-'mod':        'MOD',
-'nil':        'NIL',
-'not':        'NOT',
-'of':         'OF',
-'or':         'OR',
-'otherwise':  'OTHERWISE',
-'packed':     'PACKED',
-'begin':      'PBEGIN',
-'file':       'PFILE',
-'procedure':  'PROCEDURE',
-'program':    'PROGRAM',
-'record':     'RECORD',
-'repeat':     'REPEAT',
-'set':        'SET',
-'then':       'THEN',
-'to':         'TO',
-'type':       'TYPE',
-'until':      'UNTIL',
-'var':        'VAR',
-'while':      'WHILE',
-'with':       'WITH'
+    'array':      'ARRAY',
+    'begin':      'PBEGIN',
+    'case':       'CASE',
+    'const':      'CONST',
+    'div':        'DIV',
+    'do':         'DO',
+    'downto':     'DOWNTO',
+    'else':       'ELSE',
+    'end':        'END',
+    'file':       'PFILE',
+    'for':        'FOR',
+    'forward':    'FORWARD',
+    'function':   'FUNCTION',
+    'goto':       'GOTO',
+    'if':         'IF',
+    'in':         'IN',
+    'label':      'LABEL',
+    'mod':        'MOD',
+    'nil':        'NIL',
+    'not':        'NOT',
+    'of':         'OF',
+    'or':         'OR',
+    'otherwise':  'OTHERWISE',
+    'packed':     'PACKED',
+    'procedure':  'PROCEDURE',
+    'program':    'PROGRAM',
+    'record':     'RECORD',
+    'repeat':     'REPEAT',
+    'set':        'SET',
+    'then':       'THEN',
+    'to':         'TO',
+    'type':       'TYPE',
+    'until':      'UNTIL',
+    'var':        'VAR',
+    'while':      'WHILE',
+    'with':       'WITH'
 }
 
-
 # A string containing ignored characters (spaces and tabs).
-t_IGNORE = ' \t\r\x0c'
+t_ignore = ' \t\r\x0c'
 
 
 # pascal1973.pdf Section 2.4
-def t_IDENTIFIER(self, t):
+def t_IDENTIFIER(t):
     r"[a-zA-Z]([a-zA-Z0-9])*"
     if t.value.lower() in reserved_keywords:
         t.type = reserved_keywords[t.value.lower()]
@@ -143,7 +141,7 @@ def t_IDENTIFIER(self, t):
 # pascal1973.pdf Section 6.1.2
 # determined by particular implementations 
 # for escape character only support '\t' '\n' and '\\'
-def t_CHAR(self, t):
+def t_CHAR(t):
     r"(\'(([^\\\'])|(\\[\\tn]))\')"
     t.value = t.value[1:-1]
     t.endlexpos = t.lexpos + len(t.value)
@@ -152,11 +150,11 @@ def t_CHAR(self, t):
 
 # pascal1973.pdf Section 2.4
 # Allowed paired \' in string
-def t_STRING(self, t):
+def t_STRING(t):
     r"(\'((\'(([^\\\'])|(\\[\\tn]))*\')|((([^\\\'])|(\\[\\tn]))*))*\')"
-    escaped = False
+    escaped = 0
     s = t.value[1:-1]
-    new_str = ''
+    new_str = ""
     for i in range(0, len(s)):
         c = s[i]
         if escaped:
@@ -165,29 +163,35 @@ def t_STRING(self, t):
             elif c == "t":
                 c = "\t"
             new_str += c
-            escaped = False
+            escaped = 0
         else:
             if c == "\\":
-                escaped = True
+                escaped = 1
             else:
                 new_str += c
+
     t.endlexpos = t.lexpos + len(t.value)
     t.value = new_str
+
     return t
 
 
 # Pascal 1973 do not support comments.
 # This is an extension.
-def t_COMMENT(self, t):
+def t_COMMENT(t):
     r"(?s)(\(\*.*?\*\))|({[^}]*})"
     t.lexer.lineno += (t.value.count("\n"))
     t.endlexpos = t.lexpos + len(t.value)
 
 
-t_NEWLINE = r'\n+'
+def t_NEWLINE(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+    t.endlexpos = t.lexpos + len(t.value)
+
 
 # pascal1973.pdf Section 2.4 and 6.1.2
-def t_REALNUMBER(self, t):
+def t_REALNUMBER(t):
     r"(\d+\.\d+([eE][\+-]\d+)?)|(\d+[eE][\+-]\d+)"
     t.endlexpos = t.lexpos + len(t.value)
     return t
@@ -195,7 +199,7 @@ def t_REALNUMBER(self, t):
 
 # Pascal 1973 do not support hexadecimal number literal.
 # This is an extension. 
-def t_HEXDIGSEQ(self, t):
+def t_HEXDIGSEQ(t):
     r'(?i)[0-9][0-9a-f]*H'
     t.endlexpos = t.lexpos + len(t.value)
     return t
@@ -203,7 +207,7 @@ def t_HEXDIGSEQ(self, t):
 
 # Pascal 1973 do not support octal number literal.
 # This is an extension.
-def t_OCTDIGSEQ(self, t):
+def t_OCTDIGSEQ(t):
     r'[0-7]+Q'
     t.endlexpos = t.lexpos + len(t.value)
     return t
@@ -211,7 +215,7 @@ def t_OCTDIGSEQ(self, t):
 
 # Pascal 1973 do not support binary number literal.
 # This is an extension.
-def t_BINDIGSEQ(self, t):
+def t_BINDIGSEQ(t):
     r'[01]+B'
     t.endlexpos = t.lexpos + len(t.value)
     return t
@@ -219,39 +223,131 @@ def t_BINDIGSEQ(self, t):
 
 # pascal1973.pdf Section 2.4 
 # leading zeros are allowed.
-def t_DIGSEQ(self, t):
+def t_DIGSEQ(t):
     r'[0-9]+'
     t.endlexpos = t.lexpos + len(t.value)
     return t
 
 
-# pascal1973.pdf Section 6.1.2
-def t_BOOLEAN(self, t):
-    r'true|false'
+def t_ASSIGNMENT(t):
+    r":="
     t.endlexpos = t.lexpos + len(t.value)
     return t
 
 
-t_ASSIGNMENT = r':='
-t_STARSTAR = r'\*\*'
-t_DOTDOT = r'\.\.'
-t_GE = r'\>\='
-t_NOTEQUAL = '\<\>'
-t_LE = r'\<\='
-t_COLON = r':'
-t_COMMA = r','
-t_LBRAC = r'\['
-t_RBRAC = r'\]'
-t_DOT = r'\.'
-t_GT = r'\>'
-t_LT = r'\<'
-t_EQUAL = r'\='
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-t_MINUS = r'\-'
-t_PLUS = r'\+'
-t_SEMICOLON = r';'
-t_SLASH = r'/'
+def t_STARSTAR(t):
+    r"\*\*"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_DOTDOT(t):
+    r"\.\."
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_GE(t):
+    r"\>\="
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_NOTEQUAL(t):
+    r"\<\>"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_LE(t):
+    r"\<\="
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_COLON(t):
+    r":"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_COMMA(t):
+    r","
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_LBRAC(t):
+    r"\["
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_DOT(t):
+    r"\."
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_GT(t):
+    r"\>"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_EQUAL(t):
+    r"\="
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_LPAREN(t):
+    r"\("
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_LT(t):
+    r"\<"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_MINUS(t):
+    r"\-"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_PLUS(t):
+    r"\+"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_RBRAC(t):
+    r"\]"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_RPAREN(t):
+    r"\)"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_SEMICOLON(t):
+    r";"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
+
+def t_SLASH(t):
+    r"/"
+    t.endlexpos = t.lexpos + len(t.value)
+    return t
+
 
 def t_STAR(t):
     r"\*"
@@ -276,7 +372,7 @@ def lexer(debug=False):
     else:
         logger = lex.NullLogger()
 
-    tab = 'frontend.lextab'
+    tab = "frontend.lextable"
     mod = sys.modules[__name__]
     return lex.lex(debuglog=logger,
                    errorlog=logger,

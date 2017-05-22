@@ -1,8 +1,9 @@
 '''
 Definitions for nodes in the abstract syntax tree.
 '''
-# TODO(Cholerae): type system
-from frontend.type import Type
+from __future__ import absolute_import, print_function
+
+from frontend import typesys
 
 class Node(object):
 
@@ -47,7 +48,7 @@ class Node(object):
 
     @type.setter
     def type(self, val):
-        assert isinstance(val, Type)
+        assert isinstance(val, typesys.Type)
         self._type = val
 
     def __str__(self):
@@ -219,6 +220,10 @@ class VarAccessNode(Node):
 
     def __str__(self):
         return "Variable access"
+
+
+class ValueNode(Node):
+    pass
 
 
 class StringNode(ValueNode):
@@ -1142,3 +1147,29 @@ class IdentifierNode(Node):
 
     def __str__(self):
         return "Identifier (%s)" % self.name
+
+class TypeConvertNode(Node):
+
+    def __init__(self, child):
+        assert isinstance(child, Node)
+        self.child = child
+
+    @property
+    def children(self):
+        return [self.child]
+
+    def __str__(self):
+        return "Type convert"
+
+
+class VarReferenceNode(Node):
+
+    def __init__(self, var_access):
+        self.var_access = var_access
+
+    @property
+    def children(self):
+        return [self.var_access]
+
+    def __str__(self):
+        return "Variable reference"
