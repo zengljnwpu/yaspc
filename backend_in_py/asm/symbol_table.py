@@ -1,8 +1,8 @@
-from backend_in_py.asm.Literal import *
+from backend_in_py.asm.literal import *
 
 
 class SymbolTable ():
-    def __init__(self, base):
+    def __init__(self, base: str):
         self.base = base
         self.map = dict ({})
         self.seq= 0

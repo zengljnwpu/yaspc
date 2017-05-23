@@ -1,5 +1,5 @@
-from backend_in_py.asm.Literal import *
-from backend_in_py.asm.Operand import *
+from backend_in_py.asm.literal import *
+from backend_in_py.asm.operand import *
 
 class Assembly ():
     def to_source (self, table):
@@ -37,11 +37,12 @@ class Label (Assembly):
     def dump (self):
         return "(Label " + self.symbol.dump() + ")"
 
-    def to_source(self, table):
+    def to_source(self, table ):
         return self.symbol.to_source (table) + ":"
 
+
 class Instruction (Assembly):
-    def __init__ (self, mnemonic, suffix = None, a1 = None, a2 = None, reloc = None):
+    def __init__ (self, mnemonic: str, suffix:str = None, a1:Operand = None, a2:Operand = None, reloc:bool = None):
         self.mnemonic = mnemonic
         self.operands = []
         if suffix:
@@ -57,7 +58,7 @@ class Instruction (Assembly):
         else:
             self.need_relocation = False
     
-    def build (self, mnemonic, o1, o2 = None):
+    def build (self, mnemonic:str, o1:Operand, o2:Operand = None):
         if not o2:
             return Instruction (mnemonic= mnemonic, suffix = self.suffix, a1 = o1, reloc = self.need_relocation)
         else:
@@ -67,7 +68,7 @@ class Instruction (Assembly):
         return True
 
     def is_jump_instruction (self):
-        list = ("jump", "jz", "jne", "je", "jne")
+        list = ("jmp", "jz", "jne", "je", "jne")
         return self.mnemonic in list
 
     def num_operands (self):
@@ -81,11 +82,11 @@ class Instruction (Assembly):
 
     #Extract jump destination label from operands
     def jmp_destination (self):
-        ref = DirectMemoryReference (self.operands[0])
-        return Symbol (ref.value)
+        ref = self.operands[0]
+        return ref.value
 
     def collect_statistics (self, stats):
-        stats.instruction_ussed (self.mnemonic)
+        stats.instruction_used (self.mnemonic)
         for i in self.operands:
             i.collect_statistics (stats)
 
@@ -100,8 +101,8 @@ class Instruction (Assembly):
             buf = buf + i.to_source (table)
         return buf
 
-    def _str__(self):
-        return "#<Insn" + self.mnemonic + ">"
+    def __str__(self):
+        return "#<Insn " + self.mnemonic + ">"
 
     def dump(self):
         buf = ""
@@ -111,8 +112,9 @@ class Instruction (Assembly):
         buf = buf + ")"
         return buf
 
+
 class Directive (Assembly):
-    def __init__(self, content):
+    def __init__(self, content: str):
         super().__init__()
         self.content = content
 
@@ -144,4 +146,4 @@ class Comment (Assembly):
         return buf
 
     def dump(self):
-        return "Comment "+ self.string + ")"
+        return "(Comment "+ self.string + ")"

@@ -1,4 +1,4 @@
-from backend_in_py.asm.Assembly import *
+from backend_in_py.asm.assembly import *
 
 
 class Statistics ():
@@ -14,7 +14,7 @@ class Statistics ():
         return stats
 
     def does_register_used (self, reg):
-        return self.does_register_used(reg) > 0
+        return self.num_register_used(reg) > 0
 
     def num_register_used (self, reg):
         return self.fetch_count (self.register_usage, reg)
@@ -25,12 +25,14 @@ class Statistics ():
     def num_instruction_usage (self, insn):
         return self.fetch_count (self.insn_usage, insn)
 
-    def instruction_used(self, insn):
+    def instruction_used(self, insn:str):
         self.increment_count(self.insn_usage, insn)
 
     def does_symbol_used (self, sym):
         if isinstance(sym, Label):
             return self.does_symbol_used(sym.symbol)
+        elif isinstance (sym, SuffixedSymbol):
+            return self.does_symbol_used (sym.base)
         else:
             return self.num_symbol_used(sym) > 0
 
@@ -40,12 +42,12 @@ class Statistics ():
     def symbol_used (self, sym):
         self.increment_count (self.symbol_usage, sym)
 
-    def fetch_count (self,m, key):
-        n = dict(m).get (key)
+    def fetch_count (self, m, key):
+        n = m.get (key)
         if n:
             return n
         else:
             return 0
 
     def increment_count (self, m, key):
-        dict(m)[key] = self.fetch_count (m, key) + 1
+        m[key] = self.fetch_count (m, key) + 1

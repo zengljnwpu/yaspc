@@ -19,8 +19,8 @@ class Literal ():
 
 
 class IntegerLiteral (Literal):
-    def __init__ (self, n):
-        self.value = n
+    def __init__ (self, n:int):
+        self.value = int(n)
 
     def __eq__ (self, other):
         if not isinstance(other, IntegerLiteral):
@@ -28,8 +28,14 @@ class IntegerLiteral (Literal):
         else:
             return other.value == self.value
 
+    def __hash__ (self):
+        return hash(self.value)
+
+    def __str__(self):
+        return str(self.value)
+
     def equals (self, other):
-        return self.__eq__(other)
+        return self.__eq__ (other)
 
     def is_zero(self):
         return self.value == 0
@@ -38,7 +44,7 @@ class IntegerLiteral (Literal):
         return IntegerLiteral (self.value + diff)
 
     def plus (self, diff):
-        return self.plus (diff)
+        return self.__add__ (diff)
 
     def integer_literal (self):
         return self
@@ -50,7 +56,7 @@ class IntegerLiteral (Literal):
         return
 
     def compare_to (self, lit):
-        return -(lit.cmp (self))
+        return self.cmp (lit)
 
     def cmp (self, i):
         if isinstance(i, IntegerLiteral):
@@ -81,14 +87,14 @@ class Symbol (Literal):
         return
 
     def dump (self):
-        return
+        return ""
 
 class BaseSymbol (Symbol):
     def is_zero(self):
         return False
 
     def collect_statistics(self, stats):
-        return stats.symbol_used (self)
+        stats.symbol_used (self)
 
     def __str__(self):
         return str (hash (self))
@@ -99,6 +105,8 @@ class BaseSymbol (Symbol):
 class NamedSymbol (BaseSymbol):
     def __init__(self, name):
         super().__init__()
+        if name == "":
+            raise Exception ("NamedSymbol must have name")
         self.name = str(name)
 
     def to_source(self, table = None):
@@ -107,8 +115,17 @@ class NamedSymbol (BaseSymbol):
     def __str__ (self):
         return "#" + self.name
 
+    def __hash__ (self):
+        return hash(self.name)
+
+    def __eq__ (self, other):
+        if not isinstance (other, NamedSymbol):
+            return False
+        else:
+            return self.name == other.name
+
     def compare_to (self, lit):
-        return - (lit.cmp (self))
+        return self.cmp (lit)
 
     def cmp (self, i):
         if isinstance(i, IntegerLiteral):
@@ -134,7 +151,7 @@ class UnnamedSymbol (BaseSymbol):
         return super().__str__()
     
     def compare_to (self, lit):
-        return - (lit.cmp (self))
+        return self.cmp (lit)
 
     def cmp (self, i):
        if isinstance(i, IntegerLiteral):
@@ -147,10 +164,12 @@ class UnnamedSymbol (BaseSymbol):
            return 1
 
     def dump (self):
-        return "(UnnamedSymbol @" + str (hash (self)) + ")"
+        return "(UnnamedSymbol @" + str (self) + ")"
+
 
 class SuffixedSymbol (Symbol):
-    def __init__(self, base, suffix):
+    def __init__(self, base: Symbol, suffix: str):
+       super().__init__()
        self.base = base
        self.suffix = suffix
 
@@ -169,11 +188,20 @@ class SuffixedSymbol (Symbol):
     def to_source (self, table = None):
         return self.base.to_source (table) + self.suffix
 
+    def __hash__ (self):
+        return hash (str(self.base) + self.suffix)
+
+    def __eq__ (self, other):
+        if not isinstance (other, SuffixedSymbol):
+            return False
+        else:
+            return (self.base == other.base) and (self.suffix == other.base)
+
     def __str__ (self):
         return str(self.base) + self.suffix
 
     def compare_to (self, lit):
-        return -(lit.cmp (self))
+        return self.cmp (lit)
 
     def cmp (self, i):
         if isinstance(i, IntegerLiteral):

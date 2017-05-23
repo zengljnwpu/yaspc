@@ -1,15 +1,12 @@
-from backend_in_py.asm.SymbolTable import *
+from backend_in_py.asm.symbol_table import *
 
 
-class Operand ():
+class Operand (object):
     def to_source (self, table):
         return
 
     def dump (self):
         return
-
-    def __eq (self):
-        return False
 
     def is_register (self):
         return False
@@ -27,18 +24,47 @@ class Operand ():
         return False
 
 
+class Register (Operand):
+    def is_register(self):
+        return True
+
+    def collect_statistics(self, stats):
+        return stats.register_used (self)
+
+    def to_source(self, table):
+        return ""
+
+    def dump(self):
+        return ""
+
+
+class AbsoluteAddress (Operand):
+    def __init__(self, reg):
+        super().__init__()
+        self.register = reg
+
+    def collect_statistics(self, stats):
+        self.register.collect_statistics (stats)
+
+    def to_source (self, table):
+        return "*" + self.register.to_source (table)
+
+    def dump (self):
+        return "AbsoluteAddress " + self.register.dump() + ")"
+
+
 class ImmediateValue (Operand):
     def __init__ (self, expr):
         if isinstance(expr, int):
             self.expr = IntegerLiteral (expr)
-        else:
+        elif isinstance (expr, Literal):
             self.expr = expr
 
     def __eq__(self, other):
         if not isinstance (other, ImmediateValue):
             return False
-        imm = ImmediateValue (other)
-        return self.expr == imm.expr
+        else:
+            return self.expr == other.expr
 
     def collect_statistics (self, stats):
         return
@@ -62,23 +88,23 @@ class MemoryReference (Operand):
 
 
 class IndirectMemoryReference (MemoryReference):
-    def __init__(self, offset, base, fixed = True):
+    def __init__(self, offset: int, base: Register, fixed = True):
         super().__init__()
-        if isinstance(offset, int):
-            self.offset = IntegerLiteral (offset)
-        else:
+        if isinstance(offset, IntegerLiteral):
             self.offset = offset
+        else:
+            self.offset = IntegerLiteral(offset)
         self.base = base
         self.fixed = fixed
 
     @staticmethod
-    def reloca_table (cls, offset, base):
-        return IndirectMemoryReference (IntegerLiteral (offset), base , False)
+    def reloca_table (offset, base):
+        return IndirectMemoryReference (offset, base , False)
 
     def fix_offset(self, diff):
         if self.fixed:
             raise Exception("must not happen: fixed = True")
-        curr = IntegerLiteral (self.offset).value
+        curr = self.offset.value
         self.offset = IntegerLiteral (curr + diff)
         self.fixed = True
 
@@ -97,7 +123,7 @@ class IndirectMemoryReference (MemoryReference):
             return self.offset.to_source (table) + "(" + self.base.to_source (table) + ")"
             
     def compare_to (self, mem):
-        return -(mem.cmp (self))
+        return self.cmp (mem)
 
     def cmp (self, mem):
         if isinstance (mem, DirectMemoryReference):
@@ -117,7 +143,10 @@ class IndirectMemoryReference (MemoryReference):
 class DirectMemoryReference (MemoryReference):
     def __init__ (self, val):
         super().__init__()
-        self.value = val
+        if isinstance(val, IntegerLiteral):
+            self.value = val
+        else:
+            self.value = IntegerLiteral(val)
 
     def collect_statistics(self, stats):
         self.value.collect_statistics (stats)
@@ -132,7 +161,7 @@ class DirectMemoryReference (MemoryReference):
         return self.value.to_source (table)
 
     def compare_to (self, mem):
-        return -(mem.cmp (self))
+        return self.cmp (mem)
 
     def cmp (self, mem):
         if isinstance (mem, IndirectMemoryReference):
@@ -144,29 +173,3 @@ class DirectMemoryReference (MemoryReference):
         return "(DirectMemoryReference " + self.value.dump () + ")"
 
 
-class Register (Operand):
-    def is_register(self):
-        return True
-
-    def collect_statistics(self, stats):
-        return stats.register_used (self)
-
-    def to_source(self, table):
-        return
-
-    def dump(self):
-        return
-
-class AbsoluteAddress (Operand):
-    def __init__(self, reg):
-        super().__init__()
-        self.register = reg
-
-    def collect_statistics(self, stats):
-        self.register.collect_statistics (stats)
-
-    def to_source (self, table):
-        return "*" + self.register.to_source (table)
-
-    def dump (self):
-        return "AbsoluteAddress " + self.register.dump() + ")"
