@@ -17,7 +17,7 @@ typedef struct node
 	int left, right;	       	 /*左右节点*/
 }DAGNODE;
 
-#define MAXNN	20			/*DAG最大结点数目*/
+#define MAXNN	20			``/*DAG最大结点数目*/
 /*DAG*/
 typedef struct mnode
 {

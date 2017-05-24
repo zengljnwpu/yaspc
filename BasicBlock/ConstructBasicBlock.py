@@ -16,14 +16,17 @@ import yaspc.BasicBlock.BasicBlock as BasicBlock
 
 DEBUG = True
 
+
 def ConstructBlockList(instList):
     #instList = ConstructInstList()
     '''Logical bug has been fixed hellolzc@2017/5/18'''
     block = None
     number = 0
-    blockDict = {}      #key is the number of instruction, and map to inst
-    labelDict = {}      #key is the label of instruction, and map to block
+    blockDict = {}      # key is the number of instruction, and map to inst
+    labelDict = {}      # key is the label of instruction, and map to block
     blockList = []
+
+
     labelSet = set()    #a set for valid label
 
     ''' find the valid label '''
