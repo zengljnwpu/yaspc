@@ -19,7 +19,7 @@ class Expr():
         print ("expr#asm_value called\n");
 
     def address (self):
-        print("expr#address called\n");
+        print("expr#_address called\n");
 
     def mem_ref (self):
         print("expr#memref called\n");
@@ -54,10 +54,10 @@ class Addr (Expr):
 		return self.entity;
 
 	def address (self):
-		return self.entity.address();
+		return self.entity._address();
 
 	def mem_ref(self):
-		return self.entity.mem_ref();
+		return self.entity._mem_ref();
 
 	def get_entity_force (self):
 		return self.entity;
@@ -178,13 +178,13 @@ class Str (Expr):
 		return True;
 
 	def mem_ref(self):
-		return self.entry.mem_ref();
+		return self.entry._mem_ref();
 
 	def address(self):
-		return self.entry.address();
+		return self.entry._address();
 
 	def asm_value(self):
-		return self.entry.address();
+		return self.entry._address();
 
 	def accept(self, visitor):
 		return visitor.visit (self);
@@ -232,10 +232,10 @@ class Var (Expr):
 		return self.entity;
 
 	def address (self):
-		return self.entity.address();
+		return self.entity._address();
 
 	def mem_ref(self):
-		return self.entity.mem_ref();
+		return self.entity._mem_ref();
 
 	def address_node(self, type):
 		return Addr (type, self.entity);

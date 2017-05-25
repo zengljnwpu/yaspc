@@ -1,11 +1,12 @@
+
 class CodeGenerator ():
     __LABEL_SYMBOL_BASE = ".L"
     __CONST_SYMBOL_BASE = ".LC"
 
     def __init__ (self, options, natural_type, error_handler):
-        self.__options = options
-        self.__natural_type = natural_type
-        self.__error_handler = error_handler
+        self.options = options
+        self.natural_type = natural_type
+        self.error_handler = error_handler
 
     #Compiles IR and generates assembly code.
     def generate (self, ir):
@@ -24,7 +25,7 @@ class CodeGenerator ():
 
     def __locate_string_literal (self, ent, syms):
         ent.set_symbols (syms.new_symbol())
-        if self.__options.is_position_indepedent ():
+        if self.options.is_position_indepedent ():
             offset = self.__local_GOT_symbol (ent.symbol())
             ent.set_mem_ref (self.__mem (offset, self.__GOT_base_reg()));
         else:
@@ -33,7 +34,7 @@ class CodeGenerator ():
 
     def __locate_global_variable (self, ent):
         sym = self.__symbol (ent.symbol_string(), ent.is_private())
-        if (self.__options.is_positions_independent()):
+        if (self.options.is_positions_independent()):
             if ent.is_private() or self.__optimize_gvar_access (ent):
                 ent.set_mem_ref (self.__mem (self.__local_GOT_symbol (sym), self.__GOT_base_reg()))
             else:
@@ -69,10 +70,10 @@ class CodeGenerator ():
                 return sym
 
     def __should_use_plt (self, ent):
-        return self.__options.is_positions_independent () and not self.__optimize_gvar_access (ent)
+        return self.options.is_positions_independent () and not self.__optimize_gvar_access (ent)
 
     def __optimize_gvar_access (self, ent):
-        return self.__options.is_PIE_required () and ent.is_defined()
+        return self.options.is_PIE_required () and ent.is_defined()
 
     #generate Assembly code
     def __generate_assembly_code (self, ir):
@@ -86,14 +87,14 @@ class CodeGenerator ():
             self.__generate_text_section (file, ir.defined_funcitons())
         if ir.is_common_symbol_defined():
             self.__generate_common_symbols (file, ir.defined_common_symbols())
-        if self.__options.is_positions_independent():
+        if self.options.is_positions_independent():
             self.__PIC_thunk (file, self.__GOT_base_reg())
         return file
 
     def __new_assembly_code (self):
-        return AssemblyCode (self.__natural_type, self.__STACK_WORD_SIZE, \
-                             SymbolTable (self.__LABEL_SYMBOL_BASE),\
-                             self.__options.is_verbose_asm())
+        return AssemblyCode (self.natural_type, self.__STACK_WORD_SIZE, \
+                             SymbolTable (self.__LABEL_SYMBOL_BASE), \
+                             self.options.is_verbose_asm())
 
     def __generate_data_section (self, file, gvars):
         file._data()
@@ -252,12 +253,12 @@ class CodeGenerator ():
         self.__fix_local_variable_offsets (func.lvar_scope(), frame.lvar_offset())
         self.__fix_temp_varaible_offsets (body, frame.temp_offset())
 
-        if (self.__options.is_verbose_asm()):
+        if (self.options.is_verbose_asm()):
             self.__print_stack_frame_layout (file, frame, func.local_varables ())
         self.__generate_function_body (file, body, frame)
 
     def __optimize (self, body):
-        if self.__options.optimize_level () < 1:
+        if self.options.optimize_level () < 1:
             return body
         body.apply (PeepholeOptimizer.default_set())
         body.reduce_labels ()
@@ -266,8 +267,8 @@ class CodeGenerator ():
     def __print_stack_frame_layout (self, file, frame, lvars):
         vars = []
         for var in lvars:
-            vars.append( self.MemInfo (var.mem_ref(), var.name()))
-        vars.append(self.MemInfo (self.__mem (0, self.__bp(), "return address")))
+            vars.append(self.MemInfo (var._mem_ref(), var.name()))
+        vars.append(self.MemInfo (self.__mem (0, self.__bp(), "return _address")))
         vars.append (self.MemInfo (self, __mem (4, self.__bp(), "saved %ebp")))
         if frame.save_regs_size() > 0:
             vars.append(self.MemInfo (self.__mem (-frame.save_regs_size(), self.__bp()), \
@@ -324,14 +325,14 @@ class CodeGenerator ():
         if not self.__callee_save_registers_cache:
             regs = []
             for c in self.CALLEE_SAVE_REGISTERS:
-                regs.append(Register (c, self.__natural_type))
+                regs.append(Register (c, self.natural_type))
             self.__callee_save_registers_cache = regs
         return self.__callee_save_registers_cache
 
     def __generate_function_body (self, file, body, frame):
         file.virtual_stack.reset ()
         self.__prologue (file, frame.save_regs, frame.frame_size())
-        if self.__options.is_positions_independent() and body.does_uses (self.__GOT_base_reg()):
+        if self.options.is_positions_independent() and body.does_uses (self.__GOT_base_reg()):
             self.__load_GOT_base_address(file, self.__GOT_base_reg())
         file.add_all (body.assemblies())
         self.__epilogue (file, frame.save_regs)
@@ -360,7 +361,7 @@ class CodeGenerator ():
             var.set_mem_ref (self.__mem (self.__stack_size_from_word_num(num_words), self.__bp()))
             num_words += 1
 
-    # Allocates address of local variables, but offset is still not determined, assign unfixed IndirectMemoryReference
+    # Allocates _address of local variables, but offset is still not determined, assign unfixed IndirectMemoryReference
     def __locate_local_variables (self, scope, parent_stack_len = 0):
         len = parent_stack_len
         for var in scope.local_variables ():
@@ -378,7 +379,7 @@ class CodeGenerator ():
 
     def __fix_local_variable_offsets (self, scope, len):
         for var in scope.all_local_variables():
-            var.mem_ref().fix_offset (-len)
+            var._mem_ref().fix_offset (-len)
 
     def __fix_temp_varaible_offsets (self, asm, len):
         asm.virtual_stack.fix_offset (-len)
@@ -499,9 +500,9 @@ class CodeGenerator ():
             self.__load_constant (node, self.__ax())
             return None
         elif isinstance(node, Assign):
-            if node.lhs().is_addr() and node.lhs().mem_ref():
+            if node.lhs().is_addr() and node.lhs()._mem_ref():
                 self.__compile (node.rhs())
-                self.__store (self.__ax(node.lhs().type()), node.lhs().mem_ref())
+                self.__store (self.__ax(node.lhs().type()), node.lhs()._mem_ref())
             elif node.rhs().is_constant():
                 self.__compile (node.lhs())
                 self.__as.mov (self.__ax(), self.__cx())
@@ -529,18 +530,18 @@ class CodeGenerator ():
 
     #Statemments
     def __compile_stmt (self, stmt):
-        if self.__options.is_verbose_asm():
+        if self.options.is_verbose_asm():
             if stmt.location() != None:
                 self.__as.comment (stmt.location().numbered_line())
         stmt.accept (self)
 
     #Expression
     def __compile (self, n):
-        if self.__options.is_verbose_asm():
+        if self.options.is_verbose_asm():
             self.__as.comment (n.get_class().get_simplle_name() + " {")
             self.__as.indent_comment()
         n.accept (self)
-        if (self.__options.is_verbose_asm):
+        if (self.options.is_verbose_asm):
             self.__as.unindent_comment()
             self.__as.comment ("}")
 
@@ -602,30 +603,30 @@ class CodeGenerator ():
     def __load_constant (self, node, reg):
         if node.asm_value():
             self.__as.mov (node.asm_value(), reg)
-        elif node.mem_ref () :
-            self.__as.lea (node.mem_ref(), reg)
+        elif node._mem_ref () :
+            self.__as.lea (node._mem_ref(), reg)
         else:
             raise Exception
 
     #Load variable content to the register
     def __load_variable (self, var, dest):
-        if var.mem_ref():
-            a = Register (dest.for_type (self.__natural_type))
-            self.__as.mov (var.address(), a)
+        if var._mem_ref():
+            a = Register (dest.for_type (self.natural_type))
+            self.__as.mov (var._address(), a)
             self.__load (self.__mem (a), dest.for_type (var.type()))
         else:
-            self.__load (var.mem_ref(), dest.for_type (var.type()))
+            self.__load (var._mem_ref(), dest.for_type (var.type()))
 
-    #Load the address of the variable to the register
+    #Load the _address of the variable to the register
     def __load_address (self, var, dest):
-        if var.address():
-            self.__as.mov (var.address(), dest)
+        if var._address():
+            self.__as.mov (var._address(), dest)
         else:
-            self.__as.lea (var.mem_ref(), dest)
+            self.__as.lea (var._mem_ref(), dest)
 
     def __ax (self, t = 0):
         if t == 0:
-            t = self.__natural_type
+            t = self.natural_type
         return Register (RegisterClass.AX, t)
 
     def __al (self):
@@ -633,12 +634,12 @@ class CodeGenerator ():
 
     def __bx (self, t = 0):
         if t == 0:
-            t = self.__natural_type
+            t = self.natural_type
         return Register (RegisterClass.BX, t)
 
     def __cx (self, t = 0):
         if t == 0:
-            t = self.__natural_type
+            t = self.natural_type
         return Register (RegisterClass.CX, t)
 
     def __cl (self):
@@ -646,17 +647,17 @@ class CodeGenerator ():
 
     def __dx (self, t = 0):
         if t == 0:
-            t = self.__natural_type
+            t = self.natural_type
         return Register (RegisterClass.DX, t)
 
     def __si (self):
-        return Register (RegisterClass.SI, self.__natural_type)
+        return Register (RegisterClass.SI, self.natural_type)
     def __di (self):
-        return Register (RegisterClass.DI, self.__natural_type)
+        return Register (RegisterClass.DI, self.natural_type)
     def __bp (self):
-        return Register (RegisterClass.BP, self.__natural_type)
+        return Register (RegisterClass.BP, self.natural_type)
     def __sp (self):
-        return Register (RegisterClass.SP, self.__natural_type)
+        return Register (RegisterClass.SP, self.natural_type)
 
     def __mem (self, a = 0, b = 0):
         if isinstance(a, Symbol) and b == 0:

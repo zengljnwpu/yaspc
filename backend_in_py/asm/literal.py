@@ -109,12 +109,16 @@ class NamedSymbol (BaseSymbol):
             raise Exception ("NamedSymbol must have name")
         self.name = str(name)
 
+    def name (self):
+        return self.name
+
     def to_source(self, table = None):
         return self.name
 
     def __str__ (self):
         return "#" + self.name
 
+    @property
     def __hash__ (self):
         return hash(self.name)
 
