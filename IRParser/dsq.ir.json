@@ -3,7 +3,6 @@
 	"object": "program_definition",
 	"name": "dsq",
 	"variablelist": [
-
 		{
 			"object": "entity",
 			"type": "bool",
@@ -15,16 +14,13 @@
 
 	"labellist": [],
 	"functionlist": [
-
 		{
-
 			"object": "function_definition",
 			"filename": "dsq.pas",
 			"line_number": 4,
 			"name": "prime",
 			"type": "bool",
 			"parameterlist": [
-
 				{
 					"object": "entity",
 					"type": "int32",
@@ -32,11 +28,9 @@
 					"variable": "num",
 					"const": false
 				}
-
 			],
 
 			"variablelist": [
-
 				{
 					"object": "entity",
 					"type": "int32",
@@ -51,7 +45,6 @@
 					"name": "variable",
 					"variable": "g",
 					"const": false
-
 				},
 				{
 					"object": "entity",
@@ -66,7 +59,6 @@
 					"name": "variable",
 					"variable": "%2",
 					"const": false
-
 				},
 				{
 					"object": "entity",
@@ -74,7 +66,6 @@
 					"name": "variable",
 					"variable": "%3",
 					"const": false
-
 				},
 				{
 					"object": "entity",
@@ -82,13 +73,10 @@
 					"name": "variable",
 					"variable": "%4",
 					"const": false
-
 				}
-
 			],
 
 			"labellist": [
-
 				{
 					"object": "label",
 					"name": "forstartlabel1",

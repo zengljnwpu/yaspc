@@ -17,7 +17,7 @@ import yaspc.Instruction.instruction as instruction
 
 
 
-def main():
+def test_module():
     '''
     run a example of IR and print instructions list
     now is only support main function
@@ -32,4 +32,4 @@ def main():
     print(json.dumps(ir_json['body'], sort_keys=True, indent=4))
 
 if __name__ == '__main__':
-    main()
+    test_module()
