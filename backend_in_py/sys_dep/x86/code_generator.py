@@ -1,3 +1,5 @@
+#TODO: Nextweek, Convert IR to ASM objects
+
 
 class CodeGenerator ():
     __LABEL_SYMBOL_BASE = ".L"
@@ -597,7 +599,7 @@ class CodeGenerator ():
 
     #Utilities
 
-    #Load constant value, you must check node by #isConstant
+    #Load constant _value, you must check node by #isConstant
     #beforce calling this method
 
     def __load_constant (self, node, reg):

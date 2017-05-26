@@ -160,9 +160,9 @@ class AssemblyCode():
 
     def _value(self, val):
         if isinstance(val, int):
-            self._directive(".value\t" + IntegerLiteral((val)).to_source())
+            self._directive("._value\t" + IntegerLiteral((val)).to_source())
         elif isinstance(val, Literal):
-            self._directive(".value\t" + val.to_source())
+            self._directive("._value\t" + val.to_source())
 
     def _long(self, val):
         if isinstance(val, int):

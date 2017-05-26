@@ -44,9 +44,9 @@ class LocalScope (Scope):
         return name in self._variables
 
     def defined_variable (self, var: DefinedVariable):
-        if var.name in self._variables:
-            raise Exception ("duplicated variable: " + var.name)
-        self._variables[var.name] = var
+        if var._name in self._variables:
+            raise Exception ("duplicated variable: " + var._name)
+        self._variables[var._name] = var
 
     def allocate_tmp (self, t):
         var = DefinedVariable.tmp (t)
@@ -128,17 +128,17 @@ class ToplevelScope (Scope):
     # Declare variable or funcito globally
     #
     def declare_entity (self, entity: Entity):
-        e = self._entities.get (entity.name)
+        e = self._entities.get (entity._name)
         if e:
-            raise Exception ("duplicated declaration: " + entity.name + ":" + e.location() + " and" + entity.location())
-        self._entities[entity.name] = entity
+            raise Exception ("duplicated declaration: " + entity._name + ":" + e.location() + " and" + entity.location())
+        self._entities[entity._name] = entity
 
     # Define variable or function globally
     def define_entity (self, entity: Entity):
-        e = self._entities.get(entity.name)
+        e = self._entities.get(entity._name)
         if e and e.is_defined():
-            raise Exception("duplicated declaration: " + entity.name + ":" + e.location() + " and" + entity.location())
-        self._entities[entity.name] = entity
+            raise Exception("duplicated declaration: " + entity._name + ":" + e.location() + " and" + entity.location())
+        self._entities[entity._name] = entity
 
     def get (self, name: str):
         ent = self._entities.get(name)

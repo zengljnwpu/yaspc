@@ -1,251 +1,260 @@
+from backend_in_py.asm.type import *
+from backend_in_py.asm.operand import *
+from backend_in_py.entity.entity import *
+from backend_in_py.asm.type import *
+from backend_in_py.ir.dumper import *
+
+
 class Expr():
-
-    def __init__ (self, type):
-        self.type = type;
-
-    def type (self):
-        return self.type;
+    def __init__(self, type: Type):
+        self.type = type
 
     def is_var(self):
-        return False;
+        return False
 
-    def is_addr (self):
-        return False;
+    def is_addr(self):
+        return False
 
-    def is_constant (self):
-        return False;
+    def is_constant(self):
+        return False
 
-    def asm_value (self):
-        print ("expr#asm_value called\n");
+    def asm_value(self):
+        raise Exception("__expr#asm_value called")
 
-    def address (self):
-        print("expr#_address called\n");
+    def address(self):
+        raise Exception("__expr#_address called\n")
 
-    def mem_ref (self):
-        print("expr#memref called\n");
+    def mem_ref(self):
+        raise Exception("__expr#memref called\n")
 
-    def address_node (self, type):
-        print ("unexpected node for LHS: " + str (type));
+    def address_node(self, type: Type):
+        raise Exception("unexpected node for LHS: " + str(type))
 
     def det_entity_force(self):
-        return False;
+        return None
 
-    def accept (self, visitor):
-        return;
+    def accept(self, visitor):
+        return
 
-    def dump (self, d):
-        d.print_class (self);
-        d.print_member ("type", self.type);
-        self._dump (self, d);
+    def dump(self, d: Dumper):
+        d.print_class(self)
+        d.print_member("type", self.type)
+        self._dump(self, d=d)
 
-    def _dump (self, d):
-        return;
+    def _dump(self, d):
+        return
 
-class Addr (Expr):
 
-	def __init__ (self, type, entity):
-		super().__init__(type);
-		self.entity = entity;
+class Addr(Expr):
+    def __init__(self, type: Type, entity: Entity):
+        super(Addr, self).__init__(type)
+        self.entity = entity
 
-	def is_addr (self):
-		return True;
+        def is_addr(self):
+            return True
 
-	def entity (self):
-		return self.entity;
+        def address(self):
+            return self.entity.address
 
-	def address (self):
-		return self.entity._address();
+        def mem_ref(self):
+            return self.entity.mem_ref
 
-	def mem_ref(self):
-		return self.entity._mem_ref();
+        def get_entity_force(self):
+            return self.entity
 
-	def get_entity_force (self):
-		return self.entity;
+        def accept(self, visitor):
+            return visitor.visit(self)
 
-	def accept(self, visitor):
-		return visitor.visit (self);
+        def _dump(self, d):
+            d.print_member("_entity", self.entity._name())
 
-	def _dump(self, d):
-		d.print_member ("entity", self.entity.name());
 
-class Bin (Expr):
-	def __init__ (self, type, op,left, right):
-		super().__init__(type);
-		self.op = op;
-		self.left = left;
-		self.right = right;
+class Bin(Expr):
+    def __init__(self, type: Type, op: Op, left: Expr, right: Expr):
+        super(Bin, self).__init__(type)
+        self._op = op
+        self._left = left
+        self._right = right
 
-	def left (self):
-		return self.left;
+    def left(self):
+        return self._left
 
-	def right (self):
-		return self.right;
+    def right (self):
+        return self._right
 
-	def accept (self, visitor):
-		return visitor.visit (self);
+    def op(self):
+        return self._op
 
-	def _dump (self, d):
-		d.print_member ("op", self.op.to_string());
-		d.print_member ("left", self.left);
-		d.print_member ("right", self.right);
+    def accept(self, visitor):
+        return visitor.visit(self)
 
-class Call (Expr):
-	def __init__ (self, type, expr, args):
-		super.__init__(type);
-		self.expr = expr;
-		self.args = args;
+    def _dump(self, d):
+        d.print_member("_op", self._op.to_string())
+        d.print_member("_left", self._left)
+        d.print_member("_right", self._right)
 
-	def expr(self):
-		return self.expr;
 
-	def args(self):
-		return self.args;
+class Call(Expr):
+    def __init__(self, type: Type, expr, args:list):
+        super(Call, self).__init__(type)
+        self.__expr = expr
+        self.__args = args
 
-	def num_args (self):
-		return len (self.args);
+    def expr(self):
+        return self.__expr
 
-	#return True is this funcall is NOT a function pointer call
-	def is_static_call (self):
-		return (self.expr.get_entity_force() is Function);
+    def args(self):
+        return self.__args
 
-	#Return a funciton object which is refered by expression
-	def function (self):
-		ent = self.expr.get_entity_force();
-		if ent == False:
-			print ("not a static funcall\n");
-		else:
-			ent;
+    def num_args(self):
+        return len(self.__args)
 
-	def accept (self, visitor):
-		return visitor.visit (self);
+    # return True is this funcall is NOT a function pointer call
+    def is_static_call(self):
+        return isinstance(self.__expr.get_entity_force(), Function)
 
-	def _dump(self, d):
-		d.print_member ("expr", self.expr);
-		d.print_members ("args", self.args);
+    # Return a funciton object which is refered by expression
+    def function(self):
+        ent = self.__expr.get_entity_force()
+        if not ent:
+            raise Exception("not a static funcall")
+        else:
+            return ent
 
-class Int (Expr):
-	def __init__ (self, type, value):
-		super().__init__(type);
-		self.value = value;
+    def accept(self, visitor):
+        return visitor.visit(self)
 
-	def value (self):
-		return self.value;
+    def _dump(self, d):
+        d.print_member("_expr", self.__expr)
+        d.print_members("args", self.__args)
 
-	def is_constant(self):
-		return True;
 
-	def asm_value(self):
-		return ImmediateValue (IntegerLiteral (value));
+class Int(Expr):
+    def __init__(self, type, value):
+        super(Int, self).__init__(type)
+        self._value = value
 
-	def mem_ref(self):
-		print ("must not happen: IntValue#memref\n");
+    def value(self):
+        return self._value
 
-	def accept(self, visitor):
-		return visitor.visit (self);
+    def is_constant(self):
+        return True
 
-	def _dump(self, d):
-		d.print_member ("value", self.value);
+    def asm_value(self):
+        return ImmediateValue(IntegerLiteral(self._value))
 
-class Mem (Expr):
-	def __init__(self, type, expr):
-		super().__init__(type);
-		self.expr = expr;
+    def mem_ref(self):
+        raise Exception("must not happen: IntValue#memref")
 
-	def expr(self):
-		return self.expr;
+    def accept(self, visitor):
+        return visitor.visit(self)
 
-	def address_node (self, type):
-		return self.expr;
+    def _dump(self, d):
+        d.print_member("_value", self._value)
 
-	def accept(self, visitor):
-		return visitor.visit (self);
 
-	def _dump(self, d):
-		d.print_member ("expr", self.expr);
+class Mem(Expr):
+    def __init__(self, type, expr):
+        super(Mem, self).__init__(type)
+        self._expr = expr
 
-class Str (Expr):
-	def __init__(self, type, entry):
-		super().__init__(type);
-		self.entry = entry;
+    def expr(self):
+        return self._expr
 
-	def entry(self):
-		return self.entry;
+    def address_node(self, type):
+        return self._expr
 
-	def symbol (self):
-		return self.entry.symbol();
+    def accept(self, visitor):
+        return visitor.visit(self)
 
-	def is_constant(self):
-		return True;
+    def _dump(self, d):
+        d.print_member("__expr", self._expr)
 
-	def mem_ref(self):
-		return self.entry._mem_ref();
 
-	def address(self):
-		return self.entry._address();
+class Str(Expr):
+    def __init__(self, type, entry):
+        super(Str, self).__init__(type)
+        self._entry = entry
 
-	def asm_value(self):
-		return self.entry._address();
+    def entry(self):
+        return self._entry
 
-	def accept(self, visitor):
-		return visitor.visit (self);
+    def symbol(self):
+        return self._entry.symbol
 
-	def _dump(self, d):
-		d.print_member ("entry", self.entry);
+    def is_constant(self):
+        return True
 
-class Uni (Expr):
-	def __init__(self, type, op,expr):
-		super().__init__(type);
-		self.op = op
-		self.expr = expr;
+    def mem_ref(self):
+        return self._entry.mem_ref
 
-	def expr(self):
-		return self.expr;
+    def address(self):
+        return self._entry.address
 
-	def op(self):
-		return self.op;
+    def asm_value(self):
+        return self._entry.address
 
-	def accept(self, visitor):
-		return visitor.visit (self);
+    def accept(self, visitor):
+        return visitor.visit(self)
 
-	def _dump(self, d):
-		d.print_member("op", self.op);
-		d.print_member ("expr", self.expr);
+    def _dump(self, d):
+        d.print_member("_entry", self._entry)
 
-class Var (Expr):
-	def __init__(self, type, entity):
-		super().__init__(type);
-		self.entity = entity;
 
-	def is_var (self):
-		return True;
+class Uni(Expr):
+    def __init__(self, type, op, expr):
+        super(Uni, self).__init__(type)
+        self._op = op
+        self._expr = expr
 
-	def type(self):
-		if (super().type == False):
-			print ("Var is too big to load by 1 insn\n");
-		else:
-			return super().type;
+    def expr(self):
+        return self.expr
 
-	def name(self):
-		return self.entity.name();
+    def op(self):
+        return self._op
 
-	def entity (self):
-		return self.entity;
+    def accept(self, visitor):
+        return visitor.visit(self)
 
-	def address (self):
-		return self.entity._address();
+    def _dump(self, d):
+        d.print_member("_op", self._op)
+        d.print_member("_expr", self._expr)
 
-	def mem_ref(self):
-		return self.entity._mem_ref();
 
-	def address_node(self, type):
-		return Addr (type, self.entity);
+class Var(Expr):
+    def __init__(self, type, entity):
+        super(Var, self).__init__(type)
+        self._entity = entity
 
-	def get_entity_force(self):
-		return self.entity;
+    def is_var(self):
+        return True
 
-	def accept(self, visitor):
-		return visitor.visit (self);
+    def type(self):
+        if (super().type == False):
+            print("Var is too big to load by 1 insn\n")
+        else:
+            return super().type
 
-	def _dump(self, d):
-		d.print_member("op", self.op);
-		d.print_member ("expr", self.expr);
+    def name(self):
+        return self._entity.name()
+
+    def entity(self):
+        return self._entity
+
+    def address(self):
+        return self._entity.address()
+
+    def mem_ref(self):
+        return self._entity.mem_ref()
+
+    def address_node(self, type):
+        return Addr(type, self._entity)
+
+    def get_entity_force(self):
+        return self._entity
+
+    def accept(self, visitor):
+        return visitor.visit(self)
+
+    def _dump(self, d):
+        d.print_member ("entity", self._entity.name())

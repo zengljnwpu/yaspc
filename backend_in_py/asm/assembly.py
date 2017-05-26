@@ -80,7 +80,7 @@ class Instruction (Assembly):
     def operand2 (self):
         return self.operands[1]
 
-    #Extract jump destination label from operands
+    #Extract jump destination _label from operands
     def jmp_destination (self):
         ref = self.operands[0]
         return ref.value

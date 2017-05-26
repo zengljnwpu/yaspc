@@ -4,15 +4,15 @@ from backend_in_py.asm.literal import *
 
 class Entity (object):
     def __init__ (self, priv:bool, type, name:str):
-        self.name = name
-        self.is_private = priv
-        self.type_node = type
+        self._name = name
+        self._is_private = priv
+        self._type_node = type
         self.n_refered = 0
         self._mem_ref = None
         self._address = None
 
     def symbol_string(self):
-        return self.name
+        return self._name
 
     def is_defined(self):
         return
@@ -24,16 +24,16 @@ class Entity (object):
         return False
 
     def value(self):
-        raise Exception ("Entity#value")
+        raise Exception ("Entity#_value")
 
     def is_parameter(self):
         return False
 
     def is_private(self):
-        return self.is_private
+        return self._is_private
 
     def type(self):
-        return self.type_node.type()
+        return self._type_node.type()
 
     def alloc_size(self):
         return self.type().alloc_size()
@@ -44,10 +44,9 @@ class Entity (object):
     def refered(self):
         self.n_refered += 1
 
-    def  is_refered(self):
+    def is_refered(self):
         return self.n_refered > 0
 
-    @property
     def mem_ref (self):
         self._check_address()
         return self._mem_ref
@@ -55,7 +54,6 @@ class Entity (object):
     def set_mem_ref(self, mem: MemoryReference):
         self._mem_ref = mem
 
-    @property
     def address(self):
         self._check_address()
         return self._address
@@ -68,10 +66,10 @@ class Entity (object):
 
     def _check_address(self):
         if (not self.mem_ref and not self.address):
-            raise Exception ("_address did not resolved: " + self.name)
+            raise Exception ("_address did not resolved: " + self._name)
 
     def location (self):
-        return self.type_node.location()
+        return self._type_node.location()
 
     def accept (self, visitor):
         return
@@ -101,14 +99,13 @@ class Constant (Entity):
     def is_constant(self):
         return True
 
-    @property
     def value(self):
         return self.__value
 
     def _dump(self, d):
-        d.print_member ("name", self.name)
-        d.print_member ("type_node", self.type_node)
-        d.print_member ("value", self.value)
+        d.print_member ("_name", self._name)
+        d.print_member ("_type_node", self._type_node)
+        d.print_member ("_value", self.value)
 
     def accept(self, visitor):
         return visitor.visit()
@@ -140,13 +137,11 @@ class Function (Entity):
             raise Exception ("must not happen: Function#callingSymbol was set again")
         self._calling_symbol = sym
 
-    @property
     def calling_symbol (self):
         if not self._calling_symbol:
             raise Exception  ("must not happen: Function#callingSymbol was set again")
         return self._calling_symbol
 
-    @property
     def label (self):
         if self._label:
             return self._label
@@ -166,15 +161,12 @@ class DefinedFuntion (Function):
     def is_defined(self):
         return True
 
-    @property
     def parameters(self):
         return self._params.parameters()
 
-    @property
     def body(self):
         return self._body
 
-    @property
     def ir (self):
         return self._ir
 
@@ -185,7 +177,7 @@ class DefinedFuntion (Function):
         self._scope = scope
 
     def lvar_scope (self):
-        return self.body.scope()
+        return self._body.scope()
 
     #
     # Returns function local variables
@@ -196,8 +188,8 @@ class DefinedFuntion (Function):
         return self._scope.all_local_variables()
 
     def _dump(self, d):
-        d.print_member ("name", self.name)
-        d.print_member ("is_private", self.is_private())
+        d.print_member ("_name", self._name)
+        d.print_member ("_is_private", self.is_private())
         d.print_member ("params", self._params)
         d.print_member ("body", self.body)
 
@@ -217,9 +209,9 @@ class UndefinedFunction (Function):
         return False
 
     def _dump(self, d):
-        d.print_member("name", self.name)
-        d.print_member("is_private", self.is_private())
-        d.print_member("type_node", self.type_node)
+        d.print_member("_name", self._name)
+        d.print_member("_is_private", self.is_private())
+        d.print_member("_type_node", self._type_node)
         d.print_member("params", self._params)
 
     def accept(self, visitor):
@@ -244,12 +236,14 @@ class UndefinedVariable (Variable):
         return False
 
     def _dump(self, d):
-        d.print_member("name", self.name)
-        d.print_member("is_private", self.is_private())
-        d.print_member("type_node", self.type_node)
+        d.print_member("_name", self._name)
+        d.print_member("_is_private", self.is_private())
+        d.print_member("_type_node", self._type_node)
 
     def accept(self, visitor):
         return visitor.visit()
+
+
 class DefinedVariable (Variable):
     def __init__(self, priv, type, name, init):
         super(DefinedVariable, self).__init__(priv, type, name)
@@ -272,9 +266,9 @@ class DefinedVariable (Variable):
 
     def symbol_string(self):
         if self._sequence < 0:
-            return self.name
+            return self._name
         else:
-            return self.name + "." + str(self._sequence)
+            return self._name + "." + str(self._sequence)
 
     def has_initializer(self):
         return self._initializer != None
@@ -292,14 +286,13 @@ class DefinedVariable (Variable):
     def set_ir (self, expr):
         self._ir = expr
 
-    @property
     def ir(self):
         return self._ir
 
     def _dump(self, d):
-        d.print_member("name", self.name)
-        d.print_member("is_private", self.is_private())
-        d.print_member("type_node", self.type_node)
+        d.print_member("_name", self._name)
+        d.print_member("_is_private", self.is_private())
+        d.print_member("_type_node", self._type_node)
         d.print_member("initializer", self.initializer)
 
     def accept(self, visitor):
@@ -313,6 +306,6 @@ class Parameter (DefinedVariable):
         return True
 
     def _dump(self, d):
-        d.print_member ("name", self.name)
-        d.print_member ("type_node", self.type_node)
+        d.print_member ("_name", self._name)
+        d.print_member ("_type_node", self._type_node)
 

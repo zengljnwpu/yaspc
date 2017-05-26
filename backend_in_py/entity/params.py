@@ -35,7 +35,7 @@ class Params (ParamSlot):
         for param in self._param_descriptors:
             type_refs.append(param.type_node().type_ref())
         return ParamTypeRefs (self.location, type_refs, self._var_arg)
-    
+
     def __eq__ (self, other):
         if not isinstance(other, Params):
             return False
