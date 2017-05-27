@@ -15,7 +15,7 @@ import re
 import yaspc.Instruction.instruction as instruction
 import yaspc.BasicBlock.BasicBlock as BasicBlock
 import yaspc.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
-
+#import yaspc.BasicBlock.ud as ud
 def instParser(instString,lineNum):
     '''
     Read a instruction and generate a Instruction Object
@@ -26,7 +26,7 @@ def instParser(instString,lineNum):
         print('label')
         label = split[0][0:-1]          #split out ':'
         return instruction.LabelInst('label', instString, lineNum, label)
-    elif split[-2] == 'goto':
+    elif len(split) > 2 and split[-2] == 'goto':
         print('branch')
         if len(split) > 2:
             label = split[-1]
@@ -37,7 +37,8 @@ def instParser(instString,lineNum):
         else:
             label = split[-1]
             return instruction.JumpInst('jump', instString, lineNum, label)
-
+    elif len(split) == 1:
+         return instruction.RetureInst('return', instString, lineNum)
     else:
         print('other')
         return instruction.Instruction('other', instString, lineNum)
@@ -57,8 +58,8 @@ def main():
             inst = instParser(line, i)
             instList.append(inst)
         #return instList
-    ConstructBasicBlock.ConstructBlockList(instList)
-
+    blockList = ConstructBasicBlock.ConstructBlockList(instList)
+    #ud_interation(blockList)
 
 if __name__ == '__main__':
     main()
