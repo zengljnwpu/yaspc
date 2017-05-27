@@ -28,14 +28,15 @@ class Operand(object):
 '''
 def get_entity_name_string(entity_dict):
     '''get name of a entity'''
-    return entity_dict[entity_dict['name']].__string__
+    return str(entity_dict[entity_dict['name']])
 
 
 #defination of instructions
 class Instruction(object):
     """The base class of all instructions"""
-    def __init__(self, name, context=None, line_number=0, filename=''):
-        self.object = 'instruction'
+    def __init__(self, name, context=None, line_number=0, filename='',
+                 object='instruction'):
+        self.object = object
         self.name = name
         self.filename = filename
         self.context = context
@@ -90,8 +91,8 @@ class BinaryInst(Instruction):
         if self.context is not None:
             return self.context
         else:
-            return '%s = %s %s %s'%(get_entity_name_string(self.value), self.op, \
-                    get_entity_name_string(self.left), get_entity_name_string(self.right))
+            return '%s = %s %s %s'%(get_entity_name_string(self.value), \
+                    get_entity_name_string(self.left), self.op, get_entity_name_string(self.right))
 
 class UnaryInst(Instruction):
     '''单目运算指令'''
@@ -182,14 +183,14 @@ class RetureInst(Instruction):
 
 
 class LabelInst(Instruction):
-    '''lable_definition'''
-    def __init__(self, name, context=None, line_number=0, filename='', label=None):
+    '''label_definition'''
+    def __init__(self, name, context=None, line_number=0, filename='', labelname=None):
         super(LabelInst, self).__init__(name, context, line_number, filename)
-        assert name == 'lable_definition', 'type error'
-        self.label = label
+        assert name == 'label_definition', 'type error:%s'%name
+        self.labelname = labelname
     def __str__(self):
         if self.context is not None:
             return self.context
         else:
-            return '%s:'%self.label
+            return '%s:'%self.labelname
 
