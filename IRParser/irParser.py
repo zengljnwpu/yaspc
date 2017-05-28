@@ -18,30 +18,31 @@ import yaspc.Instruction.instruction as instruction
 def parse_single_inst_from_json(inst_dict):
     '''
     Read a instruction dict (json format) and generate a Instruction Object
-    TODO: need support for more instruction
     '''
-    if inst_dict['name'] == 'variable_definition':
-        return instruction.AllocaInst(**inst_dict)
-    elif inst_dict['name'] == 'cjump':
-        return instruction.CJumpInst(**inst_dict)
-    elif inst_dict['name'] == 'jump':
-        return instruction.JumpInst(**inst_dict)
-    elif inst_dict['name'] == 'bin':
-        return instruction.BinaryInst(**inst_dict)
-    elif inst_dict['name'] == 'uni':
-        return instruction.UnaryInst(**inst_dict)
-    elif inst_dict['name'] == 'load':
-        return instruction.LoadInst(**inst_dict)
-    elif inst_dict['name'] == 'store':
-        return instruction.StoreInst(**inst_dict)
-    elif inst_dict['name'] == 'call':
-        return instruction.CallInst(**inst_dict)
-    elif inst_dict['name'] == 'return':
-        return instruction.RetureInst(**inst_dict)
-    elif inst_dict['name'] == 'label_definition':
-        return instruction.LabelInst(**inst_dict)
+    inst_dict_cp = inst_dict.copy()
+    inst_dict_cp.pop('object', False)
+    if inst_dict_cp['name'] == 'variable_definition':
+        return instruction.AllocaInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'cjump':
+        return instruction.CJumpInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'jump':
+        return instruction.JumpInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'bin':
+        return instruction.BinaryInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'uni':
+        return instruction.UnaryInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'load':
+        return instruction.LoadInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'store':
+        return instruction.StoreInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'call':
+        return instruction.CallInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'return':
+        return instruction.RetureInst(**inst_dict_cp)
+    elif inst_dict_cp['name'] == 'label_definition':
+        return instruction.LabelInst(**inst_dict_cp)
     else:
-        print('unkown instruction: %s'%inst_dict['name'])
+        print('unkown instruction: %s'%inst_dict_cp['name'])
 
 
 def test_module():
@@ -59,7 +60,6 @@ def test_module():
     #print(json.dumps(ir_json['body'], sort_keys=True, indent=4))
     print(json.dumps(ir_json['functionlist'][0]['body'], sort_keys=True, indent=4))
     for inst_dict in ir_json['functionlist'][0]['body']:
-        inst_dict.pop('object')
         inst_list.append(parse_single_inst_from_json(inst_dict))
     print('function 0 body parse successfully.\n')
     for inst in inst_list:

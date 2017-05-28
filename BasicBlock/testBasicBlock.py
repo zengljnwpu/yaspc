@@ -32,7 +32,6 @@ def main():
     # print(json.dumps(ir_json['body'], sort_keys=True, indent=4))
     print(json.dumps(ir_json['functionlist'][0]['body'], sort_keys=True, indent=4))
     for inst_dict in ir_json['functionlist'][0]['body']:
-        inst_dict.pop('object')
         inst_list.append(irParser.parse_single_inst_from_json(inst_dict))
     print('function 0 body parse successfully.\n')
     for inst in inst_list:
