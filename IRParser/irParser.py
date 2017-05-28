@@ -63,7 +63,7 @@ def test_module():
         inst_list.append(parse_single_inst_from_json(inst_dict))
     print('function 0 body parse successfully.\n')
     for inst in inst_list:
-        print(inst)
+        print(inst.line_num, "\t", inst)
 
 if __name__ == '__main__':
     test_module()

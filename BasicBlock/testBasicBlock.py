@@ -16,14 +16,14 @@ import yaspc.Instruction.instruction as instruction
 import yaspc.BasicBlock.BasicBlock as BasicBlock
 import yaspc.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
 import yaspc.IRParser.irParser as irParser
-#import yaspc.BasicBlock.ud as ud
+import yaspc.BasicBlock.ud as ud
 
 def main():
     '''
     run a example of parser Three-address code and generate Basicblock list
     '''
     inst_list = []
-    with open('dsq.ir.json', 'r') as input_file:
+    with open('udtest.json', 'r') as input_file:
         ir_str = input_file.read()
         ir_json = json.loads(ir_str)
     # print(ir_str)
@@ -34,9 +34,11 @@ def main():
     for inst_dict in ir_json['functionlist'][0]['body']:
         inst_list.append(irParser.parse_single_inst_from_json(inst_dict))
     print('function 0 body parse successfully.\n')
-    for inst in inst_list:
-        print(inst)
-    ConstructBasicBlock.ConstructBlockList(inst_list)
+    for ith, inst in enumerate(inst_list):
+        inst.lineth = ith
+        print(inst.lineth, inst)
+    block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
+    ud.ud_iteration(block_list)
 
 if __name__ == '__main__':
     main()
