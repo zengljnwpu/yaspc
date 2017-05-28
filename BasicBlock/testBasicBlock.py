@@ -11,55 +11,33 @@ from __future__ import print_function
 
 
 import re
-
+import json
 import yaspc.Instruction.instruction as instruction
 import yaspc.BasicBlock.BasicBlock as BasicBlock
 import yaspc.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
+import yaspc.IRParser.irParser as irParser
 #import yaspc.BasicBlock.ud as ud
-def instParser(instString,lineNum):
-    '''
-    Read a instruction and generate a Instruction Object
-    TODO: need support for more instruction
-    '''
-    split = re.split(r'\s', instString)
-    if instString.find(':') != -1:
-        print('label')
-        label = split[0][0:-1]          #split out ':'
-        return instruction.LabelInst('label', instString, lineNum, label)
-    elif len(split) > 2 and split[-2] == 'goto':
-        print('branch')
-        if len(split) > 2:
-            label = split[-1]
-            condition = ''
-            for term in split[1:-3]:
-                condition += term
-            return instruction.CJumpInst('cjump', instString, lineNum, condition, label)
-        else:
-            label = split[-1]
-            return instruction.JumpInst('jump', instString, lineNum, label)
-    elif len(split) == 1:
-         return instruction.RetureInst('return', instString, lineNum)
-    else:
-        print('other')
-        return instruction.Instruction('other', instString, lineNum)
 
 def main():
     '''
     run a example of parser Three-address code and generate Basicblock list
     '''
-    instList = []
-    with open('input.txt', 'r') as input_file:
-        lines = input_file.readlines()
-        i = 0
-        for line in lines:
-            i += 1
-            line = line.strip()
-            print('%d:\t%s'%(i, line))
-            inst = instParser(line, i)
-            instList.append(inst)
-        #return instList
-    blockList = ConstructBasicBlock.ConstructBlockList(instList)
-    #ud_interation(blockList)
+    inst_list = []
+    with open('dsq.ir.json', 'r') as input_file:
+        ir_str = input_file.read()
+        ir_json = json.loads(ir_str)
+    # print(ir_str)
+    # print(ir_json)
+    # print(json.dumps(ir_json, sort_keys=True, indent=4))
+    # print(json.dumps(ir_json['body'], sort_keys=True, indent=4))
+    print(json.dumps(ir_json['functionlist'][0]['body'], sort_keys=True, indent=4))
+    for inst_dict in ir_json['functionlist'][0]['body']:
+        inst_dict.pop('object')
+        inst_list.append(irParser.parse_single_inst_from_json(inst_dict))
+    print('function 0 body parse successfully.\n')
+    for inst in inst_list:
+        print(inst)
+    ConstructBasicBlock.ConstructBlockList(inst_list)
 
 if __name__ == '__main__':
     main()

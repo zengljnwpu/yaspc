@@ -9,9 +9,10 @@ Created on Fri May 12 10:54:38 2017
 
 
 class BasicBlock:
-    def __init__(self, number = 0):
+    def __init__(self, number=0):
         self.preBasicBlock = set()
         self.succBasicBlock = set()
         self.blockNum = number
         self.instList = []
+        self.var_list = set()
 
