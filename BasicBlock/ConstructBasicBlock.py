@@ -163,8 +163,8 @@ def ConstructBlockList(inst_list):
 
         if isinstance(inst, instruction.CJumpInst):
             '''conditional inst, the succblock is label successor and next block'''
+            """ then label """
             then_number = labelDict[inst.thenlabel]
-
             # successor
             cjumpBlock = blockDict[then_number]
             block.succBasicBlock.add(cjumpBlock)
@@ -176,8 +176,8 @@ def ConstructBlockList(inst_list):
             if i+1 < len(blockList)-1:
                 followBlock.preBasicBlock.add(block)
 
-            else_number = labelDict[inst.thenlabel]
-
+            """ else label """
+            else_number = labelDict[inst.elselabel]
             # successor
             cjumpBlock = blockDict[else_number]
             block.succBasicBlock.add(cjumpBlock)
