@@ -25,7 +25,7 @@ def main():
     run a example of parser Three-address code and generate Basicblock list
     '''
     inst_list = []
-    with open('dsq.ir.json', 'r') as input_file:
+    with open('udtest.json', 'r') as input_file:
         ir_str = input_file.read()
         ir_json = json.loads(ir_str)
     # print(ir_str)
@@ -38,11 +38,15 @@ def main():
     print('function 0 body parse successfully.\n')
     for ith, inst in enumerate(inst_list):
         inst.lineth = ith
+        inst.ud = set()
         print(inst.lineth, inst)
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
     inst_list = PeepholeOptimization.control_flow_optimization(block_list, inst_list)
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
-    ud.ud_iteration(block_list)
+    #var_reduce = ud.reach_def_iteration(block_list)
+    #ud.ud_set(block_list, var_reduce)
+    #ud.constant_propagation(block_list, var_reduce, inst_list)
+    ud.live_variable_analysis(block_list)
 
 if __name__ == '__main__':
     main()

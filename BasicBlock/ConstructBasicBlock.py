@@ -14,7 +14,7 @@ import yaspc.Instruction.instruction as instruction
 import yaspc.BasicBlock.BasicBlock as BasicBlock
 
 
-DEBUG = True
+DEBUG = False
 
 
 def ConstructBlockList(inst_list):

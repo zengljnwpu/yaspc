@@ -44,5 +44,5 @@ def control_flow_optimization(block_list, inst_list):
                     print("succblock: %d:%s" % (succblock[0].blockNum, str(succblock[1])))
             if len(block.preBasicBlock) != 0:
                 for preblock in block.preBasicBlock:
-                    print ("preblock", preblock.blockNum)
+                    print("preblock", preblock.blockNum)
     return inst_list

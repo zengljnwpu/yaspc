@@ -127,7 +127,66 @@
 			],
 
 			"body": [
-
+				{
+					"object": "instruction",
+					"name": "store",
+					"filename": "dsq.pas",
+					"line_number": 14,
+					"address": {
+						"object": "entity",
+						"type": "bool",
+						"name": "variable",
+						"variable": "i",
+						"const": false
+					},
+					"value": {
+						"object": "entity",
+						"type": "bool",
+						"name": "value",
+						"value": "1",
+						"const": true
+					}
+				},
+				{
+					"object": "instruction",
+					"name": "store",
+					"filename": "dsq.pas",
+					"line_number": 14,
+					"address": {
+						"object": "entity",
+						"type": "bool",
+						"name": "variable",
+						"variable": "j",
+						"const": false
+					},
+					"value": {
+						"object": "entity",
+						"type": "bool",
+						"name": "value",
+						"value": "1",
+						"const": true
+					}
+				},
+				{
+					"object": "instruction",
+					"name": "store",
+					"filename": "dsq.pas",
+					"line_number": 14,
+					"address": {
+						"object": "entity",
+						"type": "bool",
+						"name": "variable",
+						"variable": "a",
+						"const": false
+					},
+					"value": {
+						"object": "entity",
+						"type": "bool",
+						"name": "value",
+						"value": "2",
+						"const": true
+					}
+				},
 				{
 					"object": "instruction",
 					"name": "bin",
@@ -139,7 +198,7 @@
 						"object": "entity",
 						"type": "int32",
 						"name": "variable",
-						"variable": "m",
+						"variable": "i",
 						"cosnt": false
 
 					},
@@ -148,7 +207,112 @@
 						"object": "entity",
 						"type": "int32",
 						"name": "variable",
-						"variable": "1",
+						"variable": "i",
+						"cosnt": false
+
+					},
+
+					"value": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "i",
+						"const": false
+
+					}
+
+				},
+				{
+					"object": "instruction",
+					"name": "bin",
+					"filename": "dsq.pas",
+					"line_number": 9,
+					"op": "ADD",
+
+					"left": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "a",
+						"cosnt": false
+
+					},
+
+					"right": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "i",
+						"cosnt": false
+
+					},
+
+					"value": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "j",
+						"const": false
+
+					}
+
+				},
+				{
+					"object": "instruction",
+					"name": "bin",
+					"filename": "dsq.pas",
+					"line_number": 9,
+					"op": "ADD",
+
+					"left": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "j",
+						"cosnt": false
+
+					},
+
+					"right": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "i",
+						"const": false
+
+					},
+
+					"value": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "a",
+						"const": false
+
+					}
+
+				},
+				{
+					"object": "instruction",
+					"name": "bin",
+					"filename": "dsq.pas",
+					"line_number": 9,
+					"op": "ADD",
+
+					"left": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "i",
+						"cosnt": false
+
+					},
+
+					"right": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "a",
 						"const": false
 
 					},
@@ -174,60 +338,25 @@
 						"object": "entity",
 						"type": "int32",
 						"name": "variable",
-						"variable": "n",
+						"variable": "i",
 						"cosnt": false
 
 					},
 
 					"right": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "1",
-						"const": false
-
-					},
-
-					"value": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "j",
-						"const": false
-
-					}
-
-				},
-				{
-					"object": "instruction",
-					"name": "bin",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"op": "ADD",
-
-					"left": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "n",
-						"cosnt": false
-
-					},
-
-					"right": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "1",
-						"const": false
-
-					},
-
-					"value": {
 						"object": "entity",
 						"type": "int32",
 						"name": "variable",
 						"variable": "a",
+						"const": false
+
+					},
+
+					"value": {
+						"object": "entity",
+						"type": "int32",
+						"name": "variable",
+						"variable": "c",
 						"const": false
 
 					}
@@ -559,7 +688,7 @@
 				"object": "entity",
 				"type": "bool",
 				"name": "variable",
-				"variable": "%1",
+				"variable": "a",
 				"const": false
 			}
 		},
