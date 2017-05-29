@@ -17,13 +17,15 @@ import yaspc.BasicBlock.BasicBlock as BasicBlock
 import yaspc.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
 import yaspc.IRParser.irParser as irParser
 import yaspc.BasicBlock.ud as ud
+import yaspc.BasicBlock.PeepholeOptimization as PeepholeOptimization
+
 
 def main():
     '''
     run a example of parser Three-address code and generate Basicblock list
     '''
     inst_list = []
-    with open('udtest.json', 'r') as input_file:
+    with open('dsq.ir.json', 'r') as input_file:
         ir_str = input_file.read()
         ir_json = json.loads(ir_str)
     # print(ir_str)
@@ -37,6 +39,8 @@ def main():
     for ith, inst in enumerate(inst_list):
         inst.lineth = ith
         print(inst.lineth, inst)
+    block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
+    inst_list = PeepholeOptimization.control_flow_optimization(block_list, inst_list)
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
     ud.ud_iteration(block_list)
 

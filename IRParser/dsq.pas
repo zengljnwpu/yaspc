@@ -15,4 +15,4 @@ begin
 	n:=123;
 	f:=false;
 	f:=prime(n);
-end.
+end

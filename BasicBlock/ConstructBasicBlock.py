@@ -32,7 +32,10 @@ def ConstructBlockList(inst_list):
             labelSet.add(inst.elselabel)
         elif isinstance(inst, instruction.JumpInst):
             labelSet.add(inst.label)
-
+    if DEBUG:
+        print("====================Valid set==================")
+        for label in labelSet:
+            print(label)
     ''' new the basic block '''
     i = 0
     labelFlag = 0
@@ -56,7 +59,6 @@ def ConstructBlockList(inst_list):
                     and not a successive label inst
                     map label to block no.
                 """
-                #if block != None: block.instList.append(inst)
                 labelDict[inst.labelname] = block.blockNum
                 labelFlag = 1
                 continue
@@ -83,7 +85,8 @@ def ConstructBlockList(inst_list):
                 labelFlag = 0
 
                 continue
-        else: #i!=0  not the first instruction
+        else:
+            # i!=0  not the first instruction
             if (isinstance(inst, instruction.LabelInst)) and (inst.labelname in labelSet):
                 """ the label instruction, map the label to number of block"""
                 if labelFlag == 0:
@@ -143,11 +146,14 @@ def ConstructBlockList(inst_list):
             print(key, val)
         print("===============================================")
 
+    """
+        succBasicBlock and preBasicBlock of every block 
+    """
     for i, block in enumerate(blockList):
         '''add jump target for every block'''
         if i == 0:
             """ the succblock of ENTRY is 1th block"""
-            block.succBasicBlock.add(blockList[1])
+            block.succBasicBlock.add((blockList[1], "follow"))
             continue
         if i == len(blockList)-1:
             break
@@ -158,7 +164,7 @@ def ConstructBlockList(inst_list):
             number = labelDict[inst.label]
             jumpBlock = blockDict[number]
             jumpBlock.preBasicBlock.add(block)
-            block.succBasicBlock.add(jumpBlock)
+            block.succBasicBlock.add((jumpBlock, "label"))
             continue
 
         if isinstance(inst, instruction.CJumpInst):
@@ -167,48 +173,43 @@ def ConstructBlockList(inst_list):
             then_number = labelDict[inst.thenlabel]
             # successor
             cjumpBlock = blockDict[then_number]
-            block.succBasicBlock.add(cjumpBlock)
-            if i+1 < len(blockList)-1:
-                followBlock = blockList[i+1]
-                block.succBasicBlock.add(followBlock)
+            block.succBasicBlock.add((cjumpBlock, "thenlabel"))
             #pre
             cjumpBlock.preBasicBlock.add(block)
-            if i+1 < len(blockList)-1:
-                followBlock.preBasicBlock.add(block)
 
             """ else label """
             else_number = labelDict[inst.elselabel]
             # successor
             cjumpBlock = blockDict[else_number]
-            block.succBasicBlock.add(cjumpBlock)
-            if i + 1 < len(blockList) - 1:
-                followBlock = blockList[i + 1]
-                block.succBasicBlock.add(followBlock)
+            block.succBasicBlock.add((cjumpBlock, "elselabel"))
             # pre
             cjumpBlock.preBasicBlock.add(block)
-            if i + 1 < len(blockList) - 1:
-                followBlock.preBasicBlock.add(block)
+
             continue
 
         if isinstance(inst, instruction.RetureInst):
             jumpBlock = blockList[-1]
             jumpBlock.preBasicBlock.add(block)
-            block.succBasicBlock.add(jumpBlock)
+            block.succBasicBlock.add((jumpBlock, "return"))
             continue
 
-        if i+1 < len(blockList)-1:
-            block.succBasicBlock.add(blockList[i+1])
-            blockList[i+1].preBasicBlock.add(block)
+        if i + 1 < len(blockList) - 1:
+            block.succBasicBlock.add((blockList[i + 1], "follow"))
+            blockList[i + 1].preBasicBlock.add(block)
+
 
     if DEBUG:
         print ("============PredecessorSuccessor==================")
+        for ith, inst in enumerate(inst_list):
+            inst.lineth = ith
+            print(inst.lineth, inst)
         for block in blockList:
             print(block.blockNum, ":")
             for inst in block.instList:
                 print("\t", inst)
             if len(block.succBasicBlock) != 0:
                 for succblock in block.succBasicBlock:
-                    print("succblock:", succblock.blockNum)
+                    print("succblock: %d:%s" % (succblock[0].blockNum, str(succblock[1])))
             if len(block.preBasicBlock) != 0:
                 for preblock in block.preBasicBlock:
                     print ("preblock", preblock.blockNum)
