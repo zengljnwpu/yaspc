@@ -1,5 +1,5 @@
 #/bin/env python
-
+# -*- coding: utf-8 -*-
 # Author : axiqia, lzc80234@qq.com (liuzhaoci)
 # Created : 2017/5/12
 '''

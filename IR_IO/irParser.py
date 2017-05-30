@@ -1,5 +1,5 @@
 #!/bin/env python
-
+# -*- coding: utf-8 -*-
 # Author : lzc80234@qq.com (liuzhaoci) , axiqia
 # Created : 2017/5/24
 
@@ -45,6 +45,28 @@ def parse_single_inst_from_json(inst_dict):
     else:
         print('unkown instruction: %s'%inst_dict_cp['name'])
 
+def encode_single_inst_from_json(one_inst):
+    '''
+    Read a Instruction Object and generate a instruction dict (json format)
+    '''
+    inst_dict = one_inst.__dict__.copy()
+    # remember remove items which shouldn't be in IR
+    inst_dict.pop('pos', False)
+    return inst_dict
+
+def generate_labellist(inst_list):
+    """遍历instruction list获得labellist
+    格式举例：
+    "labellist": [{ "object": "label",  "name": "forstartlabel1",  "pos": 2 }, ...]
+    """
+    labellist = []
+    for inst in inst_list:
+        if isinstance(inst, instruction.LabelInst):
+            name = inst.labelname
+            pos = inst.pos
+            labellist.append({"object": "label", "name": name, "pos": pos})
+    return labellist
+
 def decode_body(body_list):
     '''decode function body,
     return instruction list
@@ -56,29 +78,22 @@ def decode_body(body_list):
         inst_list.append(inst)
     return inst_list
 
-def encode_body():
+def encode_body(inst_list):
     '''encode function body
-    and return labels
+    and return body_list(json format)
     '''
-    pass
-
-def test_module():
-    '''
-    run a example of IR and print instructions list
-    now is only support main function
-    '''
-    with open('dsq.ir.json', 'r') as input_file:
-        ir_str = input_file.read()
-        ir_json = json.loads(ir_str)
-    #print(ir_str)
-    #print(ir_json)
-    #print(json.dumps(ir_json, sort_keys=True, indent=4))
-    #print(json.dumps(ir_json['body'], sort_keys=True, indent=4))
-    print(json.dumps(ir_json['functionlist'][0]['body'], sort_keys=True, indent=4))
-    inst_list = decode_body(ir_json['functionlist'][0]['body'])
-    print('function 0 body parse successfully.\n')
+    body_list = []
     for inst in inst_list:
-        print(inst.line_number, "\t", inst)
+        body_list.append(encode_single_inst_from_json(inst))
+    return body_list
 
-if __name__ == '__main__':
-    test_module()
+def encode_labellist(labellist):
+    '''encode function labellist
+    and return labellist(json format)
+    '''
+    label_list_json = []
+    for label in labellist:
+        label_list_json.append(label.__dict__)
+    return label_list_json
+
+

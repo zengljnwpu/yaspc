@@ -55,3 +55,16 @@ def BlockList_to_InstList(block_list):
             inst.pos = ith + 1
             print('%3d\t%s'%(inst.pos, str(inst)))
     return inst_list
+
+def generate_labellist(inst_list):
+    """遍历instruction list获得labellist
+    格式举例：
+    "labellist": [{ "object": "label",  "name": "forstartlabel1",  "pos": 2 }, ...]
+    """
+    labellist = []
+    for inst in inst_list:
+        if isinstance(inst, instruction.LabelInst):
+            name = inst.labelname
+            pos = inst.pos
+            labellist.append({"object": "label", "name": name, "pos": pos})
+    return labellist
