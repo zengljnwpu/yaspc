@@ -201,8 +201,8 @@ def ConstructBlockList(inst_list):
     if DEBUG:
         print ("============PredecessorSuccessor==================")
         for ith, inst in enumerate(inst_list):
-            inst.lineth = ith
-            print(inst.lineth, inst)
+            #inst.pos = ith
+            print(inst.pos, inst)
         for block in blockList:
             print(block.blockNum, ":")
             for inst in block.instList:

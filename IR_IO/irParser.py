@@ -20,6 +20,7 @@ def parse_single_inst_from_json(inst_dict):
     Read a instruction dict (json format) and generate a Instruction Object
     '''
     inst_dict_cp = inst_dict.copy()
+    assert inst_dict_cp['object'] == 'instruction', 'object error!'
     inst_dict_cp.pop('object', False)
     if inst_dict_cp['name'] == 'variable_definition':
         return instruction.AllocaInst(**inst_dict_cp)
@@ -49,8 +50,10 @@ def decode_body(body_list):
     return instruction list
     '''
     inst_list = []
-    for inst_dict in body_list:
-        inst_list.append(parse_single_inst_from_json(inst_dict))
+    for ith, inst_dict in enumerate(body_list):
+        inst = parse_single_inst_from_json(inst_dict)
+        inst.pos = ith + 1
+        inst_list.append(inst)
     return inst_list
 
 def encode_body():

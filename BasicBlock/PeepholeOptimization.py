@@ -36,8 +36,8 @@ def control_flow_optimization(block_list, inst_list):
     DEBUG = 1
     if DEBUG:
         for ith, inst in enumerate(inst_list):
-            inst.lineth = ith
-            print(inst.lineth, inst)
+            #inst.pos = ith
+            print(inst.pos, inst)
         print ("============Opti:PredecessorSuccessor==================")
         for block in block_list:
             print(block.blockNum, ":")

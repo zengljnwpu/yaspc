@@ -35,9 +35,9 @@ def main():
     inst_list = irParser.decode_body(ir_json['functionlist'][0]['body'])
     print('function 0 body parse successfully.\n')
     for ith, inst in enumerate(inst_list):
-        inst.lineth = ith
+        #inst.pos = ith
         inst.ud = set()
-        print(inst.lineth, inst)
+        print(inst.pos, inst)
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
     inst_list = PeepholeOptimization.control_flow_optimization(block_list, inst_list)
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)

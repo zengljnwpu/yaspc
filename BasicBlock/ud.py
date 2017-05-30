@@ -44,17 +44,17 @@ def ud_set(block_list, var_reduce):
                 else:
                     inst.right_ud = list(block.in_set & var_reduce[right_var])
 
-                block_def_var[inst.value["variable"]] = inst.lineth
+                block_def_var[inst.value["variable"]] = inst.pos
             elif isinstance(inst, instruction.UnaryInst):
                 var = inst.variable["variable"]
                 if inst.variable["variable"] in block_def_var.keys():
                     inst.var_ud = (block_def_var[var])
                 else:
                     inst.var_ud = list(block.in_set & var_reduce[left_var])
-                block_def_var[inst.value["variable"]] = inst.lineth
+                block_def_var[inst.value["variable"]] = inst.pos
             elif isinstance(inst, instruction.StoreInst):
                 var = inst.address["variable"]
-                block_def_var[var] = inst.lineth
+                block_def_var[var] = inst.pos
 
     if DEBUG:
         print("===========UD SET==============")
@@ -64,9 +64,9 @@ def ud_set(block_list, var_reduce):
             print("B%d:\t" % block.blockNum)
             for inst in block.instList:
                 if isinstance(inst, instruction.BinaryInst):
-                    print(inst.lineth, ":\t", inst.left_ud, "\t", inst.right_ud)
+                    print(inst.pos, ":\t", inst.left_ud, "\t", inst.right_ud)
                 elif isinstance(inst, instruction.UnaryInst):
-                    print(inst.lineth, ":\t", inst.var_ud)
+                    print(inst.pos, ":\t", inst.var_ud)
             print()
 def reach_def_iteration(block_list):
     """
@@ -86,10 +86,10 @@ def reach_def_iteration(block_list):
         for inst in block.instList:
             if isinstance(inst, def_inst):
                 if isinstance(inst, instruction.StoreInst):
-                    block.var_dict[inst.address["variable"]] = inst.lineth
+                    block.var_dict[inst.address["variable"]] = inst.pos
                     block.var_set.add(inst.address["variable"])
                 else:
-                    block.var_dict[inst.value["variable"]] = inst.lineth
+                    block.var_dict[inst.value["variable"]] = inst.pos
                     block.var_set.add(inst.value["variable"])
         block.gen_set = set(block.var_dict.values())
         block.kill_set = set()

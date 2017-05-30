@@ -33,14 +33,21 @@ def get_entity_name_string(entity_dict):
 
 #defination of instructions
 class Instruction(object):
-    """The base class of all instructions"""
+    """The base class of all instructions
+        name: instruction type (eg. cjump bin ...)
+        context: The three address form of this instruction (legacy)
+        line_number: the line number in source file (used to report errors)
+        object: For Instruction is 'instruction'
+        pos: the line number in three address codes of one body
+    """
     def __init__(self, name, context=None, line_number=0, filename='',
-                 object='instruction'):
-        self.object = object
+                 pos=0, object='instruction'):
+        self.object = 'instruction'
         self.name = name
         self.filename = filename
         self.context = context
         self.line_number = line_number
+        self.pos = pos
 
     def __str__(self):
         if self.context is not None:
@@ -51,9 +58,9 @@ class Instruction(object):
 
 class CJumpInst(Instruction):
     '''conditional jump instruction'''
-    def __init__(self, name, context=None, line_number=0, filename='',
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0,
                  cond=None, thenlabel=None, elselabel=None):
-        super(CJumpInst, self).__init__(name, context, line_number, filename)
+        super(CJumpInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'cjump', 'type error!'
         self.cond = cond
         self.thenlabel = thenlabel
@@ -67,8 +74,8 @@ class CJumpInst(Instruction):
 
 class JumpInst(Instruction):
     '''unconditional jump instruction'''
-    def __init__(self, name, context=None, line_number=0, filename='', label=None):
-        super(JumpInst, self).__init__(name, context, line_number, filename)
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0, label=None):
+        super(JumpInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'jump', 'type error!'
         self.label = label
     def __str__(self):
@@ -79,9 +86,9 @@ class JumpInst(Instruction):
 
 class BinaryInst(Instruction):
     '''二元运算指令'''
-    def __init__(self, name, context=None, line_number=0, filename='',
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0,
                  op=None, left=None, right=None, value=None):
-        super(BinaryInst, self).__init__(name, context, line_number, filename)
+        super(BinaryInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'bin', 'type error!'
         self.op = op
         self.left = left
@@ -96,9 +103,9 @@ class BinaryInst(Instruction):
 
 class UnaryInst(Instruction):
     '''单目运算指令'''
-    def __init__(self, name, context=None, line_number=0, filename='',
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0,
                  op=None, variable=None, value=None):
-        super(UnaryInst, self).__init__(name, context, line_number, filename)
+        super(UnaryInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'uni', 'type error'
         self.op = op
         self.variable = variable
@@ -112,9 +119,9 @@ class UnaryInst(Instruction):
 
 class AllocaInst(Instruction):
     '''same as variable_definition'''
-    def __init__(self, name, context=None, line_number=0, filename='',
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0,
                  variablename=None, var_type=None):
-        super(AllocaInst, self).__init__(name, context, line_number, filename)
+        super(AllocaInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'variable_definition', 'type error'
         self.variablename = variablename
         self.var_type = var_type
@@ -126,8 +133,9 @@ class AllocaInst(Instruction):
 
 class LoadInst(Instruction):
     '''load'''
-    def __init__(self, name, context=None, line_number=0, filename='', address=None, value=None):
-        super(LoadInst, self).__init__(name, context, line_number, filename)
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0,
+                 address=None, value=None):
+        super(LoadInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'load', 'type error'
         self.address = address
         self.value = value
@@ -140,8 +148,9 @@ class LoadInst(Instruction):
 
 class StoreInst(Instruction):
     '''store'''
-    def __init__(self, name, context=None, line_number=0, filename='', address=None, value=None):
-        super(StoreInst, self).__init__(name, context, line_number, filename)
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0,
+                 address=None, value=None):
+        super(StoreInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'store', 'type error'
         self.address = address
         self.value = value
@@ -155,9 +164,9 @@ class StoreInst(Instruction):
 
 class CallInst(Instruction):
     '''call'''
-    def __init__(self, name, context=None, line_number=0, filename='',
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0,
                  functionname=None, parameterlist=None, value=None):
-        super(CallInst, self).__init__(name, context, line_number, filename)
+        super(CallInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'call', 'type error'
         self.functionname = functionname
         self.parameterlist = parameterlist
@@ -171,8 +180,8 @@ class CallInst(Instruction):
 
 class RetureInst(Instruction):
     '''return'''
-    def __init__(self, name, context=None, line_number=0, filename='', ret=None):
-        super(RetureInst, self).__init__(name, context, line_number, filename)
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0, ret=None):
+        super(RetureInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'return', 'type error'
         self.ret = ret
     def __str__(self):
@@ -184,8 +193,8 @@ class RetureInst(Instruction):
 
 class LabelInst(Instruction):
     '''label_definition'''
-    def __init__(self, name, context=None, line_number=0, filename='', labelname=None):
-        super(LabelInst, self).__init__(name, context, line_number, filename)
+    def __init__(self, name, context=None, line_number=0, filename='', pos=0, labelname=None):
+        super(LabelInst, self).__init__(name, context, line_number, filename, pos)
         assert name == 'label_definition', 'type error:%s'%name
         self.labelname = labelname
     def __str__(self):
