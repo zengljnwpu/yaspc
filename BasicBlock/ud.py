@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@Time : 17-5-27 下午9:03
+@Time : 17-5-27 9:03pm
 
-@Author : axiqia
+@Author : axiqia hellolzc
 """
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import yaspc.Instruction.instruction as instruction
 import yaspc.BasicBlock.BasicBlock as BasicBlock
 

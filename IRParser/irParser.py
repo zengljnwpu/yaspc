@@ -44,13 +44,26 @@ def parse_single_inst_from_json(inst_dict):
     else:
         print('unkown instruction: %s'%inst_dict_cp['name'])
 
+def decode_body(body_list):
+    '''decode function body,
+    return instruction list
+    '''
+    inst_list = []
+    for inst_dict in body_list:
+        inst_list.append(parse_single_inst_from_json(inst_dict))
+    return inst_list
+
+def encode_body():
+    '''encode function body
+    and return labels
+    '''
+    pass
 
 def test_module():
     '''
     run a example of IR and print instructions list
     now is only support main function
     '''
-    inst_list = []
     with open('dsq.ir.json', 'r') as input_file:
         ir_str = input_file.read()
         ir_json = json.loads(ir_str)
@@ -59,11 +72,10 @@ def test_module():
     #print(json.dumps(ir_json, sort_keys=True, indent=4))
     #print(json.dumps(ir_json['body'], sort_keys=True, indent=4))
     print(json.dumps(ir_json['functionlist'][0]['body'], sort_keys=True, indent=4))
-    for inst_dict in ir_json['functionlist'][0]['body']:
-        inst_list.append(parse_single_inst_from_json(inst_dict))
+    inst_list = decode_body(ir_json['functionlist'][0]['body'])
     print('function 0 body parse successfully.\n')
     for inst in inst_list:
-        print(inst.line_num, "\t", inst)
+        print(inst.line_number, "\t", inst)
 
 if __name__ == '__main__':
     test_module()

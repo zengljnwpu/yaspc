@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@Time : 17-5-29 下午1:23
-
-@Author : axiqia
+窥孔优化
+@Time : 17-5-29 1:23pm
+@Author : axiqia hellolzc
 """
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import yaspc.Instruction.instruction as instruction
 
 
 def control_flow_optimization(block_list, inst_list):
-
+    """控制流优化"""
     for block in block_list[::-1]:
         """
             find unconditional jump instruction and has been labeled
