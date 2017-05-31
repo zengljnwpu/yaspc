@@ -100,6 +100,24 @@ class BinaryInst(Instruction):
         else:
             return '%s = %s %s %s'%(get_entity_name_string(self.value), \
                     get_entity_name_string(self.left), self.op, get_entity_name_string(self.right))
+    # 使用装饰器实现只读属性，下同
+    @property
+    def left_variable_name(self):
+        '''如果左操作数是变量，返回变量名
+        如果是值（value），返回值的字符串
+        '''
+        return get_entity_name_string(self.left)
+    @property
+    def right_variable_name(self):
+        '''如果右操作数是变量，返回变量名
+        如果是值（value），返回值的字符串
+        '''
+        return get_entity_name_string(self.right)
+    @property
+    def return_variable_name(self):
+        '''返回返回值变量名
+        '''
+        return get_entity_name_string(self.value)
 
 class UnaryInst(Instruction):
     '''单目运算指令'''
@@ -116,6 +134,18 @@ class UnaryInst(Instruction):
         else:
             return '%s = %s %s'%(get_entity_name_string(self.value), self.op, \
                     get_entity_name_string(self.variable))
+    # readonly attributions
+    @property
+    def variable_name(self):
+        '''如果操作数是变量，返回变量名
+        如果是值（value），返回值的字符串
+        '''
+        return get_entity_name_string(self.variable)
+    @property
+    def return_variable_name(self):
+        '''返回返回值变量名
+        '''
+        return get_entity_name_string(self.value)
 
 class AllocaInst(Instruction):
     '''same as variable_definition'''
