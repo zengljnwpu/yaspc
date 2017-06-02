@@ -472,9 +472,8 @@ class TypeSetVisitor(visitor.DefaultVisitor):
         self.ctx.install_typedef('integer' , typesys.SIntType(16))
         self.ctx.install_typedef('word'    , typesys.UIntType(16))
         self.ctx.install_typedef('longint' , typesys.SIntType(32))
-        self.ctx.install_typedef('longreal', typesys.DoubleType())
+        self.ctx.install_typedef('double'  , typesys.DoubleType())
         self.ctx.install_typedef('real'    , typesys.FloatType())
-        self.ctx.install_typedef('bytes'   , typesys.AnyType())
         # TODO: add text
 
         self.ctx.install_const('cr'        , typesys.CharType('\r')  , '\r')
@@ -487,15 +486,7 @@ class TypeSetVisitor(visitor.DefaultVisitor):
         # TODO: add eol
 
         # pointer --> VOID
-        ty = typesys.FunctionType('P86', 'new')
-        param = typesys.AnyType()
-        param = typesys.ReferenceType(param)
-        param = typesys.ParameterType('ptr', param)
-        ty.params.append(param)
-        self.ctx.install_function(ty.name, ty)
-
-        # pointer --> VOID
-        ty = typesys.FunctionType('P86', 'dispose')
+        ty = typesys.FunctionType('frontend', 'new')
         param = typesys.AnyType()
         param = typesys.ReferenceType(param)
         param = typesys.ParameterType('ptr', param)
@@ -503,99 +494,91 @@ class TypeSetVisitor(visitor.DefaultVisitor):
         self.ctx.install_function(ty.name, ty)
 
         # ordinal --> INTEGER
-        ty = typesys.FunctionType('P86', 'ord', typesys.SIntType(16))
+        ty = typesys.FunctionType('frontend', 'ord', typesys.SIntType(16))
         ty.params.append(typesys.ParameterType(ty.name, typesys.AnyType()))
         self.ctx.install_function(ty.name, ty)
 
         # int-type --> CHAR
-        ty = typesys.FunctionType('P86', 'chr', typesys.CharType())
+        ty = typesys.FunctionType('frontend', 'chr', typesys.CharType())
         ty.params.append(typesys.ParameterType('int', typesys.SIntType(32)))
         self.ctx.install_function(ty.name, ty)
 
         # TODO: ordinal --> same as input
-        ty = typesys.FunctionType('P86', 'pred', typesys.AnyType())
+        ty = typesys.FunctionType('frontend', 'pred', typesys.AnyType())
         ty.params.append(typesys.ParameterType('ordinal', typesys.AnyType()))
         self.ctx.install_function(ty.name, ty)
 
         # TODO: ordinal --> same as input
-        ty = typesys.FunctionType('P86', 'succ', typesys.AnyType())
+        ty = typesys.FunctionType('frontend', 'succ', typesys.AnyType())
         ty.params.append(typesys.ParameterType('ordinal', typesys.AnyType()))
         self.ctx.install_function(ty.name, ty)
 
         # int-type --> BOOLEAN
-        ty = typesys.FunctionType('P86', 'odd', typesys.BoolType())
+        ty = typesys.FunctionType('frontend', 'odd', typesys.BoolType())
         ty.params.append(typesys.ParameterType('int', typesys.SIntType(32)))
         self.ctx.install_function(ty.name, ty)
 
         # TODO: int,real --> same as input
-        ty = typesys.FunctionType('P86', 'abs', typesys.DoubleType())
+        ty = typesys.FunctionType('frontend', 'abs', typesys.DoubleType())
         ty.params.append(typesys.ParameterType('number', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # TODO: int,real --> same as input
-        ty = typesys.FunctionType('P86', 'sqr', typesys.DoubleType())
+        ty = typesys.FunctionType('frontend', 'sqr', typesys.DoubleType())
         ty.params.append(typesys.ParameterType('number', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # double --> double
-        ty = typesys.FunctionType('P86', 'sqrt', typesys.DoubleType())
+        ty = typesys.FunctionType('frontend', 'sqrt', typesys.DoubleType())
         ty.params.append(typesys.ParameterType('real', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # double --> double
-        ty = typesys.FunctionType('P86', 'exp', typesys.DoubleType())
+        ty = typesys.FunctionType('frontend', 'exp', typesys.DoubleType())
         ty.params.append(typesys.ParameterType('real', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # double --> double
-        ty = typesys.FunctionType('P86', 'ln', typesys.DoubleType())
+        ty = typesys.FunctionType('frontend', 'ln', typesys.DoubleType())
         ty.params.append(typesys.ParameterType('real', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # double --> double
-        ty = typesys.FunctionType('P86', 'sin', typesys.DoubleType())
+        ty = typesys.FunctionType('frontend', 'sin', typesys.DoubleType())
         ty.params.append(typesys.ParameterType('real', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # double --> double
-        ty = typesys.FunctionType('P86', 'cos', typesys.DoubleType())
+        ty = typesys.FunctionType('frontend', 'cos', typesys.DoubleType())
         ty.params.append(typesys.ParameterType('real', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # double --> double
-        ty = typesys.FunctionType('P86', 'arctan', typesys.DoubleType())
+        ty = typesys.FunctionType('frontend', 'arctan', typesys.DoubleType())
         ty.params.append(typesys.ParameterType('real', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # real --> INTEGER
-        ty = typesys.FunctionType('P86', 'trunc', typesys.SIntType(16))
+        ty = typesys.FunctionType('frontend', 'trunc', typesys.SIntType(16))
         ty.params.append(typesys.ParameterType('real', typesys.DoubleType()))
         self.ctx.install_function(ty.name, ty)
 
         # real --> INTEGER
-        ty = typesys.FunctionType('P86', 'round', typesys.SIntType(16))
+        ty = typesys.FunctionType('frontend', 'round', typesys.SIntType(16))
         ty.params.append(typesys.ParameterType('real', typesys.DoubleType()))
-        self.ctx.install_function(ty.name, ty)
-
-        # any --> WORD
-        ty = typesys.FunctionType('P86', 'size', typesys.UIntType(32))
-        ty.params.append(typesys.ParameterType('x', typesys.AnyType()))
         self.ctx.install_function(ty.name, ty)
 
         # variadic functions
-        ty = typesys.FunctionType('P86', 'write')
+        ty = typesys.FunctionType('frontend', 'write')
         self.ctx.install_function(ty.name, ty)
 
-        ty = typesys.FunctionType('P86', 'writeln')
+        ty = typesys.FunctionType('frontend', 'writeln')
         self.ctx.install_function(ty.name, ty)
 
-        ty = typesys.FunctionType('P86', 'read', typesys.SIntType(32))
+        ty = typesys.FunctionType('frontend', 'read', typesys.SIntType(32))
         self.ctx.install_function(ty.name, ty)
 
-        ty = typesys.FunctionType('P86', 'readln', typesys.SIntType(32))
-        self.ctx.install_function(ty.name, ty)
-
-        ty = typesys.FunctionType('P86', 'halt')
+        ty = typesys.FunctionType('frontend', 'readln', typesys.SIntType(32))
         self.ctx.install_function(ty.name, ty)
 
         # TODO: add get/put/reset/rewrite/pack/unpack
@@ -619,49 +602,6 @@ class TypeSetVisitor(visitor.DefaultVisitor):
             node.block.accept(self)
 
         self.ctx.exit_scope()
-
-    def visit_ModuleNode(self, node, arg=None):
-        assert isinstance(node, ast.ModuleNode)
-
-        self.ctx.enter_scope()
-
-        self.module = node.identifier.accept(self)
-
-        if node.interface:
-            node.interface.accept(self)
-
-        if node.entry_point:
-            node.entry_point.accept(self)
-
-        self.ctx.exit_scope()
-
-    def visit_PublicSectionNode(self, node, arg=None):
-        assert isinstance(node, ast.PublicSectionNode)
-
-        module = node.identifier.accept(self)
-
-        if node.section:
-            node.section.accept(self, module)
-
-    def visit_PublicFunctionNode(self, node, module):
-        assert isinstance(node, ast.PublicFunctionNode)
-
-        func = node.heading.accept(self, module)
-        self.ctx.install_function(func.name, func)
-
-        node.type = func.ret
-
-        return node.type
-
-    def visit_PublicProcedureNode(self, node, module):
-        assert isinstance(node, ast.PublicProcedureNode)
-
-        func = node.heading.accept(self, module)
-        self.ctx.install_function(func.name, func)
-
-        node.type = func.ret
-
-        return node.type
 
     def visit_FunctionNode(self, node, arg=None):
         assert isinstance(node, ast.FunctionNode)
@@ -1018,9 +958,7 @@ class TypeSetVisitor(visitor.DefaultVisitor):
             node.value_end = ast.TypeConvertNode(node.value_end)
             node.value_end.type = ty
 
-    ######################################
-    # Single values                      #
-    ######################################
+    # Single values          
 
     def visit_IntegerNode(self, node, signed=False):
         assert isinstance(node, ast.IntegerNode)
@@ -1122,9 +1060,7 @@ class TypeSetVisitor(visitor.DefaultVisitor):
 
         return node.type
 
-    ######################################
-    # Definitions and declarations       #
-    ######################################
+    # Definitions and declarations 
 
     def visit_RangeNode(self, node, arg=None):
         assert isinstance(node, ast.RangeNode)
@@ -1516,3 +1452,53 @@ class TypeSetVisitor(visitor.DefaultVisitor):
         assert isinstance(node, ast.IdentifierNode)
 
         return node.name
+
+
+
+class FixBuiltinCallbyRefVisitor(visitor.NodeVisitor):
+
+    def __init__(self):
+        self.named_functions = set()
+        self.named_functions.add('read')
+        self.named_functions.add('readln')
+
+    def default_visit(self, node, arg=None):
+        visitor.NodeVisitor.default_visit(self, node, arg)
+
+        return node
+
+    def visit_IdentifierNode(self, node, arg=None):
+        assert isinstance(node, ast.IdentifierNode)
+
+        return node.name
+
+    def visit_FunctionCallNode(self, node, arg=None):
+        assert isinstance(node, ast.FunctionCallNode)
+
+        name = node.identifier.accept(self)
+
+        if name not in self.named_functions:
+            return
+
+        byref = True
+
+        if node.arg_list:
+            node.arg_list.accept(self, byref)
+
+    def visit_VarLoadNode(self, node, byref):
+        assert isinstance(node, ast.VarLoadNode)
+
+        if byref:
+            return node.var_access
+        else:
+            return node
+
+    def visit_ArgumentNode(self, node, byref=False):
+        assert isinstance(node, ast.ArgumentNode)
+
+        if not byref:
+            return
+            
+        expr = node.expr.accept(self, byref)
+        if expr:
+            node.expr = expr

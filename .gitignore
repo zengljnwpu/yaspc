@@ -97,3 +97,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# yply generated file
+frontend/lextable.py
+frontend/parsetable.py

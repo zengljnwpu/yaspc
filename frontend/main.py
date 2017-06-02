@@ -12,8 +12,8 @@ from frontend import compiler
 from argparse import ArgumentParser
 from argparse import RawTextHelpFormatter
 
-__version__ = 0.3
-__date__ = '2017-05-14'
+__version__ = 0.4
+__date__ = '2017-06-02'
 
 DEBUG = 0
 
@@ -53,17 +53,16 @@ def run(argv=None):
         # Setup argument parser
         parser = ArgumentParser(prog=program_name, description=program_shortdesc, formatter_class=RawTextHelpFormatter)
         parser.add_argument("-t", "--syntax-tree", dest="tree", action="store_true", help="print the syntax tree to stdout")
-        # parser.add_argument("-S", "--emit-llvm", dest="ir_code", metavar="PATH", action="store", help="save LLVM-IR (plain text) to PATH")
-        # parser.add_argument("-b", "--bit-code", dest="bit_code", metavar="PATH", action="store", help="save LLVM-IR (bit code) to PATH")
-        # parser.add_argument("-o", "--object-code", dest="obj_code", metavar="PATH", action="store", help="save object code to PATH")
-        # parser.add_argument("-O", "--optimize", dest="opt", metavar="LEVEL", action="store", choices=['0', '1', '2', '3'], default='0', help="run various optimizations on the LLVM-IR code")
+        parser.add_argument("-S", "--emit-llvm", dest="ir_code", metavar="PATH", action="store", help="save LLVM-IR (plain text) to PATH")
+        parser.add_argument("-b", "--bit-code", dest="bit_code", metavar="PATH", action="store", help="save LLVM-IR (bit code) to PATH")
+        parser.add_argument("-o", "--object-code", dest="obj_code", metavar="PATH", action="store", help="save object code to PATH")
+        parser.add_argument("-O", "--optimize", dest="opt", metavar="LEVEL", action="store", choices=['0', '1', '2', '3'], default='0', help="run various optimizations on the LLVM-IR code")
+        parser.add_argument('-a', '--asm', dest='asm_code', metavar='PATH', action='store', help='save native assembly code to PATH')
+        parser.add_argument('-e', '--executable', dest='exe', metavar='PATH', action='store', help='generate executable file using clang and save to PATH')
 
-        parser.add_argument("-T", "--triple", dest="triple", action="store", default='', help="define the target triple, e.g. x86_64-pc-linux or i686-pc-win32")
-        parser.add_argument("-mcpu", dest="cpu", default='', help='target specific cpu type')
-        parser.add_argument("-mattrs", dest="attrs", default='', help='target specific attributes')
+        parser.add_argument("-T", "--triple", dest="triple", action="store", default=None, help="define the target triple, e.g. x86_64-pc-linux or i686-pc-win32")
+        parser.add_argument("-mcpu", dest="cpu", default=None, help='target specific cpu type')
 
-        parser.add_argument("-e", "--execute", dest="execute", action="store_true", help="execute the main function using the LLVM JIT compiler")
-        parser.add_argument("-a", "--arguments", dest="args", metavar="ARGS", action="store", default='', help="optional string with arguments when executing the main function using the JIT compiler")
         parser.add_argument("-v", "--verbosity", dest="verbosity", action="count", default=0)
         parser.add_argument('-V', '--version', action='version', version=program_version_message)
         parser.add_argument(dest="file", metavar="file")
@@ -83,28 +82,32 @@ def run(argv=None):
         if args.tree:
             c.print_tree()
 
-        # synthesize = (args.ir_code or args.bit_code or
-        #               args.obj_code or args.execute)
+        synthesize = (args.ir_code or args.bit_code or
+                      args.obj_code or args.asm_code or
+                      args.exe)
 
-        # if synthesize:
-        #     c.synthesize()
+        if synthesize:
+            c.synthesize(args.triple, args.cpu)
 
-        # if args.opt and synthesize:
-        #     c.optimize(int(args.opt))
+        if args.opt and synthesize:
+            c.optimize(int(args.opt))
 
-        # if args.ir_code:
-        #     c.save_ir(args.ir_code, args.triple)
+        if args.ir_code:
+            c.save_ir(args.ir_code)
 
-        # if args.bit_code:
-        #     c.save_bit_code(args.bit_code, args.triple)
+        if args.bit_code:
+            c.save_bit_code(args.bit_code)
 
-        # if args.obj_code:
-        #     c.save_obj_code(args.obj_code, args.triple, args.cpu, args.attrs)
+        if args.obj_code:
+            c.save_obj_code(args.obj_code)
+        
+        if args.asm_code:
+            c.save_asm_code(args.asm_code)
 
-        # if args.execute:
-        #     c.execute(args.args)
+        if args.exe:
+            c.save_executable(args.exe)
 
-        # return 0
+        return 0
 
     except KeyboardInterrupt:
         return 0
