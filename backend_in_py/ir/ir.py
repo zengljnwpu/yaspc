@@ -4,6 +4,16 @@ from backend_in_py.entity.entity import *
 from backend_in_py.asm.type import *
 from backend_in_py.ir.dumper import *
 
+def import_ir (data: dict()):
+    defvars = list()
+
+    for i in data["variablelist"]:
+        t = DefinedVariable (name = i["name"], type = type_factory(i["type"], i["name"]), priv = i["is_private"], init = i["value"])
+        defvars.append(t)
+
+    ir = IR (source = "test.asm", defuns = None, defvars = defvars, constant_table = None, funcdecls = None, scope = None)
+    return ir
+
 
 class IR ():
     def __init__ (self,
@@ -23,7 +33,7 @@ class IR ():
         self.comms = []
 
     def file_name (self):
-        return self.source.souce_name()
+        return self.source
 
     def location (self):
         return self.source
@@ -61,7 +71,8 @@ class IR ():
 
     #a list of all defined/declared global-scope variables
     def all_global_variables (self):
-        return self.scope.all_global_variables()
+        #return self.scope.all_global_variables()
+        return self.defvars
 
     def is_global_variable_defined (self):
         if self.defined_global_variables:
@@ -71,10 +82,12 @@ class IR ():
 
     #Returns the list of global variables.
     def defined_global_variables (self):
-        if not self.gvars:
-            self.init_variables()
-        else:
-            return self.gvars
+       #if not self.gvars:
+       #     self.init_variables()
+       # else:
+       #     return self.gvars
+        return self.defvars
+
 
     def is_common_symbol_defined(self):
         if self.defined_common_symbols():
@@ -102,6 +115,10 @@ class IR ():
         d.print_class (self, self.source)
         d.print_vars ("variables", self.defvars)
         d.print_funs ("function", self.defuns)
+
+
+
+
 
 
 

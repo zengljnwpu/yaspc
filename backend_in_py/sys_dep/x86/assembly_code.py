@@ -132,25 +132,25 @@ class AssemblyCode():
             self._directive("\t.section\t" + name)
 
     def _globl (self, sym: Symbol):
-        self._directive(".globl " + sym.name())
+        self._directive(".globl " + sym.name)
 
     def _local (self, sym: Symbol):
-        self._directive(".local " + sym.name())
+        self._directive(".local " + sym.name)
 
     def _hidden (self, sym: Symbol):
-        self._directive("\t.hidden\t", sym.name())
+        self._directive("\t.hidden\t", sym.name)
 
     def _comm (self, sym: Symbol, size: int, alignment: int):
-        self._directive("\t.comm\t" + sym.name() + "," + str (size) + "," + str (alignment))
+        self._directive("\t.comm\t" + sym.name + "," + str (size) + "," + str (alignment))
 
     def _align (self, n):
         self._directive("\t.align\t" + str (n))
 
     def _type (self, sym, type):
-        self._directive("\t.type\t" + sym.name() + "," + type)
+        self._directive("\t.type\t" + sym.name + "," + type)
 
     def _size (self, sym, size):
-        self._directive("\t.size\t" + sym.name() + "," + str (size))
+        self._directive("\t.size\t" + sym.name + "," + str (size))
 
     def _byte (self, val):
         if isinstance(val, int):

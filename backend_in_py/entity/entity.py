@@ -1,12 +1,14 @@
 from backend_in_py.asm.assembly import *
 from backend_in_py.asm.operand import *
 from backend_in_py.asm.literal import *
+from backend_in_py.type.type import *
+
 
 class Entity (object):
-    def __init__ (self, priv:bool, type, name:str):
+    def __init__ (self, priv:bool, type: Type, name:str):
         self._name = name
         self._is_private = priv
-        self._type_node = type
+        self._type = type
         self.n_refered = 0
         self._mem_ref = None
         self._address = None
@@ -33,7 +35,7 @@ class Entity (object):
         return self._is_private
 
     def type(self):
-        return self._type_node.type()
+        return self._type
 
     def alloc_size(self):
         return self.type().alloc_size()
@@ -69,7 +71,7 @@ class Entity (object):
             raise Exception ("_address did not resolved: " + self._name)
 
     def location (self):
-        return self._type_node.location()
+        return self._type.location()
 
     def accept (self, visitor):
         return
@@ -104,7 +106,7 @@ class Constant (Entity):
 
     def _dump(self, d):
         d.print_member ("_name", self._name)
-        d.print_member ("_type_node", self._type_node)
+        d.print_member ("_type", self._type)
         d.print_member ("_value", self.value)
 
     def accept(self, visitor):
@@ -211,7 +213,7 @@ class UndefinedFunction (Function):
     def _dump(self, d):
         d.print_member("_name", self._name)
         d.print_member("_is_private", self.is_private())
-        d.print_member("_type_node", self._type_node)
+        d.print_member("_type", self._type)
         d.print_member("params", self._params)
 
     def accept(self, visitor):
@@ -238,7 +240,7 @@ class UndefinedVariable (Variable):
     def _dump(self, d):
         d.print_member("_name", self._name)
         d.print_member("_is_private", self.is_private())
-        d.print_member("_type_node", self._type_node)
+        d.print_member("_type", self._type)
 
     def accept(self, visitor):
         return visitor.visit()
@@ -256,7 +258,7 @@ class DefinedVariable (Variable):
 
     @classmethod
     def tmp (cls, t):
-        return DefinedVariable (False, TypeNode(t), "@tmp" + str(cls.tmp_seq), None)
+        return DefinedVariable (False, Type(t), "@tmp" + str(cls.tmp_seq), None)
 
     def is_defined(self):
         return True
@@ -292,7 +294,7 @@ class DefinedVariable (Variable):
     def _dump(self, d):
         d.print_member("_name", self._name)
         d.print_member("_is_private", self.is_private())
-        d.print_member("_type_node", self._type_node)
+        d.print_member("_type", self._type)
         d.print_member("initializer", self.initializer)
 
     def accept(self, visitor):
@@ -307,5 +309,5 @@ class Parameter (DefinedVariable):
 
     def _dump(self, d):
         d.print_member ("_name", self._name)
-        d.print_member ("_type_node", self._type_node)
+        d.print_member ("_type", self._type)
 

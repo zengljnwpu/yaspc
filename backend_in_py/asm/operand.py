@@ -141,12 +141,9 @@ class IndirectMemoryReference (MemoryReference):
         return str
 
 class DirectMemoryReference (MemoryReference):
-    def __init__ (self, val):
+    def __init__ (self, val: Literal):
         super().__init__()
-        if isinstance(val, IntegerLiteral):
-            self.value = val
-        else:
-            self.value = IntegerLiteral(val)
+        self.value = val
 
     def collect_statistics(self, stats):
         self.value.collect_statistics (stats)

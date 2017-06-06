@@ -107,7 +107,7 @@ class NamedSymbol (BaseSymbol):
         super().__init__()
         if name == "":
             raise Exception ("NamedSymbol must have _name")
-        self.name = str(name)
+        self.name = name
 
     def name (self):
         return self.name
