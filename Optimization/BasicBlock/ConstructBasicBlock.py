@@ -10,8 +10,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import yaspc.Instruction.instruction as instruction
-import yaspc.BasicBlock.BasicBlock as BasicBlock
+import yaspc.Optimization.Instruction.instruction as instruction
+import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
 
 
 DEBUG = True
@@ -201,8 +201,8 @@ def ConstructBlockList(inst_list):
     if DEBUG:
         print ("============PredecessorSuccessor==================")
         for ith, inst in enumerate(inst_list):
-            inst.lineth = ith
-            print(inst.lineth, inst)
+            #inst.pos = ith
+            print(inst.pos, inst)
         for block in blockList:
             print(block.blockNum, ":")
             for inst in block.instList:
@@ -214,13 +214,6 @@ def ConstructBlockList(inst_list):
                 for preblock in block.preBasicBlock:
                     print ("preblock", preblock.blockNum)
     return blockList
-
-
-
-
-
-
-
 
 
 
