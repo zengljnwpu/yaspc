@@ -12,13 +12,13 @@ from __future__ import print_function
 
 import re
 import json
-import yaspc.Instruction.instruction as instruction
-import yaspc.BasicBlock.BasicBlock as BasicBlock
-import yaspc.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
-import yaspc.BasicBlock.DestructBasicBlock as DestructBasicBlock
-import yaspc.IR_IO.irParser as irParser
-import yaspc.BasicBlock.ud as ud
-import yaspc.BasicBlock.PeepholeOptimization as PeepholeOptimization
+import yaspc.Optimization.Instruction.instruction as instruction
+import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
+import yaspc.Optimization.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
+import yaspc.Optimization.BasicBlock.DestructBasicBlock as DestructBasicBlock
+import yaspc.Optimization.IR_IO.irParser as irParser
+import yaspc.Optimization.BasicBlock.ud as ud
+import yaspc.Optimization.BasicBlock.PeepholeOptimization as PeepholeOptimization
 
 
 def main():
@@ -42,9 +42,9 @@ def main():
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
     #inst_list = PeepholeOptimization.control_flow_optimization(block_list, inst_list)
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
-    #var_reduce = ud.reach_def_iteration(block_list)
-    #ud.ud_set(block_list, var_reduce)
-    #ud.constant_propagation(block_list, var_reduce, inst_list)
+    var_reduce = ud.reach_def_iteration(block_list)
+    ud.ud_set(block_list, var_reduce)
+    ud.constant_propagation(block_list, var_reduce, inst_list)
     #ud.live_variable_analysis(block_list)
     DestructBasicBlock.BlockList_to_InstList(block_list)
 

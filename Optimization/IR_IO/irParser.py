@@ -12,7 +12,7 @@ from __future__ import print_function
 
 import json
 
-import yaspc.Instruction.instruction as instruction
+import yaspc.Optimization.Instruction.instruction as instruction
 
 
 def parse_single_inst_from_json(inst_dict):

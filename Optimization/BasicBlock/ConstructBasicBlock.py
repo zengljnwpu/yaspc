@@ -10,8 +10,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import yaspc.Instruction.instruction as instruction
-import yaspc.BasicBlock.BasicBlock as BasicBlock
+import yaspc.Optimization.Instruction.instruction as instruction
+import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
 
 
 DEBUG = False
