@@ -55,8 +55,8 @@ def encode_single_inst_from_json(one_inst):
     return inst_dict
 
 def generate_labellist(inst_list):
-    """遍历instruction list获得labellist
-    格式举例：
+    """traverse instruction list to generate labellist
+    e.g：
     "labellist": [{ "object": "label",  "name": "forstartlabel1",  "pos": 2 }, ...]
     """
     labellist = []

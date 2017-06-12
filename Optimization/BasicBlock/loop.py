@@ -36,6 +36,7 @@ def dominator(block_list):
     for i in range(len(block_list)):
         N.add(i)
     print(N)
+    # The sets of dominator of all nodes
     D = dict()
     for i in range(len(block_list)):
         D[i] = set()

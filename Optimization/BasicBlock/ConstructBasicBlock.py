@@ -14,7 +14,7 @@ import yaspc.Optimization.Instruction.instruction as instruction
 import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
 
 
-DEBUG = True
+DEBUG = False
 
 
 def ConstructBlockList(inst_list):
