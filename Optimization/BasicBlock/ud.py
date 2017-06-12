@@ -79,8 +79,6 @@ def reach_def_iteration(block_list):
         map variable defined to inst num
     """
     for (block_index, block) in enumerate(block_list):
-        if block_index == 0 or block_index == len(block_list)-1:
-            continue
         block.var_dict = dict()
         block.var_set = set()
         for inst in block.instList:
@@ -143,8 +141,6 @@ def reach_def_iteration(block_list):
                 print(kill_num, end="\t")
             print()
     for (block_index, block) in enumerate(block_list):
-        if block_index == 0 or block_index == len(block_list)-1:
-            continue
         block.in_set = set()
         block.out_set = block.gen_set
     change = True
