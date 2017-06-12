@@ -14,7 +14,7 @@ import yaspc.Instruction.instruction as instruction
 import yaspc.BasicBlock.BasicBlock as BasicBlock
 
 
-DEBUG = False
+DEBUG = True
 
 
 def ConstructBlockList(inst_list):
@@ -154,6 +154,7 @@ def ConstructBlockList(inst_list):
         if i == 0:
             """ the succblock of ENTRY is 1th block"""
             block.succBasicBlock.add((blockList[1], "follow"))
+            blockList[1].preBasicBlock.add(block)
             continue
         if i == len(blockList)-1:
             break
@@ -196,7 +197,6 @@ def ConstructBlockList(inst_list):
         if i + 1 < len(blockList) - 1:
             block.succBasicBlock.add((blockList[i + 1], "follow"))
             blockList[i + 1].preBasicBlock.add(block)
-
 
     if DEBUG:
         print ("============PredecessorSuccessor==================")
