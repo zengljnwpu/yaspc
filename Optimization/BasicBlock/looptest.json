@@ -1,0 +1,179 @@
+{
+	"body": [
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 1,
+            "labelname": "label1"
+        },
+        {
+            "object": "instruction",
+            "name": "cjump",
+            "filename": "dsq.pas",
+            "line_number": 8,
+            "cond": {
+                "object": "entity",
+                "type": "bool",
+                "name": "variable",
+                "variable": "%1",
+                "const": false
+            },
+            "thenlabel": "label2",
+            "elselabel": "label3"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label2"
+        },
+        {
+            "object": "instruction",
+            "name": "jump",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "label": "label4"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label3"
+        },
+        {
+            "object": "instruction",
+            "name": "variable_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "variablename": "%3",
+            "var_type": "int32"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label4"
+        },
+        {
+            "object": "instruction",
+            "name": "cjump",
+            "filename": "dsq.pas",
+            "line_number": 8,
+            "cond": {
+                "object": "entity",
+                "type": "bool",
+                "name": "variable",
+                "variable": "%1",
+                "const": false
+            },
+            "thenlabel": "label5",
+            "elselabel": "label6"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label5"
+        },
+        {
+            "object": "instruction",
+            "name": "jump",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "label": "label7"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label6"
+        },
+        {
+            "object": "instruction",
+            "name": "jump",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "label": "label7"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label7"
+        },
+        {
+            "object": "instruction",
+            "name": "jump",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "label": "label7"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label8"
+        },
+        {
+            "object": "instruction",
+            "name": "cjump",
+            "filename": "dsq.pas",
+            "line_number": 8,
+            "cond": {
+                "object": "entity",
+                "type": "bool",
+                "name": "variable",
+                "variable": "%1",
+                "const": false
+            },
+            "thenlabel": "label9",
+            "elselabel": "label10"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label9"
+        },
+        {
+            "object": "instruction",
+            "name": "jump",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "label": "label1"
+        },
+
+        {
+            "object": "instruction",
+            "name": "label_definition",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "labelname": "label10"
+        },
+        {
+            "object": "instruction",
+            "name": "jump",
+            "filename": "dsq.pas",
+            "line_number": 9,
+            "label": "label3"
+        }
+
+	]
+}

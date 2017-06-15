@@ -5,37 +5,26 @@
 
 @Author : axiqia
 """
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-import yaspc.Optimization.BasicBlock.BasicBlock
 import copy
+import yaspc.Optimization.BasicBlock.BasicBlock
 
 
-def insert(n, loop, stack):
-    if n not in loop:
-        loop = loop.add(n)
-        stack.append(n)
+DEBUG = True
 
-
-def find_loop(d, n, block_list):
-    stack = list()
-    loop = set()
-
-    loop.add(d)
-    insert(n)
-    while len(stack):
-        m = stack.pop()
-        block = block_list[m]
-        for pre_block in block.preBasicBlock:
-            insert(pre_block.blockNum, loop, stack)
-    return loop
-
-
-def dominator(block_list):
-    """ init set N, D"""
+def find_dominator(block_list):
+    """ find dominator of all blocks
+    参考蒋立源、康慕宁《编译原理》P312程序8-4
+    """
+    # init set N, D
     N = set()
     for i in range(len(block_list)):
         N.add(i)
-    print(N)
+    if DEBUG:
+        print(N)
     # The sets of dominator of all nodes
     D = dict()
     for i in range(len(block_list)):
@@ -44,7 +33,8 @@ def dominator(block_list):
     for i in range(1, len(block_list)):
         D[i] = N
     change = True
-    print(D)
+    if DEBUG:
+        print(D)
     while change:
         change = False
         for i in range(1, len(block_list)):
@@ -57,7 +47,35 @@ def dominator(block_list):
                 change = True
                 D[i] = newD
     print(D)
+    return D
 
+
+def insert(n, loop, stack):
+    if n not in loop:
+        loop = loop.add(n)
+        stack.append(n)
+
+
+def find_loop(d, n, block_list):
+    """给定回边 n->d，确定此循环的全部节点
+    参考蒋立源、康慕宁《编译原理》P314程序8-5
+    """
+    stack = list()
+    loop = set()
+
+    loop.add(d)
+    insert(n, loop, stack)
+    while len(stack) > 0:
+        m = stack.pop()
+        block = block_list[m]
+        for pre_block in block.preBasicBlock:
+            insert(pre_block.blockNum, loop, stack)
+    return loop
+
+def do_loop_optimization(block_list):
+    """the main function of Loop optimization
+    """
+    D = find_dominator(block_list)
     loop_list = list()
     for n in D:
         dom_set = D[n]
