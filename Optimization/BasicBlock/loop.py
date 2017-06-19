@@ -13,10 +13,14 @@ import copy
 import yaspc.Optimization.BasicBlock.BasicBlock
 
 
-DEBUG = True
+DEBUG = False
 
 def find_dominator(block_list):
     """ find dominator of all blocks
+    In control flow graphs, a node d dominates a node n
+    if every path from the entry node to n must go through d.
+    Notationally, this is written as d dom n (or sometimes d >> n).
+    By definition, every node dominates itself.
     参考蒋立源、康慕宁《编译原理》P312程序8-4
     """
     # init set N, D
@@ -77,9 +81,12 @@ def do_loop_optimization(block_list):
     """
     D = find_dominator(block_list)
     loop_list = list()
-    for n in D:
+    for n in range(len(D)):
         dom_set = D[n]
         for d in dom_set:
-            if block_list[n].succBasicBlock == block_list[d]:
-                loop = find_loop(d, n, block_list)
-                loop_list.append(loop)
+            for succ, description in block_list[n].succBasicBlock:
+                if succ == block_list[d]:
+                    print("find a back edge %d -> %d"%(n, d))
+                    loop = find_loop(d, n, block_list)
+                    loop_list.append(loop)
+    print(loop_list)

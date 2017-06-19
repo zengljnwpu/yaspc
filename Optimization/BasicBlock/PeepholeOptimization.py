@@ -11,6 +11,24 @@ from __future__ import print_function
 
 import yaspc.Optimization.Instruction.instruction as instruction
 
+def remove_unused_label(inst_list):
+    """remove unused label"""
+    labelSet = set()    # a set for valid label
+    # find the valid label
+    for inst in inst_list:
+        if isinstance(inst, instruction.CJumpInst):
+            labelSet.add(inst.thenlabel)
+            labelSet.add(inst.elselabel)
+        elif isinstance(inst, instruction.JumpInst):
+            labelSet.add(inst.label)
+    new_inst_list = []
+    for inst in inst_list:
+        if isinstance(inst, instruction.LabelInst):
+            if not inst.labelname in labelSet:
+                continue
+        new_inst_list.append(inst)
+    return new_inst_list
+
 
 def control_flow_optimization(block_list, inst_list):
     """控制流优化"""

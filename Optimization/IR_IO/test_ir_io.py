@@ -12,10 +12,11 @@ from __future__ import print_function
 
 import json
 
-import yaspc.Optimization.Instruction.instruction as instruction
-import yaspc.Optimization.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
-import yaspc.Optimization.BasicBlock.DestructBasicBlock as DestructBasicBlock
-import yaspc.Optimization.IR_IO.irParser as irParser
+from yaspc.Optimization.Instruction import instruction
+from yaspc.Optimization.BasicBlock import ConstructBasicBlock
+from yaspc.Optimization.BasicBlock import DestructBasicBlock
+from yaspc.Optimization.IR_IO import irParser
+from yaspc.Optimization.BasicBlock import PeepholeOptimization
 
 def test_module():
     '''
@@ -41,6 +42,12 @@ def test_module():
     #ud.constant_propagation(block_list, var_reduce, inst_list)
     #ud.live_variable_analysis(block_list)
     inst_list = DestructBasicBlock.BlockList_to_InstList(block_list)
+    inst_list = PeepholeOptimization.remove_unused_label(inst_list)
+
+    print ("============LinearInstructionList==================")
+    for inst in inst_list:
+        print('%3d\t%s'%(inst.pos, str(inst)))
+    print ("=================LabelList=========================")
     new_labellist = DestructBasicBlock.generate_labellist(inst_list)
     print(json.dumps(new_labellist, sort_keys=True, indent=4))
 
