@@ -14,7 +14,7 @@ import yaspc.Optimization.Instruction.instruction as instruction
 import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
 
 
-DEBUG = False
+DEBUG = True
 
 
 def ConstructBlockList(inst_list):
@@ -53,7 +53,7 @@ def ConstructBlockList(inst_list):
             blockList.append(block)
             blockDict[block.blockNum] = block
 
-            if (isinstance(inst, instruction.LabelInst)) and (inst.label in labelSet):
+            if (isinstance(inst, instruction.LabelInst)) and (inst.labelname in labelSet):
                 """ the first instruction is a label
                     and label is branch destination
                     and not a successive label inst
