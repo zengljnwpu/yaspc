@@ -1,0 +1,481 @@
+{
+    "body": [
+        {
+            "address": {
+                "const": false, 
+                "name": "variable", 
+                "object": "entity", 
+                "type": "int32", 
+                "variable": "n"
+            }, 
+            "context": null, 
+            "filename": "dsq.pas", 
+            "line_number": 13, 
+            "name": "store", 
+            "object": "instruction", 
+            "value": {
+                "name": "value", 
+                "object": "entity", 
+                "type": "int32", 
+                "value": 123
+            }
+        }, 
+        {
+            "address": {
+                "const": false, 
+                "name": "variable", 
+                "object": "entity", 
+                "type": "bool", 
+                "variable": "f"
+            }, 
+            "context": null, 
+            "filename": "dsq.pas", 
+            "line_number": 14, 
+            "name": "store", 
+            "object": "instruction", 
+            "value": {
+                "name": "value", 
+                "object": "entity", 
+                "type": "bool", 
+                "value": false
+            }
+        }, 
+        {
+            "context": null, 
+            "filename": "dsq.pas", 
+            "line_number": 15, 
+            "name": "variable_definition", 
+            "object": "instruction", 
+            "var_type": "bool", 
+            "variablename": "%1"
+        }, 
+        {
+            "context": null, 
+            "filename": "dsq.pas", 
+            "functionname": "prime", 
+            "line_number": 15, 
+            "name": "call", 
+            "object": "instruction", 
+            "parameterlist": [
+                {
+                    "const": false, 
+                    "name": "variable", 
+                    "object": "entity", 
+                    "type": "int32", 
+                    "variable": "n"
+                }
+            ], 
+            "value": {
+                "const": false, 
+                "name": "variable", 
+                "object": "entity", 
+                "type": "bool", 
+                "variable": "%1"
+            }
+        }, 
+        {
+            "address": {
+                "const": false, 
+                "name": "variable", 
+                "object": "entity", 
+                "type": "bool", 
+                "variable": "f"
+            }, 
+            "context": null, 
+            "filename": "dsq.pas", 
+            "line_number": 15, 
+            "name": "store", 
+            "object": "instruction", 
+            "value": {
+                "const": false, 
+                "name": "variable", 
+                "object": "entity", 
+                "type": "bool", 
+                "variable": "%1"
+            }
+        }
+    ], 
+    "functionlist": [
+        {
+            "body": [
+                {
+                    "address": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "i"
+                    }, 
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "line_number": 8, 
+                    "name": "store", 
+                    "object": "instruction", 
+                    "value": {
+                        "name": "value", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "value": "2"
+                    }
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "labelname": "LabelBlock2", 
+                    "line_number": 8, 
+                    "name": "label_definition", 
+                    "object": "instruction"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "line_number": 8, 
+                    "name": "variable_definition", 
+                    "object": "instruction", 
+                    "var_type": "bool", 
+                    "variablename": "%1"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "left": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "i"
+                    }, 
+                    "line_number": 8, 
+                    "name": "bin", 
+                    "object": "instruction", 
+                    "op": "S_LT", 
+                    "right": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "num"
+                    }, 
+                    "value": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "bool", 
+                        "variable": "%1"
+                    }
+                }, 
+                {
+                    "cond": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "bool", 
+                        "variable": "%1"
+                    }, 
+                    "context": null, 
+                    "elselabel": "LabelBlock6", 
+                    "filename": "dsq.pas", 
+                    "line_number": 8, 
+                    "name": "cjump", 
+                    "object": "instruction", 
+                    "thenlabel": "LabelBlock3"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "labelname": "LabelBlock3", 
+                    "line_number": 9, 
+                    "name": "label_definition", 
+                    "object": "instruction"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "line_number": 9, 
+                    "name": "variable_definition", 
+                    "object": "instruction", 
+                    "var_type": "int32", 
+                    "variablename": "%2"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "left": {
+                        "cosnt": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "num"
+                    }, 
+                    "line_number": 9, 
+                    "name": "bin", 
+                    "object": "instruction", 
+                    "op": "U_MOD", 
+                    "right": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "i"
+                    }, 
+                    "value": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "%2"
+                    }
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "line_number": 9, 
+                    "name": "variable_definition", 
+                    "object": "instruction", 
+                    "var_type": "int32", 
+                    "variablename": "%3"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "left": {
+                        "cosnt": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "i"
+                    }, 
+                    "line_number": 9, 
+                    "name": "bin", 
+                    "object": "instruction", 
+                    "op": "EQ", 
+                    "right": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "%2"
+                    }, 
+                    "value": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "%3"
+                    }
+                }, 
+                {
+                    "cond": {
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "bool", 
+                        "variable": "%3"
+                    }, 
+                    "context": null, 
+                    "elselabel": "LabelBlock5", 
+                    "filename": "dsq.pas", 
+                    "line_number": 9, 
+                    "name": "cjump", 
+                    "object": "instruction", 
+                    "thenlabel": "LabelBlock5"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "label": "LabelBlock5", 
+                    "line_number": 9, 
+                    "name": "jump", 
+                    "object": "instruction"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "labelname": "LabelBlock5", 
+                    "line_number": 8, 
+                    "name": "label_definition", 
+                    "object": "instruction"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "line_number": 8, 
+                    "name": "variable_definition", 
+                    "object": "instruction", 
+                    "var_type": "int32", 
+                    "variablename": "%4"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "left": {
+                        "cosnt": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "i"
+                    }, 
+                    "line_number": 8, 
+                    "name": "bin", 
+                    "object": "instruction", 
+                    "op": "ADD", 
+                    "right": {
+                        "name": "value", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "value": 1
+                    }, 
+                    "value": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "%4"
+                    }
+                }, 
+                {
+                    "address": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "i"
+                    }, 
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "line_number": 8, 
+                    "name": "store", 
+                    "object": "instruction", 
+                    "value": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "int32", 
+                        "variable": "%4"
+                    }
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "label": "LabelBlock2", 
+                    "line_number": 8, 
+                    "name": "jump", 
+                    "object": "instruction"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "labelname": "LabelBlock6", 
+                    "line_number": 10, 
+                    "name": "label_definition", 
+                    "object": "instruction"
+                }, 
+                {
+                    "context": null, 
+                    "filename": "dsq.pas", 
+                    "line_number": 10, 
+                    "name": "return", 
+                    "object": "instruction", 
+                    "ret": {
+                        "const": false, 
+                        "name": "variable", 
+                        "object": "entity", 
+                        "type": "bool", 
+                        "variable": "g"
+                    }
+                }
+            ], 
+            "filename": "dsq.pas", 
+            "labellist": [
+                {
+                    "name": "LabelBlock2", 
+                    "object": "label", 
+                    "pos": 3
+                }, 
+                {
+                    "name": "LabelBlock3", 
+                    "object": "label", 
+                    "pos": 7
+                }, 
+                {
+                    "name": "LabelBlock5", 
+                    "object": "label", 
+                    "pos": 15
+                }, 
+                {
+                    "name": "LabelBlock6", 
+                    "object": "label", 
+                    "pos": 20
+                }
+            ], 
+            "line_number": 4, 
+            "name": "prime", 
+            "object": "function_definition", 
+            "parameterlist": [
+                {
+                    "const": false, 
+                    "name": "variable", 
+                    "object": "entity", 
+                    "type": "int32", 
+                    "variable": "num"
+                }
+            ], 
+            "type": "bool", 
+            "variablelist": [
+                {
+                    "const": false, 
+                    "name": "variable", 
+                    "object": "entity", 
+                    "type": "int32", 
+                    "variable": "i"
+                }, 
+                {
+                    "const": false, 
+                    "name": "variable", 
+                    "object": "entity", 
+                    "type": "bool", 
+                    "variable": "g"
+                }, 
+                {
+                    "const": false, 
+                    "name": "variable", 
+                    "object": "entity", 
+                    "type": "bool", 
+                    "variable": "%1"
+                }, 
+                {
+                    "const": false, 
+                    "name": "variable", 
+                    "object": "entity", 
+                    "type": "int32", 
+                    "variable": "%2"
+                }, 
+                {
+                    "const": false, 
+                    "name": "variable", 
+                    "object": "entity", 
+                    "type": "int32", 
+                    "variable": "%3"
+                }, 
+                {
+                    "const": false, 
+                    "name": "variable", 
+                    "object": "entity", 
+                    "type": "int32", 
+                    "variable": "%4"
+                }
+            ]
+        }
+    ], 
+    "labellist": [], 
+    "name": "dsq", 
+    "object": "program_definition", 
+    "variablelist": [
+        {
+            "const": false, 
+            "name": "variable", 
+            "object": "entity", 
+            "type": "bool", 
+            "variable": "%1"
+        }
+    ]
+}

@@ -224,13 +224,4 @@ def encode_body(inst_list):
         body_list.append(encode_single_inst_from_json(inst))
     return body_list
 
-def encode_labellist(labellist):
-    '''encode function labellist
-    and return labellist(json format)
-    '''
-    label_list_json = []
-    for label in labellist:
-        label_list_json.append(label.__dict__)
-    return label_list_json
-
 
