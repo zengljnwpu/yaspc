@@ -4,6 +4,7 @@
 Created on Thu May 11 19:37:34 2017
 
 @author: hellolzc axiqia
+# TODO: The IR format is changed. This file need to be updated 2017/6/21
 """
 #from enum import Enum
 

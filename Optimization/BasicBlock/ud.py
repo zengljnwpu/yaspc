@@ -70,12 +70,15 @@ def ud_set(block_list, var_reduce):
             print()
 def reach_def_iteration(block_list):
     """
-    cal reaching-definition of every block
-    param:type block_list: a list of BasicBlock
-    return: var_reduce :
+    calculate reaching-definition of every block.
+      parameter: type block_list: a list of BasicBlock.
+      return: var_reduce : Record the where the variable was killed.
+            key : left value;
+            value : a set where the key variable definition.
+    add properties of gen_set and kill_set for every block.
     """
 
-    """ 
+    """
         find all variable of block
         map variable defined to inst num
     """
@@ -95,8 +98,9 @@ def reach_def_iteration(block_list):
         block.kill_set = set()
 
     """ init var_reduce
-        key is left value 
-        value is a set where the key variable definition 
+        var_reduce: Record the where the variable was killed
+            key : left value 
+            value : a set where the key variable definition
     """
     var_reduce = dict()
     for (block_index, block) in enumerate(block_list):
@@ -125,7 +129,8 @@ def reach_def_iteration(block_list):
                 print(gen_num, end="\t")
             print()
 
-    """ kill set of blocks"""
+    """ kill set of blocks
+    """
     for (block_index, block) in enumerate(block_list):
         if block_index == 0 or block_index == len(block_list) - 1:
             continue
@@ -145,6 +150,15 @@ def reach_def_iteration(block_list):
     for (block_index, block) in enumerate(block_list):
         block.in_set = set()
         block.out_set = block.gen_set
+
+    # start iteration
+    # We denote the data-flow values immediately before and immediately after
+    # each basic block B by IN [ B ] and OUT [ B ], respectively.
+    # The constraints involving IN [ B ] and OUT [ B ] can be derived from
+    # those involving IN [ s ]and OUT [ s ] for the various statements s in B as follows.
+    #
+    # 参考《Compilers Principles, Techniques, and Tools - 2nd Edition - Alfred V. Aho》
+    # Figure 9-14 Iterative algorithm to compute reaching denitions
     change = True
     while change:
         change = False
@@ -178,7 +192,7 @@ def reach_def_iteration(block_list):
     return var_reduce
 
 
-def new_entity(entity_type, value):
+def __new_entity(entity_type, value):
     entity = dict()
     entity["object"] = "entity"
     entity["type"] = "int32"
@@ -198,9 +212,9 @@ def constant_propagation(block_list, var_reduce, inst_list):
                     left_ud = inst.left_ud
                     right_ud = inst.right_ud
                     if len(left_ud) == 1 and isinstance(inst_list[left_ud[0]], instruction.StoreInst):
-                        inst.left = new_entity("value", inst_list[left_ud[0]].value["value"])
+                        inst.left = __new_entity("value", inst_list[left_ud[0]].value["value"])
                     if len(right_ud) == 1 and isinstance(inst_list[right_ud[0]], instruction.StoreInst):
-                        inst.right = new_entity("value", inst_list[right_ud[0]].value["value"])
+                        inst.right = __new_entity("value", inst_list[right_ud[0]].value["value"])
                 elif isinstance(inst, instruction.UnaryInst):
                     pass
 
@@ -233,7 +247,7 @@ def live_variable_analysis(block_list):
                     block.live_use_set.add(var)
                 if value not in block.live_use_set:
                     block.live_def_set.add(value)
-    if (DEBUG):
+    if DEBUG:
         for block in block_list:
             print(block.blockNum, "def:", block.live_def_set, ";\t", block.live_use_set)
     change = True
