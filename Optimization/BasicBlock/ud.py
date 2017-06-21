@@ -71,7 +71,8 @@ def ud_set(block_list, var_reduce):
 def reach_def_iteration(block_list):
     """
     cal reaching-definition of every block
-    :type block_list: a list of BasicBlock
+    param:type block_list: a list of BasicBlock
+    return: var_reduce :
     """
 
     """ 
@@ -82,7 +83,8 @@ def reach_def_iteration(block_list):
         block.var_dict = dict()
         block.var_set = set()
         for inst in block.instList:
-            if isinstance(inst, def_inst):
+            # only considrate the last gen of the same variable
+            if isinstance(inst, def_inst): # BinaryInst UnaryInst StoreInst
                 if isinstance(inst, instruction.StoreInst):
                     block.var_dict[inst.address["variable"]] = inst.pos
                     block.var_set.add(inst.address["variable"])
