@@ -189,6 +189,8 @@ def encode_single_inst_from_json(one_inst):
     inst_dict = one_inst.__dict__.copy()
     # remember remove items which shouldn't be in IR
     inst_dict.pop('pos', False)
+    inst_dict.pop('ud', False)
+    inst_dict.pop('context', False)
     return inst_dict
 
 def generate_labellist(inst_list):

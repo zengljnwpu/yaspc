@@ -8,7 +8,6 @@
                 "type": "int32", 
                 "variable": "n"
             }, 
-            "context": null, 
             "filename": "dsq.pas", 
             "line_number": 13, 
             "name": "store", 
@@ -28,7 +27,6 @@
                 "type": "bool", 
                 "variable": "f"
             }, 
-            "context": null, 
             "filename": "dsq.pas", 
             "line_number": 14, 
             "name": "store", 
@@ -41,7 +39,6 @@
             }
         }, 
         {
-            "context": null, 
             "filename": "dsq.pas", 
             "line_number": 15, 
             "name": "variable_definition", 
@@ -50,7 +47,6 @@
             "variablename": "%1"
         }, 
         {
-            "context": null, 
             "filename": "dsq.pas", 
             "functionname": "prime", 
             "line_number": 15, 
@@ -81,7 +77,6 @@
                 "type": "bool", 
                 "variable": "f"
             }, 
-            "context": null, 
             "filename": "dsq.pas", 
             "line_number": 15, 
             "name": "store", 
@@ -106,7 +101,6 @@
                         "type": "int32", 
                         "variable": "i"
                     }, 
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "line_number": 8, 
                     "name": "store", 
@@ -119,7 +113,6 @@
                     }
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "labelname": "LabelBlock2", 
                     "line_number": 8, 
@@ -127,7 +120,6 @@
                     "object": "instruction"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "line_number": 8, 
                     "name": "variable_definition", 
@@ -136,7 +128,6 @@
                     "variablename": "%1"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "left": {
                         "const": false, 
@@ -172,7 +163,6 @@
                         "type": "bool", 
                         "variable": "%1"
                     }, 
-                    "context": null, 
                     "elselabel": "LabelBlock6", 
                     "filename": "dsq.pas", 
                     "line_number": 8, 
@@ -181,7 +171,6 @@
                     "thenlabel": "LabelBlock3"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "labelname": "LabelBlock3", 
                     "line_number": 9, 
@@ -189,7 +178,6 @@
                     "object": "instruction"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "line_number": 9, 
                     "name": "variable_definition", 
@@ -198,7 +186,6 @@
                     "variablename": "%2"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "left": {
                         "cosnt": false, 
@@ -227,7 +214,6 @@
                     }
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "line_number": 9, 
                     "name": "variable_definition", 
@@ -236,7 +222,6 @@
                     "variablename": "%3"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "left": {
                         "cosnt": false, 
@@ -271,7 +256,6 @@
                         "type": "bool", 
                         "variable": "%3"
                     }, 
-                    "context": null, 
                     "elselabel": "LabelBlock5", 
                     "filename": "dsq.pas", 
                     "line_number": 9, 
@@ -280,15 +264,6 @@
                     "thenlabel": "LabelBlock5"
                 }, 
                 {
-                    "context": null, 
-                    "filename": "dsq.pas", 
-                    "label": "LabelBlock5", 
-                    "line_number": 9, 
-                    "name": "jump", 
-                    "object": "instruction"
-                }, 
-                {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "labelname": "LabelBlock5", 
                     "line_number": 8, 
@@ -296,7 +271,6 @@
                     "object": "instruction"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "line_number": 8, 
                     "name": "variable_definition", 
@@ -305,7 +279,6 @@
                     "variablename": "%4"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "left": {
                         "cosnt": false, 
@@ -340,7 +313,6 @@
                         "type": "int32", 
                         "variable": "i"
                     }, 
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "line_number": 8, 
                     "name": "store", 
@@ -354,7 +326,6 @@
                     }
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "label": "LabelBlock2", 
                     "line_number": 8, 
@@ -362,7 +333,6 @@
                     "object": "instruction"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "labelname": "LabelBlock6", 
                     "line_number": 10, 
@@ -370,7 +340,6 @@
                     "object": "instruction"
                 }, 
                 {
-                    "context": null, 
                     "filename": "dsq.pas", 
                     "line_number": 10, 
                     "name": "return", 

@@ -120,19 +120,19 @@ if __name__ == '__main__':
         '--control_flow',
         type=int,
         default=1,
-        help='true: optimize control flow'
+        help='1: optimize control flow'
     )
     parser.add_argument(
         '--reach_defination',
         type=int,
-        default=0,
-        help='true: optimize reach defination'
+        default=1,
+        help='1: optimize reach defination'
     )
     parser.add_argument(
         '--loop',
         type=int,
         default=1,
-        help='true: optimize loop'
+        help='1: optimize loop'
     )
     FLAGS, unparsed = parser.parse_known_args()
     main(FLAGS.input_file_name, FLAGS.output_file_name, bool(FLAGS.control_flow),\

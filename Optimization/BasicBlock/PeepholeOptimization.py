@@ -13,18 +13,27 @@ import yaspc.Optimization.Instruction.instruction as instruction
 
 def remove_unused_label(inst_list):
     """remove unused label"""
-    labelSet = set()    # a set for valid label
+    # remove a JumpInst if its target is followed label
+    new_inst_list = []
+    for inst_no, inst in enumerate(inst_list):
+        if isinstance(inst, instruction.JumpInst):
+            if inst_no+1 < len(inst_list) and inst.label == inst_list[inst_no+1].labelname:
+                continue
+        new_inst_list.append(inst)
+    inst_list = new_inst_list
     # find the valid label
+    used_label_set = set()    # a set for valid label
     for inst in inst_list:
         if isinstance(inst, instruction.CJumpInst):
-            labelSet.add(inst.thenlabel)
-            labelSet.add(inst.elselabel)
+            used_label_set.add(inst.thenlabel)
+            used_label_set.add(inst.elselabel)
         elif isinstance(inst, instruction.JumpInst):
-            labelSet.add(inst.label)
+            used_label_set.add(inst.label)
+    # remove unused label
     new_inst_list = []
     for inst in inst_list:
         if isinstance(inst, instruction.LabelInst):
-            if not inst.labelname in labelSet:
+            if not inst.labelname in used_label_set:
                 continue
         new_inst_list.append(inst)
     return new_inst_list
