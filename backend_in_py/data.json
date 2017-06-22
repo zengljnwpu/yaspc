@@ -105,7 +105,14 @@
       ],
       "line_number": 3,
       "name": "foo",
-      "parameterlsit": [ { } ],
+      "parameterlist": [
+        {"object": "parameter",
+      "type": "int",
+      "name": "a"},
+        {"object": "parameter",
+      "type": "int",
+      "name": "b"
+      } ],
       "object": "function_definition",
       "variablelsit": [
         {
@@ -117,7 +124,7 @@
         }
       ],
       "labellist": [ ],
-      "type": "None"
+      "type": "int"
     }
   ]
 }
