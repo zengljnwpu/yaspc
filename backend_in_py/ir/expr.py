@@ -1,13 +1,23 @@
-from backend_in_py.asm.type import *
 from backend_in_py.asm.operand import *
 from backend_in_py.entity.entity import *
 from backend_in_py.asm.type import *
 from backend_in_py.ir.dumper import *
-
+from backend_in_py.ir.op import *
+import backend_in_py.type.type
 
 class Expr():
-    def __init__(self, type: Type):
-        self.type = type
+    @staticmethod
+    def expr_factory(value):
+        if value["name"] == "value":
+            return Int(type=value["type"], value=value["value"])
+        elif value["name"] == "variable":
+            return Var(type=value["type"], entity = entity_map[value["variable"]])
+
+    def __init__(self, type):
+        self._type = backend_in_py.type.type.Type.type_factory(type = type, obj = None)
+
+    def type(self):
+        return self._type
 
     def is_var(self):
         return False
@@ -38,7 +48,7 @@ class Expr():
 
     def dump(self, d: Dumper):
         d.print_class(self)
-        d.print_member("type", self.type)
+        d.print_member("type", self._type)
         self._dump(self, d=d)
 
     def _dump(self, d):
@@ -70,17 +80,21 @@ class Addr(Expr):
 
 
 class Bin(Expr):
-    def __init__(self, type: Type, op: Op, left: Expr, right: Expr):
+    def __init__(self, type: Type, op: str, left, right, value):
         super(Bin, self).__init__(type)
-        self._op = op
-        self._left = left
-        self._right = right
+        self._op = Op.op_factory(op)
+        self._left = Expr.expr_factory (left)
+        self._right = Expr.expr_factory (right)
+        self._value = Expr.expr_factory (value)
 
     def left(self):
         return self._left
 
     def right (self):
         return self._right
+
+    def value(self):
+        return self._value
 
     def op(self):
         return self._op
@@ -230,10 +244,10 @@ class Var(Expr):
         return True
 
     def type(self):
-        if (super().type == False):
-            print("Var is too big to load by 1 insn\n")
+        if (super().type() == False):
+            raise Exception("Var is too big to load by 1 insn\n")
         else:
-            return super().type
+            return super().type()
 
     def name(self):
         return self._entity.name()

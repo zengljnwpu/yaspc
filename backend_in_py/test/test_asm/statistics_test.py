@@ -4,7 +4,7 @@ from backend_in_py.asm.statistics import *
 class TestStat (unittest.TestCase):
     def test_register (self):
         a = Statistics()
-        b = Register()
+        b = x86Register()
         self.assertFalse(a.does_register_used(b))
         self.assertEqual(a.num_register_used(b), 0)
         b.collect_statistics(a)

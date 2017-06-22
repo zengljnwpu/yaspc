@@ -16,14 +16,14 @@
         "variable": "%1",
         "const": false,
         "object": "entity",
-        "type": "s_int16",
+        "type": "INT32",
         "name": "variable"
       },
       "address": {
         "variable": "i",
         "const": false,
         "object": "entity",
-        "type": "s_int16",
+        "type": "INT32",
         "name": "variable"
       }
     }
@@ -39,7 +39,7 @@
         "type": "INT32"
       },
       "is_private": false,
-      "type": "int",
+      "type": "INT32",
       "name": "glo"
     }
   ],
@@ -60,45 +60,20 @@
       "body": [
         {
           "line_number": 5,
-          "right": {
-            "type": "s_int16",
-            "name": "value",
-            "value": 1,
-            "entity": "entity"
-          },
-          "object": "instruction",
-          "value": {
-            "variable": "%0",
-            "const": false,
-            "object": "entity",
-            "type": "s_int16",
-            "name": "variable"
-          },
-          "op": "+",
-          "left": {
-            "variable": "i",
-            "const": false,
-            "object": "entity",
-            "type": "s_int16",
-            "name": "variable"
-          }
-        },
-        {
-          "line_number": 5,
           "object": "instruction",
           "name": "store",
-          "value": {
-            "variable": "%0",
+          "right": {
             "const": false,
             "object": "entity",
-            "type": "s_int16",
-            "name": "variable"
+            "type": "INT32",
+            "value": 1,
+            "name": "value"
           },
-          "address": {
-            "variable": "foo",
+          "left": {
+            "variable": "a",
             "const": false,
             "object": "entity",
-            "type": "s_int16",
+            "type": "INT32",
             "name": "variable"
           }
         }
@@ -107,24 +82,23 @@
       "name": "foo",
       "parameterlist": [
         {"object": "parameter",
-      "type": "int",
-      "name": "a"},
-        {"object": "parameter",
-      "type": "int",
-      "name": "b"
-      } ],
+      "type": "INT32",
+      "name": "a"}],
       "object": "function_definition",
-      "variablelsit": [
+      "variablelist": [
         {
-          "variable": "%0",
-          "const": false,
-          "object": "entity",
-          "type": "s_int16",
-          "name": "variable"
+      "object": "DefinedVariable",
+      "value":{
+        "value": 3,
+        "type": "INT32"
+      },
+      "is_private": false,
+      "type": "INT32",
+      "name": "tmp1"
         }
       ],
       "labellist": [ ],
-      "type": "int"
+      "type": "INT32"
     }
   ]
 }

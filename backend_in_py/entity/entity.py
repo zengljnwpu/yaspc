@@ -1,17 +1,23 @@
 from backend_in_py.asm.assembly import *
 from backend_in_py.asm.operand import *
 from backend_in_py.asm.literal import *
-from backend_in_py.type.type import *
+import backend_in_py.type.type
+import backend_in_py.ir.ir
 
+entity_map = dict()
 
 class Entity (object):
-    def __init__ (self, priv:bool, type: Type, name:str):
+    def __init__ (self, priv:bool, type: str, name:str):
         self._name = name
         self._is_private = priv
-        self._type = type
+        self._type = backend_in_py.type.type.Type.type_factory(type, name)
         self.n_refered = 0
         self._mem_ref = None
         self._address = None
+        entity_map[self._name] = self
+
+    def name (self):
+        return self._name
 
     def symbol_string(self):
         return self._name
@@ -87,7 +93,7 @@ class Entity (object):
 class Constant (Entity):
     def __init__(self, type, name, value):
         super(Constant, self).__init__(True, type, name)
-        self.__value = value
+        self.__value = int(value)
 
     def is_assignable (self):
         return False
@@ -153,18 +159,21 @@ class Function (Entity):
 
 
 class DefinedFuntion (Function):
-    def __init__(self, priv: bool, type, name: str, params, body):
+    def __init__(self, priv: bool, type, name: str, params, body, scope):
         super(DefinedFuntion, self).__init__(priv, type, name)
-        self._params = params
+        self._params = Params (loc = 0, param_descs = params)
         self._body = body
-        self._scope = None
-        self._ir = None
+        self._scope = scope
+        self._ir = list()
+        for i in self._body:
+            self._ir.append(backend_in_py.ir.ir.inst_factory(i))
+
 
     def is_defined(self):
         return True
 
     def parameters(self):
-        return self._params.parameters()
+        return self._params
 
     def body(self):
         return self._body
@@ -172,14 +181,8 @@ class DefinedFuntion (Function):
     def ir (self):
         return self._ir
 
-    def set_ir (self, ir):
-        self._ir = ir
-
-    def set_scope (self, scope):
-        self._scope = scope
-
     def lvar_scope (self):
-        return self._body.scope()
+        return self._scope
 
     #
     # Returns function local variables
@@ -190,8 +193,8 @@ class DefinedFuntion (Function):
         return self._scope.all_local_variables()
 
     def _dump(self, d):
-        d.print_member ("_name", self._name)
-        d.print_member ("_is_private", self.is_private())
+        d.print_member ("name", self._name)
+        d.print_member ("is_private", self.is_private())
         d.print_member ("params", self._params)
         d.print_member ("body", self.body)
 
@@ -278,7 +281,6 @@ class DefinedVariable (Variable):
     def is_initialized(self):
         return self.has_initializer()
 
-    @property
     def initializer (self):
         return self._initializer
 
@@ -300,6 +302,7 @@ class DefinedVariable (Variable):
     def accept(self, visitor):
         return visitor.visit()
 
+
 class Parameter (DefinedVariable):
     def __init__(self, type, name):
         super(Parameter, self).__init__(False, type, name, None)
@@ -311,3 +314,50 @@ class Parameter (DefinedVariable):
         d.print_member ("_name", self._name)
         d.print_member ("_type", self._type)
 
+
+class ParamSlot (object):
+    def __init__(self, loc, param_descs: list, var_arg: bool):
+        self._location = loc
+        self._param_descriptors = list()
+        for i in param_descs:
+            self._param_descriptors.append(Parameter(name = i["name"], type = i["type"]))
+        self._var_arg = var_arg
+
+    def argc (self):
+        if self._var_arg:
+            raise Exception ("must not happen: Param#argc for var_arg")
+        return len (self._param_descriptors)
+
+    def min_argc(self):
+        return len (self._param_descriptors)
+
+    def accept_varargs(self):
+        self._var_arg = True
+
+    def is_vararg(self):
+        return self._var_arg
+
+    def location(self):
+        return self._location
+
+class Params (ParamSlot):
+    def __init__(self, loc, param_descs):
+        super(Params, self).__init__(loc, param_descs, False)
+
+    def parameters(self):
+        return self._param_descriptors
+
+    def parameters_type_ref (self):
+        type_refs = []
+        for param in self._param_descriptors:
+            type_refs.append(param.type_node().type_ref())
+        return ParamTypeRefs (self.location, type_refs, self._var_arg)
+
+    def __eq__ (self, other):
+        if not isinstance(other, Params):
+            return False
+        else:
+            return other._var_arg == self._var_arg  and other._param_descriptors == self._param_descriptors
+
+    def dump(self, d):
+        d.print_node_list ("parameters", self.parameters)

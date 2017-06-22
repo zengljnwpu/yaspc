@@ -18,6 +18,8 @@ class AssemblyCode():
         self._comment_indent_level = 0
         self._statistics = Statistics ()
 
+    def assemblies(self):
+        return self._assemblies
 
     def add_all (self, assemblies: list):
         return self._assemblies.extend(assemblies)
@@ -42,8 +44,8 @@ class AssemblyCode():
             self._statistics = Statistics.collect(self._assemblies)
         return self._statistics
 
-    def does_uses (self, reg: Register):
-        return self._statistics.does_register_used (reg)
+    def does_uses (self, reg: x86Register):
+        return self._statistics.does_register_used (reg.base_name())
 
     def comment (self, str: str):
         self._assemblies.append (Comment (str, self._comment_indent_level))
@@ -92,13 +94,13 @@ class AssemblyCode():
     def _type_suffix (self, t1: Type, t2: Type = None):
         str = ""
         if t1:
-            if t1 == Type.INT8:
+            if t1.size() == Type.INT8.size():
                 str += "b"
-            elif t1 == Type.INT16:
+            elif t1.size() == Type.INT16.size():
                 str += "w"
-            elif t1 == Type.INT32:
+            elif t1.size() == Type.INT32.size():
                 str += "l"
-            elif t1 == Type.INT64:
+            elif t1.size() == Type.INT64.size():
                 str += "q"
             else:
                 raise Exception ("unknown register type: " + t1.size())
@@ -132,25 +134,25 @@ class AssemblyCode():
             self._directive("\t.section\t" + name)
 
     def _globl (self, sym: Symbol):
-        self._directive(".globl " + sym.name)
+        self._directive(".globl " + sym.name())
 
     def _local (self, sym: Symbol):
-        self._directive(".local " + sym.name)
+        self._directive(".local " + sym.name())
 
     def _hidden (self, sym: Symbol):
-        self._directive("\t.hidden\t", sym.name)
+        self._directive("\t.hidden\t", sym.name())
 
     def _comm (self, sym: Symbol, size: int, alignment: int):
-        self._directive("\t.comm\t" + sym.name + "," + str (size) + "," + str (alignment))
+        self._directive("\t.comm\t" + sym.name() + "," + str (size) + "," + str (alignment))
 
     def _align (self, n):
         self._directive("\t.align\t" + str (n))
 
     def _type (self, sym, type):
-        self._directive("\t.type\t" + sym.name + "," + type)
+        self._directive("\t.type\t" + sym._name + "," + type)
 
     def _size (self, sym, size):
-        self._directive("\t.size\t" + sym.name + "," + str (size))
+        self._directive("\t.size\t" + sym._name + "," + str (size))
 
     def _byte (self, val):
         if isinstance(val, int):
@@ -295,13 +297,13 @@ class AssemblyCode():
         self._insn(t = base.type, op = "and", a = bits, b = base)
     def _or (self, bits, base):
         self._insn(t = base.type, op = "or", a = bits, b = base)
-    def _xor (self, bits, base):
+    def xor (self, bits, base):
         self._insn(t = base.type, op = "xor", a = bits, b = base)
-    def _sar (self, bits, base):
+    def sar (self, bits, base):
         self._insn(t = base.type, op = "sar", a = bits, b = base)
-    def _sal (self, bits, base):
+    def sal (self, bits, base):
         self._insn(t = base.type, op = "sal", a = bits, b = base)
-    def _shr (self, bits, base):
+    def shr (self, bits, base):
         self._insn(t = base.type, op = "shr", a = bits, b = base)
 
 #Virtual Stack

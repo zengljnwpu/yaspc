@@ -34,6 +34,43 @@ class Op (Enum):
     U_CAST = auto()
 
     @staticmethod
+    def op_factory (op: str):
+        if op == "+":
+            return Op.ADD
+        elif op == "-" :
+            return Op.SUB
+        elif op == "*":
+            return Op.MUL
+        elif op == "/":
+                return Op.U_DIV
+        elif op == "%":
+                return Op.U_MOD
+        elif op == "&":
+            return Op.BIT_AND
+        elif op == "|":
+            return Op.BIT_OR
+        elif op == "^":
+            return Op.BIT_XOR
+        elif op == "<<":
+            return Op.BIT_LSHIFT
+        elif op == ">>":
+                return Op.BIT_RSHIFT
+        elif op == "==":
+            return Op.EQ
+        elif op == "!=":
+            return Op.NEQ
+        elif op == "<":
+                return Op.U_LF
+        elif op == "<=":
+                return Op.U_LTEQ
+        elif op == ">":
+                return Op.U_GT
+        elif op == ">=":
+                return Op.U_GTEQ
+        else:
+           raise Exception ("unknown binary op: " + op)
+
+    @staticmethod
     def intern_binary (op: str, is_signed: bool):
         if op == "+":
             return Op.ADD

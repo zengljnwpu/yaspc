@@ -8,7 +8,7 @@ with open ("data.json", "r") as f:
     ir = import_ir(data)
     asm = CodeGenerator (None, Type.INT32)
     file = asm.generate(ir)
-    file.dump()
+    #file.dump()
     str = file.to_source()
     print (str)
 

@@ -1,11 +1,10 @@
-
-def type_factory (type: str, obj):
-    if type == "int":
-        return IntegerType (4, False, obj)
-
-
 class Type (object):
     size_unknown = -1
+
+    @staticmethod
+    def type_factory(type: str, obj):
+        if type == "INT32":
+            return IntegerType(4, False, obj)
 
     def size(self):
         raise Exception ("Method not instantiated")

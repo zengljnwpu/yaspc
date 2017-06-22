@@ -20,28 +20,34 @@ class Literal ():
 
 class IntegerLiteral (Literal):
     def __init__ (self, n:int):
-        self.value = int(n)
+        self._value = int(n)
+
+    def value(self):
+        return self._value
+
+    def __int__ (self):
+        return self._value
 
     def __eq__ (self, other):
         if not isinstance(other, IntegerLiteral):
             return False
         else:
-            return other.value == self.value
+            return other._value == self._value
 
     def __hash__ (self):
-        return hash(self.value)
+        return hash(self._value)
 
     def __str__(self):
-        return str(self.value)
+        return str(self._value)
 
     def equals (self, other):
         return self.__eq__ (other)
 
     def is_zero(self):
-        return self.value == 0
+        return self._value == 0
 
     def __add__ (self, diff):
-        return IntegerLiteral (self.value + diff)
+        return IntegerLiteral (self._value + diff)
 
     def plus (self, diff):
         return self.__add__ (diff)
@@ -50,7 +56,7 @@ class IntegerLiteral (Literal):
         return self
 
     def to_source (self, table = None):
-        return str (self.value)
+        return str (self._value)
 
     def collect_statistics(self, stats):
         return
@@ -60,7 +66,7 @@ class IntegerLiteral (Literal):
 
     def cmp (self, i):
         if isinstance(i, IntegerLiteral):
-            return self.cmp(i.value)
+            return self.cmp(i._value)
         elif isinstance(i, NamedSymbol):
             return -1
         elif isinstance(i, UnnamedSymbol):
@@ -68,15 +74,15 @@ class IntegerLiteral (Literal):
         elif isinstance(i, SuffixedSymbol):
             return -1
         elif isinstance(i, int):
-            if self.value > i:
+            if self._value > i:
                 return 1
-            elif self.value == i:
+            elif self._value == i:
                 return 0
             else:
                 return -1
 
     def dump (self):
-        return "(IntegerLiteral " + str(self.value) + ")"
+        return "(IntegerLiteral " + str(self._value) + ")"
 
 
 class Symbol (Literal):
@@ -107,26 +113,25 @@ class NamedSymbol (BaseSymbol):
         super().__init__()
         if name == "":
             raise Exception ("NamedSymbol must have _name")
-        self.name = name
+        self._name = name
 
     def name (self):
-        return self.name
+        return self._name
 
     def to_source(self, table = None):
-        return self.name
+        return self._name
 
     def __str__ (self):
-        return "#" + self.name
+        return "#" + self._name
 
-    @property
     def __hash__ (self):
-        return hash(self.name)
+        return hash(self._name)
 
     def __eq__ (self, other):
         if not isinstance (other, NamedSymbol):
             return False
         else:
-            return self.name == other.name
+            return self._name == other._name
 
     def compare_to (self, lit):
         return self.cmp (lit)
@@ -135,14 +140,14 @@ class NamedSymbol (BaseSymbol):
         if isinstance(i, IntegerLiteral):
             return 1
         elif isinstance(i, NamedSymbol):
-            return (self.name > i.name) - (self.name < i.name)
+            return (self._name > i._name) - (self._name < i._name)
         elif isinstance(i, UnnamedSymbol):
             return -1
         elif isinstance(i, SuffixedSymbol):
             return (str(self) > str(i)) - (str(self) < str(i))
 
     def dump (self):
-        return "(NamedSymbol " + self.name + ")"
+        return "(NamedSymbol " + self._name + ")"
 
 class UnnamedSymbol (BaseSymbol):
     def name(self):
@@ -174,35 +179,35 @@ class UnnamedSymbol (BaseSymbol):
 class SuffixedSymbol (Symbol):
     def __init__(self, base: Symbol, suffix: str):
        super().__init__()
-       self.base = base
-       self.suffix = suffix
+       self._base = base
+       self._suffix = suffix
 
     def is_zero (self):
         return False
 
     def collect_statistics(self, stats):
-        return self.base.collect_statistics (stats)
+        return self._base.collect_statistics (stats)
 
     def plus (self, n):
         raise Exception("must not happen: SuffixedSymbol.plus called")
 
     def name(self):
-        return self.base.name
+        return self._base.name()
 
     def to_source (self, table = None):
-        return self.base.to_source (table) + self.suffix
+        return self._base.to_source (table) + self._suffix
 
     def __hash__ (self):
-        return hash (str(self.base) + self.suffix)
+        return hash (str(self._base) + self._suffix)
 
     def __eq__ (self, other):
         if not isinstance (other, SuffixedSymbol):
             return False
         else:
-            return (self.base == other.base) and (self.suffix == other.base)
+            return (self._base == other._base) and (self._suffix == other._base)
 
     def __str__ (self):
-        return str(self.base) + self.suffix
+        return str(self._base) + self._suffix
 
     def compare_to (self, lit):
         return self.cmp (lit)
@@ -218,5 +223,5 @@ class SuffixedSymbol (Symbol):
             return (str(self) > str(i)) - (str(self) < str(i))
 
     def dump(self):
-        return "(SuffixedSymbol " + self.base.dump() + \
-            " " + self.suffix + ")"
+        return "(SuffixedSymbol " + self._base.dump() + \
+            " " + self._suffix + ")"

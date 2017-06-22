@@ -41,39 +41,46 @@ class Register (Operand):
 class AbsoluteAddress (Operand):
     def __init__(self, reg):
         super().__init__()
-        self.register = reg
+        self._register = reg
+
+    def register(self):
+        return self._register
 
     def collect_statistics(self, stats):
-        self.register.collect_statistics (stats)
+        self._register.collect_statistics (stats)
 
     def to_source (self, table):
-        return "*" + self.register.to_source (table)
+        return "*" + self._register.to_source (table)
 
     def dump (self):
-        return "AbsoluteAddress " + self.register.dump() + ")"
+        return "AbsoluteAddress " + self._register.dump() + ")"
 
 
 class ImmediateValue (Operand):
     def __init__ (self, expr):
+        self._expr = None
         if isinstance(expr, int):
-            self.expr = IntegerLiteral (expr)
+            self._expr = IntegerLiteral (expr)
         elif isinstance (expr, Literal):
-            self.expr = expr
+            self._expr = expr
+
+    def expr (self):
+        return self._expr
 
     def __eq__(self, other):
         if not isinstance (other, ImmediateValue):
             return False
         else:
-            return self.expr == other.expr
+            return self._expr == other._expr
 
     def collect_statistics (self, stats):
         return
 
     def to_source(self, table):
-        return "$" + self.expr.to_source (table)
+        return "$" + self._expr.to_source (table)
 
     def dump (self):
-        return "(ImmediateValue " + self.expr.dump() + ")"
+        return "(ImmediateValue " + self._expr.dump() + ")"
 
 
 class MemoryReference (Operand):
@@ -90,37 +97,39 @@ class MemoryReference (Operand):
 class IndirectMemoryReference (MemoryReference):
     def __init__(self, offset: int, base: Register, fixed = True):
         super().__init__()
+        self._offset = None
         if isinstance(offset, IntegerLiteral):
-            self.offset = offset
+            self._offset = offset
         else:
-            self.offset = IntegerLiteral(offset)
-        self.base = base
-        self.fixed = fixed
+            self._offset = IntegerLiteral(offset)
+        self._base = base
+        self._fixed = fixed
 
     @staticmethod
     def reloca_table (offset, base):
         return IndirectMemoryReference (offset, base , False)
 
     def fix_offset(self, diff):
-        if self.fixed:
+        if self._fixed:
             raise Exception("must not happen: fixed = True")
-        curr = self.offset.value
-        self.offset = IntegerLiteral (curr + diff)
-        self.fixed = True
+        curr = IntegerLiteral (self._offset).value()
+
+        self._offset = IntegerLiteral (curr + diff)
+        self._fixed = True
 
     def collect_statistics(self, stats):
-        return self.base.collect_statistics (stats)
+        return self._base.collect_statistics (stats)
 
     def __str__ (self):
         return self.to_source (dummy)
 
     def to_source (self, table):
-        if not self.fixed:
+        if not self._fixed:
             raise Exception ("must not happen: writing unfixed variable")
-        if self.offset.is_zero ():
+        if self._offset.is_zero ():
             return ""
         else:
-            return self.offset.to_source (table) + "(" + self.base.to_source (table) + ")"
+            return self._offset.to_source (table) + "(" + self._base.to_source (table) + ")"
             
     def compare_to (self, mem):
         return self.cmp (mem)
@@ -129,24 +138,28 @@ class IndirectMemoryReference (MemoryReference):
         if isinstance (mem, DirectMemoryReference):
             return -1
         elif isinstance(mem, IndirectMemoryReference):
-            return self.offset.compare_to (mem.offset)
+            return self._offset.compare_to (mem._offset)
 
     def dump (self):
         str = "(IndirectMemoryReference "
-        if self.fixed:
+        if self._fixed:
             str += ""
         else:
             str += "*"
-        str = str +self.offset.dump() + " " + self.base.dump() + ")"
+        str = str +self._offset.dump() + " " + self._base.dump() + ")"
         return str
+
 
 class DirectMemoryReference (MemoryReference):
     def __init__ (self, val: Literal):
         super().__init__()
-        self.value = val
+        self._value = val
+
+    def value(self):
+        return self._value
 
     def collect_statistics(self, stats):
-        self.value.collect_statistics (stats)
+        self._value.collect_statistics (stats)
 
     def fix_offset(self, diff):
         raise Exception ("DirectMemoryReference#fixoffset")
@@ -155,7 +168,7 @@ class DirectMemoryReference (MemoryReference):
         return self.to_source (dummy)
 
     def to_source (self, table):
-        return self.value.to_source (table)
+        return self._value.to_source (table)
 
     def compare_to (self, mem):
         return self.cmp (mem)
@@ -164,9 +177,9 @@ class DirectMemoryReference (MemoryReference):
         if isinstance (mem, IndirectMemoryReference):
             return 1
         elif isinstance (mem, DirectMemoryReference):
-            return self.value.compare_to (mem.value)
+            return self._value.cmp (mem._value)
 
     def dump (self):
-        return "(DirectMemoryReference " + self.value.dump () + ")"
+        return "(DirectMemoryReference " + self._value.dump () + ")"
 
 

@@ -9,11 +9,9 @@ class ConstantEntry (object):
         self._mem_ref = 0
         self._address = 0
 
-    @property
     def value(self):
         return self._value
 
-    @property
     def symbol (self):
         if not self._symbol:
             raise Exception ("must not happen: symbol == null")
@@ -22,7 +20,6 @@ class ConstantEntry (object):
     def set_symbol(self, sym: Symbol):
         self.sym = sym
 
-    @property
     def mem_ref (self):
         if not self._mem_ref:
             raise Exception ("must not happen: memref == null")
@@ -32,7 +29,6 @@ class ConstantEntry (object):
     def set_mem_ref (self, mem: MemoryReference):
         self._mem_ref = mem
 
-    @property
     def address (self):
         return self._address
 

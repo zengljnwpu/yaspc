@@ -3,16 +3,32 @@ from backend_in_py.asm.operand import *
 from backend_in_py.entity.entity import *
 from backend_in_py.asm.type import *
 from backend_in_py.ir.dumper import *
+from backend_in_py.ir.stmt import *
+from backend_in_py.ir.case import *
+from backend_in_py.ir.op import *
+from backend_in_py.ir.expr import *
+from backend_in_py.entity.scope import *
 
 def import_ir (data: dict()):
-    defvars = list()
+    def_vars = list()
+    def_funs = list()
 
     for i in data["variablelist"]:
-        t = DefinedVariable (name = i["name"], type = type_factory(i["type"], i["name"]), priv = i["is_private"], init = i["value"])
-        defvars.append(t)
+        t = DefinedVariable (name = i["name"], type = i["type"], priv = i["is_private"], init = i["value"])
+        def_vars.append(t)
 
-    ir = IR (source = "test.asm", defuns = None, defvars = defvars, constant_table = None, funcdecls = None, scope = None)
+    for i in data["functionlist"]:
+        t = DefinedFuntion (priv = False, body = i["body"], name = i["name"], params = i["parameterlist"], type = i["type"], scope= LocalScope (i["variablelist"]))
+        def_funs.append(t)
+
+    ir = IR (source = "test.asm", defuns = def_funs, defvars = def_vars, constant_table = None, funcdecls = None, scope = None)
     return ir
+
+def inst_factory (insn):
+    if insn["name"] == "store":
+        return Assign (loc= insn["line_number"], lhs= insn["left"], rhs= insn["right"])
+    else:
+        raise Exception ("Feature not implemented")
 
 
 class IR ():
@@ -55,8 +71,10 @@ class IR ():
 
     def all_functions (self):
         result = []
-        result.extend(self.defuns)
-        result.extend(self.funcdecls)
+        if self.defuns:
+            result.extend(self.defuns)
+        if self.funcdecls:
+            result.extend(self.funcdecls)
         return result
 
     def init_variables (self):

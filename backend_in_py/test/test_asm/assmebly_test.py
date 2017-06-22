@@ -60,7 +60,7 @@ class TestInst (unittest.TestCase):
 
     def test_build (self):
         a = Instruction ("jmp")
-        self.assertIsInstance(a.build ("jne", Register()), Instruction)
+        self.assertIsInstance(a.build ("jne", x86Register()), Instruction)
 
     def test_is_jump (self):
         a = Instruction ("jmp")
@@ -74,19 +74,19 @@ class TestInst (unittest.TestCase):
     def test_num_operands(self):
         a = Instruction ("jne")
         self.assertEqual(a.num_operands(), 0)
-        a = Instruction ("jmp", suffix= "", a1 = AbsoluteAddress(Register()))
+        a = Instruction ("jmp", suffix= "", a1 = AbsoluteAddress(x86Register()))
         self.assertEqual(a.num_operands(), 1)
-        a = Instruction("jmp", suffix="", a1=AbsoluteAddress(Register()), a2 = Register())
+        a = Instruction("jmp", suffix="", a1=AbsoluteAddress(x86Register()), a2 = x86Register())
         self.assertEqual(a.num_operands(), 2)
 
     def test_op1(self):
-        a = Register()
+        a = x86Register()
         b = Instruction ("jne", suffix="", a1 = a)
         self.assertEqual(b.operand1(), a)
 
     def test_op2(self):
-        a = Register()
-        c = Register ()
+        a = x86Register()
+        c = x86Register ()
         b = Instruction("jne", suffix="", a1=a, a2 = c)
         self.assertEqual(b.operand2(), c)
         return

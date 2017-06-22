@@ -15,7 +15,7 @@ class x86Register (Register):
         return True
 
     def __eq__ (self, other):
-        return isinstance(other, Register) and (other._class == self._class)
+        return isinstance(other, x86Register) and (other._class == self._class)
 
     @property
     def __hash__ (self):
@@ -28,13 +28,13 @@ class x86Register (Register):
         return "%" + self.__typed_name()
 
     def __typed_name(self):
-        if self.type == Type.INT8:
+        if self.type.size() == Type.INT8.size():
             return self.__lower_byte_register()
-        elif self.type == Type.INT16:
+        elif self.type.size() == Type.INT16.size():
             return self.base_name()
-        elif self.type == Type.INT32:
+        elif self.type.size() == Type.INT32.size():
             return "e" + self.base_name()
-        elif self.type == Type.INT64:
+        elif self.type.size() == Type.INT64.size():
             return "r" + self.base_name()
         else:
             raise Exception ("unknown register type: " + str(self.type))
