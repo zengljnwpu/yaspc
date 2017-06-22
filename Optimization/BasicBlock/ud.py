@@ -20,14 +20,18 @@ def_inst = (instruction.BinaryInst, instruction.UnaryInst,\
 def ud_set(block_list, var_reduce):
     """
     cal use-def set of every inst
-    :param block_list: 
-    :return: 
+    :param block_list:
+    :return:
+        add left_ud, right_ud or var_ud properties for every instruction
+        var_ud is a list of set (block.in_set & var_reduce before this instruction in this block)
     """
     for (block_index, block) in enumerate(block_list):
         if block_index == 0 or block_index == len(block_list)-1:
             continue
+        # block_def_var records the definition of a variable in a block
         block_def_var = dict()
         for inst in block.instList:
+            # BinaryInst
             if isinstance(inst, instruction.BinaryInst):
                 left_var = inst.left["variable"]
                 right_var = inst.right["variable"]
@@ -45,6 +49,7 @@ def ud_set(block_list, var_reduce):
                     inst.right_ud = list(block.in_set & var_reduce[right_var])
 
                 block_def_var[inst.value["variable"]] = inst.pos
+            # UnaryInst
             elif isinstance(inst, instruction.UnaryInst):
                 var = inst.variable["variable"]
                 if inst.variable["variable"] in block_def_var.keys():
@@ -52,6 +57,7 @@ def ud_set(block_list, var_reduce):
                 else:
                     inst.var_ud = list(block.in_set & var_reduce[left_var])
                 block_def_var[inst.value["variable"]] = inst.pos
+            # StoreInst
             elif isinstance(inst, instruction.StoreInst):
                 var = inst.address["variable"]
                 block_def_var[var] = inst.pos
@@ -68,6 +74,7 @@ def ud_set(block_list, var_reduce):
                 elif isinstance(inst, instruction.UnaryInst):
                     print(inst.pos, ":\t", inst.var_ud)
             print()
+
 def reach_def_iteration(block_list):
     """
     calculate reaching-definition of every block.

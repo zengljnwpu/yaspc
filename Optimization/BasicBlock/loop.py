@@ -54,7 +54,7 @@ def find_dominator(block_list):
     return D
 
 
-def insert(n, loop, stack):
+def __insert(n, loop, stack):
     if n not in loop:
         loop = loop.add(n)
         stack.append(n)
@@ -68,12 +68,12 @@ def find_loop(d, n, block_list):
     loop = set()
 
     loop.add(d)
-    insert(n, loop, stack)
+    __insert(n, loop, stack)
     while len(stack) > 0:
         m = stack.pop()
         block = block_list[m]
         for pre_block in block.preBasicBlock:
-            insert(pre_block.blockNum, loop, stack)
+            __insert(pre_block.blockNum, loop, stack)
     return loop
 
 def do_loop_optimization(block_list):
