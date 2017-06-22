@@ -31,6 +31,11 @@ def get_entity_name_string(entity_dict):
     '''get name of a entity'''
     return str(entity_dict[entity_dict['name']])
 
+def is_operand_a_variable(entity_dict):
+    '''if operand is a variable, return true
+    else return false
+    '''
+    return entity_dict['name']=='variable'
 
 #defination of instructions
 class Instruction(object):
@@ -119,6 +124,17 @@ class BinaryInst(Instruction):
         '''返回返回值变量名
         '''
         return get_entity_name_string(self.value)
+    def is_left_a_variable(self):
+        '''if left operand is a variable, return true
+        else return false
+        '''
+        return self.left['name'] == 'variable'
+    def is_right_a_variable(self):
+        '''if right operand is a variable, return true
+        else return false
+        '''
+        return self.right['name'] == 'variable'
+
 
 class UnaryInst(Instruction):
     '''单目运算指令'''
@@ -147,6 +163,11 @@ class UnaryInst(Instruction):
         '''返回返回值变量名
         '''
         return get_entity_name_string(self.value)
+    def is_variable_a_variable(self):
+        '''if self.variable is a variable, return true
+        else return false
+        '''
+        return self.variable['name'] == 'variable'
 
 class AllocaInst(Instruction):
     '''same as variable_definition'''
