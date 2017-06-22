@@ -238,9 +238,12 @@ def live_variable_analysis(block_list):
         block.live_out_set = set()
         for inst in block.instList:
             if isinstance(inst, instruction.BinaryInst):
-                left_var = inst.left["variable"]
-                right_var = inst.right["variable"]
-                value = inst.value["variable"]
+                left_var = inst.left_variable_name
+                right_var = inst.right_variable_name
+                value = inst.return_variable_name
+                #left_var = inst.left["variable"]
+                #right_var = inst.right["variable"]
+                #value = inst.value["variable"]
                 if left_var not in block.live_def_set:
                     block.live_use_set.add(left_var)
                 if right_var not in block.live_def_set:
@@ -248,8 +251,10 @@ def live_variable_analysis(block_list):
                 if value not in block.live_use_set:
                     block.live_def_set.add(value)
             elif isinstance(inst, instruction.UnaryInst):
-                var = inst.variable["variable"]
-                value = inst.value["variable"]
+                #var = inst.variable["variable"]
+                #value = inst.value["variable"]
+                var = inst.variable_name
+                value = inst.return_variable_name
                 if var not in block.live_def_set:
                     block.live_use_set.add(var)
                 if value not in block.live_use_set:

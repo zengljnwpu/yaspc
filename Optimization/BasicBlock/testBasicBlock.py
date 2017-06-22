@@ -49,7 +49,7 @@ def main():
         var_reduce = ud.reach_def_iteration(block_list)
         ud.ud_set(block_list, var_reduce)
         ud.constant_propagation(block_list, var_reduce, inst_list)
-        #ud.live_variable_analysis(block_list)
+        ud.live_variable_analysis(block_list)
     if False:
         print('\nAnalyzing loop...')
         loop.do_loop_optimization(block_list)
