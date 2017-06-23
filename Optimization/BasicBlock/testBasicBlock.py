@@ -37,13 +37,7 @@ def main():
     # with open('udtest.json', 'r') as input_file:
     #     ir_str = input_file.read()
     #     ir_json = json.loads(ir_str)
-    # print(ir_str)
-    # print(ir_json)
-    # print(json.dumps(ir_json, sort_keys=True, indent=4))
-    # print(json.dumps(ir_json['body'], sort_keys=True, indent=4))
-    # print(json.dumps(ir_json['functionlist'][0]['body'], sort_keys=True, indent=4))
     #inst_list = irParser.decode_body(ir_json['functionlist'][0]['body'])
-    #inst_list = irParser.decode_body(ir_json['body'])
     # print('function 0 body parsed successfully.\n')
     # for inst in inst_list:
     #     print(inst.pos, inst)
