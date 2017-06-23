@@ -299,7 +299,7 @@
             "name": "%6",
             "is_private": false
           },
-          "op": "=",
+          "op": "EQ",
           "left": {
             "const": false,
             "object": "variable",
