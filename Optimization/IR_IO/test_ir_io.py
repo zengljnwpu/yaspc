@@ -23,7 +23,7 @@ def test_module():
     run a example of IR and print instructions list
     now is only support main function
     '''
-    with open('dsq.ir.json', 'r') as input_file:
+    with open('dsq.newir.json', 'r') as input_file:
         ir_str = input_file.read()
         ir_json = json.loads(ir_str)
     #print(ir_str)

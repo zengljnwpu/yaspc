@@ -34,13 +34,11 @@ class BasicBlock:
         '''generate block labelInst from blockNum'''
         label_name = self.gen_block_label_string()
         if len(self.instList) >= 1:
-            filename = self.get_first_inst().filename
             line_number = self.get_first_inst().line_number
         else:
-            filename = ''
             line_number = 0
         block_label_inst = instruction.LabelInst('label_definition', line_number=line_number,
-                                                 filename=filename, labelname=label_name)
+                                                 labelname=label_name)
         return block_label_inst
 
     def gen_block_label_string(self):
