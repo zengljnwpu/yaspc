@@ -3,7 +3,7 @@
 """
 @Time : 17-6-12 下午10:09
 
-@Author : axiqia
+@Author : hellolzc axiqia
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -85,7 +85,7 @@ def find_loop(d, n, block_list):
             __insert(pre_block.blockNum, loop, stack)
     return loop
 
-def __is_operand_define_out_loop(operand, var_ud, inst_set_of_loop):
+def __is_operand_define_out_loop(inst, operand, var_ud, inst_set_of_loop):
     if instruction.is_operand_a_variable(operand) is False:
         return True
     else:
@@ -99,8 +99,8 @@ def __is_operand_define_out_loop(operand, var_ud, inst_set_of_loop):
             return True
 
 def __mark_unchanged_computation(block_list, loop):
-    """对于循环L中的四元式r，若它的各运算对象是常数，或者是定值点在L之外的变量，或者
-    虽然在L中的某一点s定值，但该点是唯一能到达r的且已标记的定值点，则标记四元式r
+    """对于循环L中的四元式r，若 "它的各运算对象是常数，或者是定值点在L之外的变量"，或者
+    "虽然在L中的某一点s定值，但该点是唯一能到达r的且已标记的定值点"，则标记四元式r
     参考蒋立源、康慕宁《编译原理》P315
     Parameters :
         block_list :
@@ -173,6 +173,24 @@ def __mark_unchanged_computation(block_list, loop):
                             inst.unchanged_flag = True
                             changed_flag = True
 
+def __check_whether_expression_can_be_hoisted():
+    """
+    """
+    pass
+
+def __hoist_loop_invariant_expressions():
+    """Loop-invariant expressions can be hoisted out of loops
+        参考蒋立源、康慕宁《编译原理》P317。
+        求出L中全部不变运算后，对每一个不变运算s:
+        (s)  A := B OP C 或 A := OP B
+        可以提出到循环外的运算必须满足下面条件：
+             (1)s是L中A的唯一定值点。
+             (2)对于A在L中的全部引用点，只有A在（s）的定值才能到达
+             (3) a. s所在的基本块是L的各出口节点的必经节点
+             或  b. 当控制从L的出口节点离开循环时，变量A不再活跃
+        之后，可以按查找时的顺序，将符合条件的不变运算移至前置节点
+    """
+    pass
 
 def do_loop_optimization(block_list):
     """the main function of Loop optimization
