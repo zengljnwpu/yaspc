@@ -85,6 +85,19 @@ def find_loop(d, n, block_list):
             __insert(pre_block.blockNum, loop, stack)
     return loop
 
+def find_loop_exit(block_list, loop):
+    """find the exit blocks of a loop
+    return a list of blockNum
+    """
+    exit_blockNum = []
+    for block in block_list:
+        if not block.blockNum in loop:
+            continue
+        for succ, _ in block.succBasicBlock:
+            if not succ.blockNum in loop:
+                exit_blockNum.append(block.blockNum)
+    return exit_blockNum
+
 def __is_operand_define_out_loop(inst, operand, var_ud, inst_set_of_loop):
     # TODO: complete it and rewrite function __mark_unchanged_computation
     if instruction.is_operand_a_variable(operand) is False:
@@ -103,6 +116,7 @@ def __mark_unchanged_computation(block_list, loop):
     """对于循环L中的四元式r，若 "它的各运算对象是常数，或者是定值点在L之外的变量"，或者
     "虽然在L中的某一点s定值，但该点是唯一能到达r的且已标记的定值点"，则标记四元式r
     参考蒋立源、康慕宁《编译原理》P315
+    等价描述：先找到各运算对象是常数，或者是定值点在L之外的变量的四元式，处理这个四元式后，重复进行标记工作
     Parameters :
         block_list :
         loop : The set of blockNum in the loop
@@ -175,7 +189,7 @@ def __mark_unchanged_computation(block_list, loop):
                             inst.unchanged_flag = True
                             changed_flag = True
 
-def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_inst):
+def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_inst, D):
     """对循环L中每一个不变运算s:
         (s)  A := B OP C 或 A := OP B
        可以提出到循环外的运算必须满足下面条件：
@@ -207,18 +221,23 @@ def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_i
                     return False
     # (3) a. s所在的基本块是L的各出口节点的必经节点
     # 或  b. 当控制从L的出口节点离开循环时，变量A不再活跃
-    # TODO: complete it
+    exit_blocks = find_loop_exit(block_list, loop)
+    for block in block_list:
+        if not block.blockNum in exit_blocks:
+            continue
+        if not the_block.blockNum in D[block.blockNum]:
+            return False
     # 三个条件均满足，返回真
     return True
 
 def __hoist_expression(block_list, loop, the_inst):
     """
-    # TODO: complete it
+    先查找循环的前置节点，再将符合条件的算式提前
     """
-    
+    # TODO: complete it
     pass
 
-def hoist_loop_invariant_expressions(block_list, loop):
+def hoist_loop_invariant_expressions(block_list, loop, D):
     """Loop-invariant expressions can be hoisted out of loops
         Attention: You must analysis reaching definitions first
         参考蒋立源、康慕宁《编译原理》P317。
@@ -239,7 +258,7 @@ def hoist_loop_invariant_expressions(block_list, loop):
             continue
         for inst in block:
             if inst.unchanged_flag is True:
-                if __check_whether_expression_can_be_hoisted(block_list, loop, block, inst):
+                if __check_whether_expression_can_be_hoisted(block_list, loop, block, inst, D):
                     # Loop-invariant expressions can be hoisted out of loops
                     __hoist_expression(block_list, loop, inst)
 
@@ -267,5 +286,5 @@ def do_loop_optimization(block_list):
 
     for loop in loop_list:
         # Loop-invariant expressions can be hoisted out of loops
-        hoist_loop_invariant_expressions(block_list, loop)
+        hoist_loop_invariant_expressions(block_list, loop, D)
 
