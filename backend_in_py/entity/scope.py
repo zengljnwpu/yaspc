@@ -1,6 +1,8 @@
 from backend_in_py.entity.entity import *
 import backend_in_py.type.type
 
+
+#Used to describe scope of variables
 class LocalScope (object):
     def __init__(self, local):
         super().__init__()

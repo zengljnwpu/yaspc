@@ -1,7 +1,19 @@
+from enum import Enum, auto
 from backend_in_py.asm.operand import Register
 from backend_in_py.asm.type import *
-from backend_in_py.sys_dep.x86.register_class import RegisterClass
 
+class RegisterClass (Enum):
+    AX = auto()
+    BX = auto()
+    CX = auto()
+    DX = auto()
+    SI = auto()
+    DI = auto()
+    SP = auto()
+    BP = auto()
+
+
+# Describe propertys of x86 Registers
 class x86Register (Register):
     def __init__ (self, _class: RegisterClass, type: Type):
         super().__init__()

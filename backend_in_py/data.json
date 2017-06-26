@@ -58,23 +58,16 @@
   "functionlist": [
     {
       "body": [
-        {
+          {
           "line_number": 5,
           "object": "instruction",
-          "name": "store",
-          "right": {
+          "name": "return",
+          "expr": {
             "const": false,
             "object": "entity",
             "type": "INT32",
             "value": 1,
             "name": "value"
-          },
-          "left": {
-            "variable": "a",
-            "const": false,
-            "object": "entity",
-            "type": "INT32",
-            "name": "variable"
           }
         }
       ],

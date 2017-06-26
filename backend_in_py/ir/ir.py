@@ -4,7 +4,6 @@ from backend_in_py.entity.entity import *
 from backend_in_py.asm.type import *
 from backend_in_py.ir.dumper import *
 from backend_in_py.ir.stmt import *
-from backend_in_py.ir.case import *
 from backend_in_py.ir.op import *
 from backend_in_py.ir.expr import *
 from backend_in_py.entity.scope import *
@@ -27,10 +26,13 @@ def import_ir (data: dict()):
 def inst_factory (insn):
     if insn["name"] == "store":
         return Assign (loc= insn["line_number"], lhs= insn["left"], rhs= insn["right"])
+    elif insn["name"] == "return":
+        return Return (loc = insn ["line_number"], expr= insn["expr"])
     else:
         raise Exception ("Feature not implemented")
 
 
+# This class were used to import IR from json text
 class IR ():
     def __init__ (self,
                   source,

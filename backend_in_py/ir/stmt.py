@@ -1,5 +1,6 @@
 from backend_in_py.entity.entity import Entity
 import backend_in_py.ir.expr
+from backend_in_py.asm.assembly import *
 
 class Stmt ():
     def __init__ (self, loc):
@@ -109,7 +110,7 @@ class LabelStmt (Stmt):
 class Return (Stmt):
     def __init__(self, loc, expr):
         super(Return, self).__init__(loc)
-        self._expr = expr
+        self._expr = backend_in_py.ir.expr.Expr.expr_factory (value=expr)
 
     def expr(self):
         return self._expr
@@ -119,3 +120,14 @@ class Return (Stmt):
 
     def _dump(self, d):
         d.print_member ("expr", self._expr)
+
+
+class Case():
+    def __init__(self, value: int, label: Label):
+        self._value = value
+        self._label = label
+
+    def dump (self, d):
+        d.print_class (self)
+        d.print_member ("_value", self._value)
+        d.print_member ("_label", self._label)

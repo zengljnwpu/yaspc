@@ -4,9 +4,10 @@ from backend_in_py.asm.literal import *
 from backend_in_py.asm.operand import *
 from backend_in_py.asm.statistics import *
 from backend_in_py.asm.symbol_table import *
-from backend_in_py.sys_dep.x86.register_class import RegisterClass
-from backend_in_py.sys_dep.x86.register import x86Register
+from backend_in_py.sys_dep.x86.register import *
 
+
+# Describe a kind of ASM DSL (Domain Specific Languages) so that it can convert from ASM objects to ASM codes easily
 class AssemblyCode():
     def __init__(self, natural_type: Type, stack_wordsize: int, label_Symbols: SymbolTable, verbose: bool):
         self.natural_type = natural_type
@@ -264,6 +265,8 @@ class AssemblyCode():
             type = dest.type
         elif isinstance(src, x86Register) and isinstance( dest, Operand):
             type = src.type
+        else:
+            raise Exception ("Wrong src or dest type")
         self._insn(t = type, op = "mov", a = src, b = dest)
 
     #for stack access

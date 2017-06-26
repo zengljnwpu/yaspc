@@ -1,3 +1,5 @@
+
+# Describe type property of variables
 class Type (object):
     size_unknown = -1
 

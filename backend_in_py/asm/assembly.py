@@ -1,6 +1,7 @@
 from backend_in_py.asm.literal import *
 from backend_in_py.asm.operand import *
 
+
 class Assembly ():
     def to_source (self, table):
         return
@@ -22,6 +23,7 @@ class Assembly ():
 
     def collect_statistics (self, stats):
         return
+
 
 class Label (Assembly):
     def __init__ (self, sym = None):
@@ -89,8 +91,8 @@ class Instruction (Assembly):
 
     #Extract jump destination _label from operands
     def jmp_destination (self):
-        ref = self._operands[0]
-        return ref.value
+        ref = DirectMemoryReference (self._operands[0])
+        return ref.value()
 
     def collect_statistics (self, stats):
         stats.instruction_used (self._mnemonic)
@@ -103,9 +105,9 @@ class Instruction (Assembly):
         buf = buf + self._mnemonic + self._suffix
         sep = "\t"
         for i in self._operands:
-            buf = buf + sep
+            buf += sep
             sep = ", "
-            buf = buf + i.to_source (table)
+            buf += i.to_source (table)
         return buf
 
     def __str__(self):
@@ -133,6 +135,7 @@ class Directive (Assembly):
 
     def dump(self):
         return "(Directive " + self._content.strip() + ")"
+
 
 class Comment (Assembly):
     def __init__(self, string, indent_level = 0):

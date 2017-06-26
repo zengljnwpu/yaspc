@@ -261,7 +261,7 @@ class DefinedVariable (Variable):
 
     @classmethod
     def tmp (cls, t):
-        return DefinedVariable (False, Type(t), "@tmp" + str(cls.tmp_seq), None)
+        return DefinedVariable (False, backend_in_py.type.type.Type.type_factory(t, obj = None), "@tmp" + str(cls.tmp_seq), None)
 
     def is_defined(self):
         return True
@@ -339,6 +339,7 @@ class ParamSlot (object):
 
     def location(self):
         return self._location
+
 
 class Params (ParamSlot):
     def __init__(self, loc, param_descs):

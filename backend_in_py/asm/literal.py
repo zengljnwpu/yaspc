@@ -95,6 +95,7 @@ class Symbol (Literal):
     def dump (self):
         return ""
 
+
 class BaseSymbol (Symbol):
     def is_zero(self):
         return False
@@ -107,6 +108,7 @@ class BaseSymbol (Symbol):
 
     def plus (self, n):
         raise Exception("must not happen: BaseSymbol.plus called")
+
 
 class NamedSymbol (BaseSymbol):
     def __init__(self, name):
@@ -148,6 +150,7 @@ class NamedSymbol (BaseSymbol):
 
     def dump (self):
         return "(NamedSymbol " + self._name + ")"
+
 
 class UnnamedSymbol (BaseSymbol):
     def name(self):

@@ -1,5 +1,6 @@
 from enum import Enum, auto
 
+
 class Op (Enum):
     ADD = auto()
     SUB = auto(),

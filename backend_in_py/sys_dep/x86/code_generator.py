@@ -1,10 +1,9 @@
-#TODO: Nextweek, Convert IR to ASM objects
-from backend_in_py.asm.symbol_table import *
 from backend_in_py.sys_dep.x86.assembly_code import *
 from backend_in_py.ir.expr import *
 from backend_in_py.ir.op import *
-from backend_in_py.ir.case import *
 from backend_in_py.ir.stmt import *
+from backend_in_py.sys_dep.x86.register import RegisterClass
+
 
 class CodeGenerator ():
     LABEL_SYMBOL_BASE = ".L"
@@ -131,7 +130,7 @@ class CodeGenerator ():
             else:
                 raise ArithmeticError
         elif isinstance(node, str):
-            expr = str (node)
+            expr = Str (node)
             if size == 4:
                 file._long (expr.symbol())
             elif size == 8:
@@ -147,7 +146,7 @@ class CodeGenerator ():
     #     for ent in constants:
     #         file.label (ent.symbol())
     #         file._string (ent.value())
-    #
+
     def __generate_text_section (self, file, functions):
         file._text()
         for func in functions:
@@ -158,13 +157,17 @@ class CodeGenerator ():
             file.label (sym)
             self.__compile_function_body (file, func)
             file._size (sym, ".-" + sym.to_source())
-    #
+
     # def __generate_common_symbols (self, file, variables):
     #     for var in variables:
     #         sym = self.__global_symbol(var.symbol_string())
     #         if var.is_private():
     #             file._local (sym)
     #         file._comm (sym, var.alloc_size(), var.alignment())
+    #
+    #
+    #          These codes (GOT and PIC) were used to describe functions that used in Dynamic-link library
+    #
     #
     # #PIC/PIE related constants and codes
     # __GOT = NamedSymbol ("_GLOBAL_OFFSET_TABLE_")
@@ -258,11 +261,11 @@ class CodeGenerator ():
         frame = self.StackFrameInfo()
         self.__locate_parameters (func.parameters())
         frame.lvar_size = self.__locate_local_variables (func.lvar_scope())
-        #
+
         body = self.__optimize (self.__compile_stmts (func))
         frame.save_regs = self.__used_callee_save_registers (body)
         frame.temp_size = body.virtual_stack.max_size()
-        #
+
         self.__fix_local_variable_offsets (func.lvar_scope(), frame.lvar_offset())
         self.__fix_temp_varaible_offsets (body, frame.temp_offset())
         self.__generate_function_body (file, body, frame)
@@ -274,41 +277,11 @@ class CodeGenerator ():
        # body.reduce_labels ()
        # return body
 
-    def __print_stack_frame_layout (self, file, frame, lvars):
-        vars = []
-        for var in lvars:
-            vars.append(self.MemInfo (var._mem_ref(), var.name()))
-        vars.append(self.MemInfo (self.__mem (0, self.__bp(), "return _address")))
-        vars.append (self.MemInfo (self.__mem (4, self.__bp(), "saved %ebp")))
-        if frame.save_regs_size() > 0:
-            vars.append(self.MemInfo (self.__mem (-frame.save_regs_size(), self.__bp()),
-                                 "saved callee-saved registers (" + frame.save_regs_size() + "bytes)"))
-        if frame.temp_size > 0:
-            vars.append ( self.MemInfo (self.__mem (-frame.frame_size(), self.__bp()),
-                                   "tmp variables (" + frame.temp_size + "bytes)"))
-    #
-    #    # Collections.sort(vars, new
-    #    # Comparator < MemInfo > ()
-    #    # {
-    #    #     public
-    #    # int
-    #    # compare(MemInfo
-    #    # x, MemInfo
-    #    # y) {
-    #    # return x.mem.compareTo(y.mem)
-    #    # }
-    #    # })
-    #     file.comment ("---- Stack Frame Layout --------")
-    #     for info in vars:
-    #         file.comment (info.mem.to_string() + ": " + info.name)
-    #     file.comment ("--------------------------------")
-    #
+
     class MemInfo ():
         def __init__(self, mem = MemoryReference(), name = ""):
             self.mem = mem
             self.name = name
-
-
 
     def __compile_stmts (self, func):
         self.__as = self.__new_assembly_code()
@@ -324,7 +297,7 @@ class CodeGenerator ():
         for reg in self.__callee_save_registers():
             if body.does_uses(reg):
                 result.append(reg)
-        #TODO: result.remove(self.__bp())
+        #result.remove(self.__bp())
         return result
 
     CALLEE_SAVE_REGISTERS = [RegisterClass.BX, RegisterClass.BP, RegisterClass.SI, RegisterClass.DI]
@@ -399,7 +372,7 @@ class CodeGenerator ():
         if len > 0:
             file.add (self.__imm (len), self.__sp())
 
-    #Implements cdecl function call:
+    #   Implements cdecl function call:
     #   All arguments are on stack
     #   Caller rewinds stack pointer.
     #
@@ -419,7 +392,7 @@ class CodeGenerator ():
         elif isinstance(node, Return):
             if node.expr():
                 self.__compile (node.expr())
-            self.__as.jmp (self.__epilogue_)
+            #self.__as.jmp (self.__epilogue_)
             return None
         elif isinstance(node, ExprStmt):
             self.__compile (node.expr())
@@ -490,7 +463,7 @@ class CodeGenerator ():
             self.__load_variable (node, self.__ax())
             return None
         elif isinstance(node, Int):
-            self.__as.mov (node.value(), self.__ax())
+            self.__as.mov (self.__imm (node.value()), self.__ax())
             return None
         elif isinstance(node, Str):
             self.__load_constant (node, self.__ax())

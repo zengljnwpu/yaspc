@@ -1,4 +1,5 @@
 
+# Describe some flags for linker
 SectionFlag_allocatable = "a"
 SectionFlag_writable = "w"
 SectionFlag_executable = "x"
@@ -8,8 +9,7 @@ SectionFlag_threadlocalstorage = "T"
 
 # argument of "G" flag
 Linkage_linkonce = "comdat"
-
-#Types
+# Types
 SectionType_bits = "@progbits"
 SectionType_nobits = "@nobits"
 SectionType_note = "@note"
