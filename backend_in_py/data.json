@@ -1,0 +1,97 @@
+{
+  "body": [
+    {
+      "line_number": 2,
+      "const": false,
+      "name": "variable_definition",
+      "var_type": "integer",
+      "object": "instruction",
+      "variablename": "i"
+    },
+    {
+      "line_number": 8,
+      "object": "instruction",
+      "name": "store",
+      "value": {
+        "variable": "%1",
+        "const": false,
+        "object": "entity",
+        "type": "INT32",
+        "name": "variable"
+      },
+      "address": {
+        "variable": "i",
+        "const": false,
+        "object": "entity",
+        "type": "INT32",
+        "name": "variable"
+      }
+    }
+  ],
+  "line_number": 1,
+  "name": "programsasasa",
+  "object": "program_definition",
+  "variablelist": [
+    {
+      "object": "DefinedVariable",
+      "value":{
+        "value": 3,
+        "type": "INT32"
+      },
+      "is_private": false,
+      "type": "INT32",
+      "name": "glo"
+    }
+  ],
+  "labellist": [
+    {
+      "object": "label",
+      "name": "test_label_1",
+      "pos": 2
+    },
+    {
+      "object": "label",
+      "name": "test_label_2",
+      "pos": 2
+    }
+  ],
+  "functionlist": [
+    {
+      "body": [
+          {
+          "line_number": 5,
+          "object": "instruction",
+          "name": "return",
+          "expr": {
+            "const": false,
+            "object": "entity",
+            "type": "INT32",
+            "value": 1,
+            "name": "value"
+          }
+        }
+      ],
+      "line_number": 3,
+      "name": "foo",
+      "parameterlist": [
+        {"object": "parameter",
+      "type": "INT32",
+      "name": "a"}],
+      "object": "function_definition",
+      "variablelist": [
+        {
+      "object": "DefinedVariable",
+      "value":{
+        "value": 3,
+        "type": "INT32"
+      },
+      "is_private": false,
+      "type": "INT32",
+      "name": "tmp1"
+        }
+      ],
+      "labellist": [ ],
+      "type": "INT32"
+    }
+  ]
+}
