@@ -185,6 +185,7 @@ class BinaryInst(Instruction):
     def left_variable_name(self):
         '''如果左操作数是变量，返回变量名
         如果是值（value），返回值的字符串
+        此方法已过时，建议使用下面函数替代
         '''
         if self.left.is_variable():
             return self.left.name
@@ -194,6 +195,7 @@ class BinaryInst(Instruction):
     def right_variable_name(self):
         '''如果右操作数是变量，返回变量名
         如果是值（value），返回值的字符串
+        此方法已过时，建议使用下面函数替代
         '''
         if self.left.is_variable():
             return self.left.name
@@ -202,16 +204,19 @@ class BinaryInst(Instruction):
     @property
     def return_variable_name(self):
         '''返回返回值变量名
+        此方法已过时，建议使用下面函数替代
         '''
         return self.value.name
     def is_left_a_variable(self):
         '''if left operand is a variable, return true
         else return false
+        此方法已过时，建议使用下面函数替代
         '''
         return self.left.is_variable()
     def is_right_a_variable(self):
         '''if right operand is a variable, return true
         else return false
+        此方法已过时，建议使用下面函数替代
         '''
         return self.right.is_variable()
     def to_dict(self):
@@ -247,16 +252,19 @@ class UnaryInst(Instruction):
     def variable_name(self):
         '''如果操作数是变量，返回变量名
         如果是值（value），返回值的字符串
+        此方法已过时，建议使用下面函数替代
         '''
         return self.variable.name
     @property
     def return_variable_name(self):
         '''返回返回值变量名
+        此方法已过时，建议使用下面函数替代
         '''
         return self.value.name
     def is_variable_a_variable(self):
         '''if self.variable is a variable, return true
         else return false
+        此方法已过时，建议使用下面函数替代
         '''
         return self.variable.is_variable()
     def to_dict(self):

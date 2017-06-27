@@ -107,7 +107,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--input_file_name',
         type=str,
-        default='IR_IO/dsq.ir.json',
+        default='IR_IO/dsq.newir.json',
         help='Input IR File name'
     )
     parser.add_argument(
