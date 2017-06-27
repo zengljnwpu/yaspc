@@ -43,17 +43,17 @@ def __get_entity_from_str(entity_str):
         var:i
         val:1
     """
-    var_entity = {"object": "entity", "type": "int32", "name": "variable", "variable": "%0"}
-    val_entity = {"object": "entity", "type": "int32", "name": "value", "value": 0}
+    var_entity_dict = {"object": "variable", "type": "int32", "name": "%0"}
+    val_entity_dict = {"object": "value", "type": "int32", "value": 0}
     if entity_str.find(':') == -1:
         print('wrong entity format: %s'%entity_str)
         return None
     if entity_str[0:3] == 'var':
-        var_entity['variable'] = entity_str[4:]
-        return var_entity
+        var_entity_dict['name'] = entity_str[4:]
+        return instruction.Variable(**var_entity_dict)
     elif entity_str[0:3] == 'val':
-        val_entity['value'] = int(entity_str[4:])
-        return val_entity
+        val_entity_dict['value'] = int(entity_str[4:])
+        return instruction.Value(**val_entity_dict)
     else:
         print('wrong entity format: %s'%entity_str)
         return None
@@ -186,12 +186,7 @@ def encode_single_inst_from_json(one_inst):
     '''
     Read a Instruction Object and generate a instruction dict (json format)
     '''
-    inst_dict = one_inst.__dict__.copy()
-    # remember remove items which shouldn't be in IR
-    inst_dict.pop('pos', False)
-    inst_dict.pop('ud', False)
-    inst_dict.pop('context', False)
-    return inst_dict
+    return one_inst.to_dict()
 
 def generate_labellist(inst_list):
     """traverse instruction list to generate labellist
