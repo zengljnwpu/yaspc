@@ -223,7 +223,7 @@ class BinaryInst(Instruction):
         """json IR format
         """
         return {"object": "instruction", "name": self.name, "line_number": self.line_number,
-                "op": self.op, "left": self.left.to_dict(), "right": self.right.to_dict,
+                "op": self.op, "left": self.left.to_dict(), "right": self.right.to_dict(),
                 "value": self.value.to_dict()}
 
 

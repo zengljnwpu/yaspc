@@ -41,7 +41,7 @@
       "line_number": 19,
       "functionname": "prime",
       "object": "instruction",
-      "paramaterlist": [
+      "parameterlist": [
         {
           "const": false,
           "object": "variable",
