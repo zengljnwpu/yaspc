@@ -58,6 +58,57 @@
   "functionlist": [
     {
       "body": [
+        {
+          "line_number": 10,
+	"object": "instruction",
+	"name": "store",
+	"address": {
+		"object": "entity",
+		"type": "INT32",
+		"name": "variable*",
+		"variable": "a"
+	},
+	"value": {
+		"object": "entity",
+		"type": "INT32",
+		"name": "value",
+		"value": 100
+	}},
+        {
+
+					"object": "instruction",
+					"name": "bin",
+					"filename": "dsq.pas",
+					"line_number": 8,
+					"op": "+",
+                    "type": "INT32",
+					"left": {
+
+						"object": "entity",
+						"type": "INT32",
+						"name": "variable",
+						"variable": "i",
+						"cosnt": false
+
+					},
+
+					"right": {
+
+						"object": "entity",
+						"type": "INT32",
+						"name": "value",
+						"value": 382832
+					},
+
+					"value": {
+						"object": "entity",
+						"type": "INT32",
+						"name": "variable*",
+						"variable": "a",
+						"const": false
+					}
+
+				},
           {
           "line_number": 5,
           "object": "instruction",
@@ -66,7 +117,7 @@
             "const": false,
             "object": "entity",
             "type": "INT32",
-            "value": 1,
+            "value": 888,
             "name": "value"
           }
         }
@@ -76,7 +127,7 @@
       "parameterlist": [
         {"object": "parameter",
       "type": "INT32",
-      "name": "a"}],
+      "name": "b"}],
       "object": "function_definition",
       "variablelist": [
         {
@@ -87,7 +138,18 @@
       },
       "is_private": false,
       "type": "INT32",
-      "name": "tmp1"
+      "name": "a"
+        },
+
+         {
+      "object": "DefinedVariable",
+      "value":{
+        "value": 55,
+        "type": "INT32"
+      },
+      "is_private": false,
+      "type": "INT32",
+      "name": "i"
         }
       ],
       "labellist": [ ],

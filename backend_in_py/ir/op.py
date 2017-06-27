@@ -34,6 +34,16 @@ class Op (Enum):
     S_CAST = auto(),
     U_CAST = auto()
 
+    def __eq__(self, other):
+        if not isinstance(other, Op):
+            return False
+        else:
+            if self.name == other.name:
+                return True
+            else:
+                return False
+
+
     @staticmethod
     def op_factory (op: str):
         if op == "+":

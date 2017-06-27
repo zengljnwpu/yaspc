@@ -100,8 +100,10 @@ class IndirectMemoryReference (MemoryReference):
         self._offset = None
         if isinstance(offset, IntegerLiteral):
             self._offset = offset
-        else:
+        elif isinstance(offset, int):
             self._offset = IntegerLiteral(offset)
+        else:
+            raise Exception ("offset type wrong")
         self._base = base
         self._fixed = fixed
 

@@ -12,6 +12,8 @@ class Expr():
             return Int(type=value["type"], value=value["value"])
         elif value["name"] == "variable":
             return Var(type=value["type"], entity = entity_map[value["variable"]])
+        elif value["name"] == "variable*":
+            return Addr(type=value["type"], entity = entity_map[value["variable"]])
 
     def __init__(self, type):
         self._type = backend_in_py.type.type.Type.type_factory(type = type, obj = None)
@@ -57,26 +59,29 @@ class Expr():
 
 class Addr(Expr):
     def __init__(self, type: Type, entity: Entity):
-        super(Addr, self).__init__(type)
+        super().__init__(type)
         self.entity = entity
 
-        def is_addr(self):
-            return True
+    def is_addr(self):
+        return True
 
-        def address(self):
-            return self.entity.address
+    def entity(self):
+        return self.entity
 
-        def mem_ref(self):
-            return self.entity.mem_ref
+    def address(self):
+        return self.entity.address()
 
-        def get_entity_force(self):
-            return self.entity
+    def mem_ref(self):
+        return self.entity.mem_ref()
 
-        def accept(self, visitor):
-            return visitor.visit(self)
+    def get_entity_force(self):
+        return self.entity
 
-        def _dump(self, d):
-            d.print_member("_entity", self.entity._name())
+    def accept(self, visitor):
+        return visitor.visit(self)
+
+    def _dump(self, d):
+        d.print_member("_entity", self.entity.name())
 
 
 class Bin(Expr):

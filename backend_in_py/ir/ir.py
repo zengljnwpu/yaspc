@@ -8,6 +8,7 @@ from backend_in_py.ir.op import *
 from backend_in_py.ir.expr import *
 from backend_in_py.entity.scope import *
 
+
 def import_ir (data: dict()):
     def_vars = list()
     def_funs = list()
@@ -25,9 +26,11 @@ def import_ir (data: dict()):
 
 def inst_factory (insn):
     if insn["name"] == "store":
-        return Assign (loc= insn["line_number"], lhs= insn["left"], rhs= insn["right"])
+        return Assign (loc= insn["line_number"], lhs= insn["address"], rhs= insn["value"])
     elif insn["name"] == "return":
         return Return (loc = insn ["line_number"], expr= insn["expr"])
+    elif insn["name"] == "bin":
+        return Bin (left= insn["left"], right= insn["right"], op= insn["op"], type= insn["type"], value= insn["value"])
     else:
         raise Exception ("Feature not implemented")
 
@@ -39,8 +42,8 @@ class IR ():
                   defvars,
                   defuns,
                   funcdecls,
-                  scope,
-                  constant_table):
+                  constant_table,
+                  scope):
         self.source = source
         self.defvars = defvars
         self.defuns = defuns
