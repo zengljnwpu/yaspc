@@ -33,8 +33,8 @@ def ud_set(block_list, var_reduce):
         for inst in block.instList:
             # BinaryInst
             if isinstance(inst, instruction.BinaryInst):
-                left_var = inst.left["variable"]
-                right_var = inst.right["variable"]
+                left_var = inst.left.name
+                right_var = inst.right.name
                 inst.left_ud = []
                 inst.right_ud = []
                 if left_var in block_def_var.keys():
@@ -48,18 +48,18 @@ def ud_set(block_list, var_reduce):
                 else:
                     inst.right_ud = list(block.in_set & var_reduce[right_var])
 
-                block_def_var[inst.value["variable"]] = inst.pos
+                block_def_var[inst.value.name] = inst.pos
             # UnaryInst
             elif isinstance(inst, instruction.UnaryInst):
-                var = inst.variable["variable"]
-                if inst.variable["variable"] in block_def_var.keys():
+                var = inst.variable.name
+                if inst.variable.name in block_def_var.keys():
                     inst.var_ud = (block_def_var[var])
                 else:
                     inst.var_ud = list(block.in_set & var_reduce[left_var])
-                block_def_var[inst.value["variable"]] = inst.pos
+                block_def_var[inst.value.name] = inst.pos
             # StoreInst
             elif isinstance(inst, instruction.StoreInst):
-                var = inst.address["variable"]
+                var = inst.address.name
                 block_def_var[var] = inst.pos
 
     if DEBUG:
@@ -96,11 +96,11 @@ def reach_def_iteration(block_list):
             # only considrate the last gen of the same variable
             if isinstance(inst, def_inst): # BinaryInst UnaryInst StoreInst
                 if isinstance(inst, instruction.StoreInst):
-                    block.var_dict[inst.address["variable"]] = inst.pos
-                    block.var_set.add(inst.address["variable"])
+                    block.var_dict[inst.address.name] = inst.pos
+                    block.var_set.add(inst.address.name)
                 else:
-                    block.var_dict[inst.value["variable"]] = inst.pos
-                    block.var_set.add(inst.value["variable"])
+                    block.var_dict[inst.value.name] = inst.pos
+                    block.var_set.add(inst.value.name)
         block.gen_set = set(block.var_dict.values())
         block.kill_set = set()
 
@@ -199,14 +199,8 @@ def reach_def_iteration(block_list):
     return var_reduce
 
 
-def __new_entity(entity_type, value):
-    entity = dict()
-    entity["object"] = "entity"
-    entity["type"] = "int32"
-    entity["name"] = entity_type
-    entity[entity_type] = value
-    entity["const"] = value.isdigit()
-    return entity
+def __new_entity_value(entity_type, value):
+    return instruction.Value('value', entity_type, value)
 
 
 def constant_propagation(block_list, var_reduce, inst_list):
@@ -219,9 +213,9 @@ def constant_propagation(block_list, var_reduce, inst_list):
                     left_ud = inst.left_ud
                     right_ud = inst.right_ud
                     if len(left_ud) == 1 and isinstance(inst_list[left_ud[0]], instruction.StoreInst):
-                        inst.left = __new_entity("value", inst_list[left_ud[0]].value["value"])
+                        inst.left = __new_entity_value("value", inst_list[left_ud[0]].value.value)
                     if len(right_ud) == 1 and isinstance(inst_list[right_ud[0]], instruction.StoreInst):
-                        inst.right = __new_entity("value", inst_list[right_ud[0]].value["value"])
+                        inst.right = __new_entity_value("value", inst_list[right_ud[0]].value.value)
                 elif isinstance(inst, instruction.UnaryInst):
                     pass
 
@@ -238,9 +232,9 @@ def live_variable_analysis(block_list):
         block.live_out_set = set()
         for inst in block.instList:
             if isinstance(inst, instruction.BinaryInst):
-                left_var = inst.left_variable_name
-                right_var = inst.right_variable_name
-                value = inst.return_variable_name
+                left_var = inst.left.name
+                right_var = inst.right.name
+                value = inst.value.name
                 #left_var = inst.left["variable"]
                 #right_var = inst.right["variable"]
                 #value = inst.value["variable"]
@@ -253,8 +247,8 @@ def live_variable_analysis(block_list):
             elif isinstance(inst, instruction.UnaryInst):
                 #var = inst.variable["variable"]
                 #value = inst.value["variable"]
-                var = inst.variable_name
-                value = inst.return_variable_name
+                var = inst.variable.name
+                value = inst.value.name
                 if var not in block.live_def_set:
                     block.live_use_set.add(var)
                 if value not in block.live_use_set:
