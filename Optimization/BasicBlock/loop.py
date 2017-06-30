@@ -98,19 +98,6 @@ def find_loop_exit(block_list, loop):
                 exit_blockNum.append(block.blockNum)
     return exit_blockNum
 
-def __is_operand_define_out_loop(inst, operand, var_ud, inst_set_of_loop):
-    # TODO: complete it and rewrite function __mark_unchanged_computation
-    if instruction.is_operand_a_variable(operand) is False:
-        return True
-    else:
-        ud_in_L = tuple(var_ud & inst_set_of_loop)
-        if len(ud_in_L) == 0:
-            # definition is out of L
-            return True
-        elif len(ud_in_L) == 1 and hasattr(inst, changed_flag) and \
-                                    ud_in_L[0].changed_flag == True:
-            # definition is in L and is a unchanged computation
-            return True
 
 def __mark_unchanged_computation(block_list, loop):
     """对于循环L中的四元式r，若 "它的各运算对象是常数，或者是定值点在L之外的变量"，或者
@@ -189,7 +176,7 @@ def __mark_unchanged_computation(block_list, loop):
                             inst.unchanged_flag = True
                             changed_flag = True
 
-def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_inst, D):
+def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_inst, D, var_reduce):
     """对循环L中每一个不变运算s:
         (s)  A := B OP C 或 A := OP B
        可以提出到循环外的运算必须满足下面条件：
@@ -198,26 +185,25 @@ def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_i
         (3) a. s所在的基本块是L的各出口节点的必经节点
         或  b. 当控制从L的出口节点离开循环时，变量A不再活跃
     """
-    # (1)s是L中A的唯一定值点
+    inst_set_of_loop = set()
     for block in block_list:
         if not block.blockNum in loop:
             continue
         for inst in block:
-            if inst.pos == the_inst.pos:
-                continue
-            if isinstance(inst, instruction.BinaryInst) \
-                or isinstance(inst, instruction.UnaryInst) \
-                or isinstance(inst, instruction.StoreInst):
-                if inst.value.name == inst.value.name:
-                    return False
+            inst_set_of_loop.add(inst.pos)
+    # (1)s是L中A的唯一定值点
+    var_A_name = the_inst.value.name
+    var_reduce_in_loop = var_reduce[var_A_name] & inst_set_of_loop
+    if not len(var_reduce_in_loop) == 1:
+        return False
+
     # (2)对于A在L中的全部引用点，只有A在（s）的定值才能到达
     for block in block_list:
         if not block.blockNum in loop:
             continue
         for inst in block:
             if isinstance(inst, instruction.BinaryInst):
-                if len(inst.left_ud) == 1:
-                    # TODO: complete it
+                if len(inst.left_ud) != 1 or inst.left_ud[0] != the_inst.pos:
                     return False
     # (3) a. s所在的基本块是L的各出口节点的必经节点
     # 或  b. 当控制从L的出口节点离开循环时，变量A不再活跃
@@ -230,14 +216,24 @@ def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_i
     # 三个条件均满足，返回真
     return True
 
-def __hoist_expression(block_list, loop, the_inst):
+def __hoist_expression(block_list, loop_dict, the_block, the_inst):
     """
     先查找循环的前置节点，再将符合条件的算式提前
     """
-    # TODO: complete it
-    pass
+    entrance_blockNum = loop_dict['entrance']
+    for block in block_list:
+        if block.blockNum == entrance_blockNum:
+            entrance_block = block
+    pre_entrance_block_list = entrance_block.preBasicBlock
+    if len(pre_entrance_block_list) == 1:
+        pre_entrance_block = pre_entrance_block_list[0]
+        pre_entrance_block.instlist.append(the_inst)
+        the_block.instList.pop(the_inst)
+    else:
+        return
 
-def hoist_loop_invariant_expressions(block_list, loop, D):
+
+def hoist_loop_invariant_expressions(block_list, loop_dict, D, var_reduce):
     """Loop-invariant expressions can be hoisted out of loops
         Attention: You must analysis reaching definitions first
         参考蒋立源、康慕宁《编译原理》P317。
@@ -251,16 +247,16 @@ def hoist_loop_invariant_expressions(block_list, loop, D):
         之后，可以按查找时的顺序，将符合条件的不变运算移至前置节点
     """
     # mark unchanged computation
-    __mark_unchanged_computation(block_list, loop)
+    __mark_unchanged_computation(block_list, loop_dict['loop'])
     # find computation which can be moved
     for block in block_list:
-        if not block.blockNum in loop:
+        if not block.blockNum in loop_dict['loop']:
             continue
         for inst in block:
             if inst.unchanged_flag is True:
-                if __check_whether_expression_can_be_hoisted(block_list, loop, block, inst, D):
+                if __check_whether_expression_can_be_hoisted(block_list, loop_dict['loop'], block, inst, D, var_reduce):
                     # Loop-invariant expressions can be hoisted out of loops
-                    __hoist_expression(block_list, loop, inst)
+                    __hoist_expression(block_list, loop_dict, block, inst)
 
 
 
@@ -269,22 +265,30 @@ def do_loop_optimization(block_list):
     """
     # find dominator
     D = find_dominator(block_list)
+
     # find loop
-    loop_list = list()
+    loop_info_dict = dict()
+    count = 0
     for n in range(len(D)):
         dom_set = D[n]
         for d in dom_set:
             for succ, description in block_list[n].succBasicBlock:
                 if succ == block_list[d]:
+                    count = count + 1
                     print("find a back edge %d -> %d"%(n, d))
                     loop = find_loop(d, n, block_list)
-                    loop_list.append(loop)
-    print(loop_list)
+                    loop_info_dict[count] = {"loop":loop, "entrance":d}
+
+    if count == 0:
+        print("No Loop founded")
+        return
+    print('find %d loops'%count)
+    print(loop_info_dict)
     # analysis reaching definitions
     var_reduce = ud.reach_def_iteration(block_list)
     ud.ud_set(block_list, var_reduce)
 
-    for loop in loop_list:
+    for loop_dict in loop_info_dict:
         # Loop-invariant expressions can be hoisted out of loops
-        hoist_loop_invariant_expressions(block_list, loop, D)
+        hoist_loop_invariant_expressions(block_list, loop_dict, D, var_reduce)
 
