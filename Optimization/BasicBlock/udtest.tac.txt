@@ -17,6 +17,7 @@ jump label2
 label_definition label2
 label_definition ifelselabel1
 bin  ADD var:j var:i var:i
+bin  ADD var:c var:c var:c2
 cjump   var:%2 ifthenlabel2 ifelselabel2
 label_definition ifthenlabel2
 return  var:g

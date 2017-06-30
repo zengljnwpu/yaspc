@@ -227,9 +227,10 @@ def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_i
     print('Test condition 3:')
     exit_blocks = find_loop_exit(block_list, loop)
     for block in block_list:
-        if not block.blockNum in exit_blocks:
+        if block.blockNum not in exit_blocks:
             continue
-        if not the_block.blockNum in D[block.blockNum]:
+        if the_block.blockNum not in D[block.blockNum]:
+            # print('%d not in %s'%(the_block.blockNum, str(D[block.blockNum])))
             return False
     # 三个条件均满足，返回真
     return True
@@ -237,6 +238,7 @@ def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_i
 def __hoist_expression(block_list, loop_dict, the_block, the_inst):
     """
     先查找循环的前置节点，再将符合条件的算式提前
+    成功提前则返回True
     """
     entrance_blockNum = loop_dict['entrance']
     for block in block_list:
@@ -252,7 +254,7 @@ def __hoist_expression(block_list, loop_dict, the_block, the_inst):
             if len(pre_block.succBasicBlock) == 1:
                 pre_entrance_block_list.append(pre_block)
             else:
-                return
+                return False
 
     for pre_block in pre_entrance_block_list:
         # 插入指令
@@ -263,7 +265,7 @@ def __hoist_expression(block_list, loop_dict, the_block, the_inst):
     for num, inst in enumerate(the_block.instList):
         if inst.pos == the_inst.pos:
             the_block.instList.pop(num)
-            break
+            return True
 
 
 
@@ -280,18 +282,21 @@ def hoist_loop_invariant_expressions(block_list, loop_dict, D, var_reduce):
              或  b. 当控制从L的出口节点离开循环时，变量A不再活跃
         之后，可以按查找时的顺序，将符合条件的不变运算移至前置节点
     """
-    # mark unchanged computation
-    __mark_unchanged_computation(block_list, loop_dict['loop'], var_reduce)
-    # find computation which can be moved
-    for block in block_list:
-        if not block.blockNum in loop_dict['loop']:
-            continue
-        for inst in block.instList:
-            if inst.unchanged_flag is True:
-                if __check_whether_expression_can_be_hoisted(block_list, loop_dict['loop'], block, inst, D, var_reduce):
-                    print("Loop-invariant expression Found")
-                    # Loop-invariant expressions can be hoisted out of loops
-                    __hoist_expression(block_list, loop_dict, block, inst)
+    loop_changed_flag = True
+    while loop_changed_flag:
+        loop_changed_flag = False
+        # mark unchanged computation
+        __mark_unchanged_computation(block_list, loop_dict['loop'], var_reduce)
+        # find computation which can be moved
+        for block in block_list:
+            if not block.blockNum in loop_dict['loop']:
+                continue
+            for inst in block.instList:
+                if inst.unchanged_flag is True:
+                    if __check_whether_expression_can_be_hoisted(block_list, loop_dict['loop'], block, inst, D, var_reduce):
+                        print("Loop-invariant expression Found")
+                        # Loop-invariant expressions can be hoisted out of loops
+                        loop_changed_flag = __hoist_expression(block_list, loop_dict, block, inst)
 
 
 
