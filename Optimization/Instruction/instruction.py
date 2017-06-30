@@ -21,10 +21,10 @@ class Entity(object):
         pass
     def is_variable(self):
         """if entity type is variable return true"""
-        return self.type == "variable"
+        return self.object == "variable"
     def is_value(self):
         """if entity type is value return true"""
-        return self.type == "value"
+        return self.object == "value"
 
 class Value(Entity):
     """

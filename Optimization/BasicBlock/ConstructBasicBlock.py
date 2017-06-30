@@ -130,7 +130,7 @@ def ConstructBlockList(inst_list):
         for block in blockList:
             print(block.blockNum, ":")
             for inst in block.instList:
-                print("\t", inst)
+                print("\t", inst.pos, inst)
         print("===================LabelDict===================")
         for key, val in labelDict.items():
             print(key, val)

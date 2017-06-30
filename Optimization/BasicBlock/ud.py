@@ -14,7 +14,7 @@ import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
 
 DEBUG = True
 def_inst = (instruction.BinaryInst, instruction.UnaryInst,\
-                instruction.StoreInst)
+                instruction.StoreInst, instruction.LoadInst)
 
 
 def ud_set(block_list, var_reduce):
@@ -33,30 +33,50 @@ def ud_set(block_list, var_reduce):
         for inst in block.instList:
             # BinaryInst
             if isinstance(inst, instruction.BinaryInst):
-                left_var = inst.left.name
-                right_var = inst.right.name
+                """ Regardless of whether he operand is constant or variable,
+                    a property right_ud is added to the instruction dynamically
+                """
                 inst.left_ud = []
+                if inst.left.is_variable() is True:
+                    left_var = inst.left.name
+                    if left_var in block_def_var.keys():
+                        def_num = block_def_var[left_var]
+                        inst.left_ud = [def_num]
+                    else:
+                        inst.left_ud = list(block.in_set & var_reduce[left_var])
+
                 inst.right_ud = []
-                if left_var in block_def_var.keys():
-                    def_num = block_def_var[left_var]
-                    inst.left_ud = [def_num]
-                else:
-                    inst.left_ud = list(block.in_set & var_reduce[left_var])
-                if right_var in block_def_var.keys():
-                    def_num = block_def_var[right_var]
-                    inst.right_ud = [def_num]
-                else:
-                    inst.right_ud = list(block.in_set & var_reduce[right_var])
+                if inst.right.is_variable() is True:
+                    right_var = inst.right.name
+
+                    if right_var in block_def_var.keys():
+                        def_num = block_def_var[right_var]
+                        inst.right_ud = [def_num]
+                    else:
+                        inst.right_ud = list(block.in_set & var_reduce[right_var])
 
                 block_def_var[inst.value.name] = inst.pos
             # UnaryInst
             elif isinstance(inst, instruction.UnaryInst):
-                var = inst.variable.name
-                if inst.variable.name in block_def_var.keys():
-                    inst.var_ud = (block_def_var[var])
-                else:
-                    inst.var_ud = list(block.in_set & var_reduce[left_var])
+                inst.var_ud = []
+                if inst.variable.is_variable() is True:
+                    var = inst.variable.name
+                    if inst.variable.name in block_def_var.keys():
+                        inst.var_ud = (block_def_var[var])
+                    else:
+                        inst.var_ud = list(block.in_set & var_reduce[left_var])
                 block_def_var[inst.value.name] = inst.pos
+            # LoadInst
+            elif isinstance(inst, instruction.LoadInst):
+                inst.address_ud = []
+                if inst.address.is_variable() is True:
+                    address = inst.address.name
+                    if inst.address.name in block_def_var.keys():
+                        inst.address_ud = (block_def_var[address])
+                    else:
+                        inst.address_ud = list(block.in_set & var_reduce[address])
+                var = inst.value.name
+                block_def_var[var] = inst.pos
             # StoreInst
             elif isinstance(inst, instruction.StoreInst):
                 var = inst.address.name
@@ -71,6 +91,8 @@ def ud_set(block_list, var_reduce):
             for inst in block.instList:
                 if isinstance(inst, instruction.BinaryInst):
                     print(inst.pos, ":\t", inst.left_ud, "\t", inst.right_ud)
+                elif isinstance(inst, instruction.LoadInst):
+                    print(inst.pos, ":\t", inst.address_ud)
                 elif isinstance(inst, instruction.UnaryInst):
                     print(inst.pos, ":\t", inst.var_ud)
             print()
@@ -232,27 +254,36 @@ def live_variable_analysis(block_list):
         block.live_out_set = set()
         for inst in block.instList:
             if isinstance(inst, instruction.BinaryInst):
-                left_var = inst.left.name
-                right_var = inst.right.name
-                value = inst.value.name
+                """ left operand is a variable, 
+                    or left operand is a const value which should not consider
+                """
+                if inst.left.is_variable() is True:
+                    left_var = inst.left.name
+                    if left_var not in block.live_def_set:
+                        block.live_use_set.add(left_var)
+                if inst.right.is_variable() is True:
+                    right_var = inst.right.name
+                    if right_var not in block.live_def_set:
+                        block.live_use_set.add(right_var)
+                if inst.value.is_variable() is True:
+                    value = inst.value.name
+                    if value not in block.live_use_set:
+                        block.live_def_set.add(value)
                 #left_var = inst.left["variable"]
                 #right_var = inst.right["variable"]
                 #value = inst.value["variable"]
-                if left_var not in block.live_def_set:
-                    block.live_use_set.add(left_var)
-                if right_var not in block.live_def_set:
-                    block.live_use_set.add(right_var)
-                if value not in block.live_use_set:
-                    block.live_def_set.add(value)
+
             elif isinstance(inst, instruction.UnaryInst):
                 #var = inst.variable["variable"]
                 #value = inst.value["variable"]
-                var = inst.variable.name
-                value = inst.value.name
-                if var not in block.live_def_set:
-                    block.live_use_set.add(var)
-                if value not in block.live_use_set:
-                    block.live_def_set.add(value)
+                if inst.variable.is_variable():
+                    var = inst.variable.name
+                    if var not in block.live_def_set:
+                        block.live_use_set.add(var)
+                if inst.value.is_variable():
+                    value = inst.value.name
+                    if value not in block.live_use_set:
+                        block.live_def_set.add(value)
     if DEBUG:
         for block in block_list:
             print(block.blockNum, "def:", block.live_def_set, ";\t", block.live_use_set)
