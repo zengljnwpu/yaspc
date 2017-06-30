@@ -495,7 +495,7 @@
       "name": "prime",
       "parameterlsit": [ { } ],
       "object": "function_definition",
-      "variablelsit": [
+      "variablelist": [
         {
           "initvalue": 0,
           "line_number": 6,
