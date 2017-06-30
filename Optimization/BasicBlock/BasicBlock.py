@@ -56,7 +56,7 @@ class BasicBlock:
         """
         if isinstance(self.get_last_inst(), instruction.CJumpInst):
             for succ_block in self.succBasicBlock:
-                if succ_block[1]=='thenlabel':
+                if succ_block[1] == 'thenlabel':
                     return succ_block[0]
         else:
             return None

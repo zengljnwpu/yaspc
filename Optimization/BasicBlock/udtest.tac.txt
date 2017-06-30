@@ -7,6 +7,7 @@ bin  ADD var:j var:i var:a
 bin  ADD var:i var:a var:i
 bin  ADD var:i var:a var:c
 label_definition label1
+bin  ADD val:1 val:1 var:c
 bin  ADD var:i var:i var:i
 bin  ADD var:j var:i var:j
 cjump   var:%1 ifthenlabel1 ifelselabel1
