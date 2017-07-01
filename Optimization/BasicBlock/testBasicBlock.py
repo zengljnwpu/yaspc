@@ -47,13 +47,13 @@ def main():
         print('\noptimizing control flow...')
         inst_list = PeepholeOptimization.control_flow_optimization(block_list, inst_list)
         block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
-    if True:
+    if False:
         print('\nAnalyzing reach defination...')
         var_reduce = ud.reach_def_iteration(block_list)
         ud.ud_set(block_list, var_reduce)
         ud.constant_propagation(block_list, var_reduce, inst_list)
         ud.live_variable_analysis(block_list)
-    if False:
+    if True:
         print('\nAnalyzing loop...')
         loop.do_loop_optimization(block_list)
     print('\nOptimized instructions:')

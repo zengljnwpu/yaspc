@@ -21,11 +21,15 @@ from yaspc.Optimization.BasicBlock import PeepholeOptimization
 from yaspc.Optimization.BasicBlock import ud
 from yaspc.Optimization.BasicBlock import loop
 
-def do_optimization(input_body_json, control_flow=False, reach_defination=False, optimize_loop=False, debug_print=True):
+def do_optimization(function_json, control_flow=False, reach_defination=False, optimize_loop=False, debug_print=True):
     """optimize a body of a function or a program (JSON format object)
     return optimized body and updated label list (JSON format object)
     """
-    inst_list = irParser.decode_body(input_body_json)
+    input_body_json = function_json['body']
+    input_variablelist_json = function_json['variablelist']
+    inst_list = irParser.decode_variablelist(input_variablelist_json) + \
+                irParser.decode_body(input_body_json)
+    inst_list = irParser.renumbering(inst_list)
     if debug_print:
         for inst in inst_list:
             print('%3d\t%s'%(inst.pos, str(inst)))
@@ -83,14 +87,14 @@ def main(input_file_name, output_file_name, control_flow=False, reach_defination
     #print(json.dumps(ir_json['functionlist'][0]['body'], sort_keys=True, indent=4))
     for function_no, function_json in enumerate(ir_json['functionlist']):
         print('parsing function %s body ...\n'%function_json["name"])
-        new_body, new_labellist = do_optimization(function_json['body'], control_flow, \
+        new_body, new_labellist = do_optimization(function_json, control_flow, \
                                                   reach_defination, loop, debug_print=True)
         print('function %d body parsed successfully.\n'%function_no)
         function_json['body'] = new_body
         function_json['labellist'] = new_labellist
 
     print('parsing main function body ...\n')
-    new_body, new_labellist = do_optimization(ir_json['body'], control_flow, \
+    new_body, new_labellist = do_optimization(ir_json, control_flow, \
                                               reach_defination, loop, debug_print=True)
     print('program body parsed successfully.\n')
     ir_json['body'] = new_body

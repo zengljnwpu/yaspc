@@ -188,6 +188,28 @@ def encode_single_inst_from_json(one_inst):
     '''
     return one_inst.to_dict()
 
+def decode_variablelist(variablelist):
+    '''decode function variablelist,
+    generate store instructions,
+    return instruction list
+    '''
+    inst_list = []
+    for ith, var_dict in enumerate(variablelist):
+        var_name = var_dict["variablename"]
+        initvalue = var_dict["initvalue"]
+        line_number = var_dict["line_number"]
+        const = var_dict["const"]
+        var_type = var_dict["var_type"]
+        is_private = var_dict["is_private"]
+
+        address = instruction.Variable("variable", var_type, var_name, is_private, const)
+        value = instruction.Value("value", var_type, initvalue)
+
+        inst = instruction.StoreInst('store', line_number=line_number, address=address, value=value)
+        inst.pos = ith + 1
+        inst_list.append(inst)
+    return inst_list
+
 def generate_labellist(inst_list):
     """traverse instruction list to generate labellist
     e.g：
@@ -221,4 +243,9 @@ def encode_body(inst_list):
         body_list.append(encode_single_inst_from_json(inst))
     return body_list
 
-
+def renumbering(inst_list):
+    '''numbering for instruction list again
+    '''
+    for ith, inst in enumerate(inst_list):
+        inst.pos = ith + 1
+    return inst_list
