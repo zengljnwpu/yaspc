@@ -14,7 +14,7 @@ from yaspc.Optimization.BasicBlock import BasicBlock
 from yaspc.Optimization.BasicBlock import ud
 from yaspc.Optimization.Instruction import instruction
 
-DEBUG = True
+DEBUG = False
 
 # Loop-invariant code motion – this can vastly improve efficiency by moving a computation
 #  from inside the loop to outside of it, computing a value just once before the loop begins,
@@ -36,8 +36,7 @@ def find_dominator(block_list):
     N = set()
     for i in range(len(block_list)):
         N.add(i)
-    if DEBUG:
-        print(N)
+    # print(N)
     # The sets of dominator of all nodes
     D = dict()
     for i in range(len(block_list)):
@@ -46,8 +45,7 @@ def find_dominator(block_list):
     for i in range(1, len(block_list)):
         D[i] = N
     change = True
-    if DEBUG:
-        print(D)
+    # print(D)
     while change:
         change = False
         for i in range(1, len(block_list)):
@@ -59,7 +57,9 @@ def find_dominator(block_list):
             if D[i] != newD:
                 change = True
                 D[i] = newD
-    print(D)
+    print('===========DOMINATOR SET==============')
+    for key in D:
+        print(key, D[key])
     return D
 
 
@@ -172,6 +172,7 @@ def __mark_unchanged_computation(block_list, loop, var_reduce):
                             inst.unchanged_flag = True
                             loop_changed_flag = True
     if DEBUG:
+        print("=======Unchanged Computation=======")
         print("pos\tunchanged_flag\tinst")
         for block in block_list:
             if not block.blockNum in loop:
@@ -196,35 +197,39 @@ def __check_whether_expression_can_be_hoisted(block_list, loop, the_block, the_i
         for inst in block.instList:
             inst_set_of_loop.add(inst.pos)
     # (1)s是L中A的唯一定值点
-    print('Test condition 1:')
+    if DEBUG:
+        print('Test condition 1...')
     var_A_name = the_inst.value.name
     var_reduce_in_loop = set(var_reduce[var_A_name]) & inst_set_of_loop
     if not len(var_reduce_in_loop) == 1:
         return False
 
     # (2)对于A在L中的全部引用点，只有A在（s）的定值才能到达
-    print('Test condition 2:')
+    if DEBUG:
+        print('Test condition 2...')
     for block in block_list:
         if not block.blockNum in loop:
             continue
         for inst in block.instList:
             if isinstance(inst, instruction.BinaryInst):
                 if inst.left.is_variable() and inst.left.name == var_A_name:
-                    print(inst.left_ud)
+                    # print(inst.left_ud)
                     if len(inst.left_ud) != 1 or inst.left_ud[0] != the_inst.pos:
                         return False
                 if inst.right.is_variable() and inst.right.name == var_A_name:
-                    print(inst.right_ud)
+                    # print(inst.right_ud)
                     if len(inst.right_ud) != 1 or inst.right_ud[0] != the_inst.pos:
                         return False
             if isinstance(inst, instruction.UnaryInst):
                 if inst.variable.is_variable() and inst.variable.name == var_A_name:
-                    print(inst.var_ud)
+                    # print(inst.var_ud)
                     if len(inst.var_ud) != 1 or inst.var_ud[0] != the_inst.pos:
                         return False
     # (3) a. s所在的基本块是L的各出口节点的必经节点
+    #
     # 或  b. 当控制从L的出口节点离开循环时，变量A不再活跃
-    print('Test condition 3:')
+    if DEBUG:
+        print('Test condition 3...')
     exit_blocks = find_loop_exit(block_list, loop)
     for block in block_list:
         if block.blockNum not in exit_blocks:
@@ -294,15 +299,18 @@ def hoist_loop_invariant_expressions(block_list, loop_dict, D, var_reduce):
             for inst in block.instList:
                 if inst.unchanged_flag is True:
                     if __check_whether_expression_can_be_hoisted(block_list, loop_dict['loop'], block, inst, D, var_reduce):
-                        print("Loop-invariant expression Found")
+                        if DEBUG:
+                            print("Loop-invariant expression Found\n")
                         # Loop-invariant expressions can be hoisted out of loops
                         loop_changed_flag = __hoist_expression(block_list, loop_dict, block, inst)
 
 
 
-def do_loop_optimization(block_list):
+def do_loop_optimization(block_list, debug_print=True):
     """the main function of Loop optimization
     """
+    global DEBUG
+    DEBUG = debug_print
     # find dominator
     D = find_dominator(block_list)
 
@@ -315,15 +323,17 @@ def do_loop_optimization(block_list):
             for succ, description in block_list[n].succBasicBlock:
                 if succ == block_list[d]:
                     count = count + 1
-                    print("find a back edge %d -> %d"%(n, d))
+                    print("\nFind a back edge %d -> %d"%(n, d))
                     loop = find_loop(d, n, block_list)
                     loop_info_dict[count] = {"loop":loop, "entrance":d}
 
     if count == 0:
         print("No Loop founded")
         return
-    print('find %d loops'%count)
-    print(loop_info_dict)
+    print('Find %d loops:'%count)
+    for key in loop_info_dict:
+        print(key, '\tEntrance:', loop_info_dict[key]['entrance'])
+        print('\tBlocks in loop:', loop_info_dict[key]['loop'])
     # analysis reaching definitions
     var_reduce = ud.reach_def_iteration(block_list)
     ud.ud_set(block_list, var_reduce)
