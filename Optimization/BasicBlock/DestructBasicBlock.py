@@ -15,7 +15,7 @@ import yaspc.Optimization.Instruction.instruction as instruction
 import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
 import copy
 
-DEBUG = True
+DEBUG = False
 
 
 def BlockList_to_InstList(block_list):
@@ -27,7 +27,7 @@ def BlockList_to_InstList(block_list):
         # ENTRY BLOCK
         if curblock.blockNum == 0:
             continue
-        # 先给所有block入口加label，之后可以考虑在窥孔优化中删除
+        # 先给所有block入口加label，之后可以在窥孔优化中删除
         block_label_inst = curblock.gen_block_label_inst()
         inst_list.append(block_label_inst)
         # EXIT BLOCK
@@ -48,11 +48,13 @@ def BlockList_to_InstList(block_list):
             # 不做处理
             pass
         inst_list[-1] = last_inst
+
+    # pos需要重新编号，以便于之后生成labellist
+    for ith, inst in enumerate(inst_list):
+            inst.pos = ith + 1
     if DEBUG:
         print ("============LinearInstructionList==================")
-        for ith, inst in enumerate(inst_list):
-            # pos需要重新编号，以便于之后生成labellist
-            inst.pos = ith + 1
+        for inst in inst_list:
             print('%3d\t%s'%(inst.pos, str(inst)))
     return inst_list
 

@@ -12,7 +12,7 @@ from __future__ import print_function
 
 import yaspc.Optimization.Instruction.instruction as instruction
 import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
-
+from yaspc.Optimization.BasicBlock import PeepholeOptimization
 
 DEBUG = False
 
@@ -23,19 +23,9 @@ def ConstructBlockList(inst_list):
     blockDict = {}      # key is the number of instruction, and map to inst
     labelDict = {}      # key is the label of instruction, and map to block
     blockList = []
-    labelSet = set()    # a set for valid label
 
-    ''' find the valid label '''
-    for inst in inst_list:
-        if isinstance(inst, instruction.CJumpInst):
-            labelSet.add(inst.thenlabel)
-            labelSet.add(inst.elselabel)
-        elif isinstance(inst, instruction.JumpInst):
-            labelSet.add(inst.label)
-    if DEBUG:
-        print("====================Valid set==================")
-        for label in labelSet:
-            print(label)
+    ''' remove the invalid label '''
+    inst_list = PeepholeOptimization.remove_unused_label(inst_list)
     ''' new the basic block '''
     i = 0
     labelFlag = 0
@@ -53,7 +43,7 @@ def ConstructBlockList(inst_list):
             blockList.append(block)
             blockDict[block.blockNum] = block
 
-            if (isinstance(inst, instruction.LabelInst)) and (inst.label in labelSet):
+            if isinstance(inst, instruction.LabelInst):
                 """ the first instruction is a label
                     and label is branch destination
                     and not a successive label inst
@@ -87,7 +77,7 @@ def ConstructBlockList(inst_list):
                 continue
         else:
             # i!=0  not the first instruction
-            if (isinstance(inst, instruction.LabelInst)) and (inst.labelname in labelSet):
+            if isinstance(inst, instruction.LabelInst):
                 """ the label instruction, map the label to number of block"""
                 if labelFlag == 0:
                     block = BasicBlock.BasicBlock(number)
@@ -140,7 +130,7 @@ def ConstructBlockList(inst_list):
         for block in blockList:
             print(block.blockNum, ":")
             for inst in block.instList:
-                print("\t", inst)
+                print("\t", inst.pos, inst)
         print("===================LabelDict===================")
         for key, val in labelDict.items():
             print(key, val)
@@ -154,6 +144,7 @@ def ConstructBlockList(inst_list):
         if i == 0:
             """ the succblock of ENTRY is 1th block"""
             block.succBasicBlock.add((blockList[1], "follow"))
+            blockList[1].preBasicBlock.add(block)
             continue
         if i == len(blockList)-1:
             break
@@ -196,7 +187,6 @@ def ConstructBlockList(inst_list):
         if i + 1 < len(blockList) - 1:
             block.succBasicBlock.add((blockList[i + 1], "follow"))
             blockList[i + 1].preBasicBlock.add(block)
-
 
     if DEBUG:
         print ("============PredecessorSuccessor==================")
