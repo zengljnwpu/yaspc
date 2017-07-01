@@ -43,11 +43,11 @@ def main():
     #     print(inst.pos, inst)
     print('\nConstrusting basicblock...')
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
-    if False:
+    if True:
         print('\noptimizing control flow...')
         inst_list = PeepholeOptimization.control_flow_optimization(block_list, inst_list)
         block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
-    if False:
+    if True:
         print('\nAnalyzing reach defination...')
         var_reduce = ud.reach_def_iteration(block_list)
         ud.ud_set(block_list, var_reduce)

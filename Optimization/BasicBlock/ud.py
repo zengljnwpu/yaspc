@@ -241,9 +241,12 @@ def constant_propagation(block_list, var_reduce, inst_list):
                     if len(right_ud) == 1 and isinstance(inst_list[right_ud[0]], instruction.StoreInst):
                         inst.right = __new_entity_value("value", inst_list[right_ud[0]].value.value)
                 elif isinstance(inst, instruction.UnaryInst):
-                    pass
+                    var_ud = inst.var_ud
+                    if len(var_ud) == 1 and isinstance(inst_list[var_ud[0]], instruction.StoreInst):
+                        inst.left = __new_entity_value("value", inst_list[var_ud[0]].value.value)
 
     if(DEBUG):
+        print("==============constant_propagation===============")
         for inst in inst_list:
             print(inst)
 
