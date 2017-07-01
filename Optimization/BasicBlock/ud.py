@@ -74,6 +74,8 @@ def ud_set(block_list, var_reduce):
                     if inst.address.name in block_def_var.keys():
                         inst.address_ud = (block_def_var[address])
                     else:
+                        if address not in var_reduce:
+                            var_reduce[address] = set((-1,))
                         inst.address_ud = list(block.in_set & var_reduce[address])
                 var = inst.value.name
                 block_def_var[var] = inst.pos
