@@ -302,3 +302,9 @@ def live_variable_analysis(block_list):
             if new_in != block.live_in_set:
                 change = True
                 block.live_in_set = new_in
+
+def set_debug_print(debug_print):
+    """set DEBUG
+    """
+    global DEBUG
+    DEBUG = debug_print

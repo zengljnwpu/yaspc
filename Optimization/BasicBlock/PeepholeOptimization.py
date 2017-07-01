@@ -11,6 +11,8 @@ from __future__ import print_function
 
 import yaspc.Optimization.Instruction.instruction as instruction
 
+DEBUG = True
+
 def remove_unused_label(inst_list):
     """remove unused label"""
     # remove a JumpInst if its target is followed label
@@ -60,7 +62,7 @@ def control_flow_optimization(block_list, inst_list):
                             else:
                                 preinst.elselabel = label
                                 change = False
-    DEBUG = 1
+
     if DEBUG:
         for ith, inst in enumerate(inst_list):
             #inst.pos = ith

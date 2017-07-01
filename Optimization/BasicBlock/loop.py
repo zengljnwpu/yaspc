@@ -57,7 +57,7 @@ def find_dominator(block_list):
             if D[i] != newD:
                 change = True
                 D[i] = newD
-    print('===========DOMINATOR SET==============')
+    print('=============DOMINATOR SET=================')
     for key in D:
         print(key, D[key])
     return D
@@ -122,7 +122,7 @@ def __mark_unchanged_computation(block_list, loop, var_reduce):
             # init the unchanged_flag of all instructions
             inst.unchanged_flag = False
     if DEBUG:
-        print("inst_set_of_loop:")
+        print("Instructions in the loop:")
         print(inst_set_of_loop)
 
     for block in block_list:
@@ -172,7 +172,7 @@ def __mark_unchanged_computation(block_list, loop, var_reduce):
                             inst.unchanged_flag = True
                             loop_changed_flag = True
     if DEBUG:
-        print("=======Unchanged Computation=======")
+        print("==========Unchanged Computation===========")
         print("pos\tunchanged_flag\tinst")
         for block in block_list:
             if not block.blockNum in loop:
@@ -300,7 +300,7 @@ def hoist_loop_invariant_expressions(block_list, loop_dict, D, var_reduce):
                 if inst.unchanged_flag is True:
                     if __check_whether_expression_can_be_hoisted(block_list, loop_dict['loop'], block, inst, D, var_reduce):
                         if DEBUG:
-                            print("Loop-invariant expression Found\n")
+                            print("Loop-invariant expression Found: %d\n"%inst.pos)
                         # Loop-invariant expressions can be hoisted out of loops
                         loop_changed_flag = __hoist_expression(block_list, loop_dict, block, inst)
 
@@ -335,6 +335,8 @@ def do_loop_optimization(block_list, debug_print=True):
         print(key, '\tEntrance:', loop_info_dict[key]['entrance'])
         print('\tBlocks in loop:', loop_info_dict[key]['loop'])
     # analysis reaching definitions
+    print('Analysis reaching definition...')
+    ud.set_debug_print(False)
     var_reduce = ud.reach_def_iteration(block_list)
     ud.ud_set(block_list, var_reduce)
 

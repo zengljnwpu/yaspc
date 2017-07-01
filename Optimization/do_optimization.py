@@ -72,7 +72,7 @@ def main(input_file_name, output_file_name, control_flow=False, reach_defination
     '''
     The main function of all optimization
     '''
-    print('Welcome!')
+    print('\nWelcome!')
     print('INPUT: %s \tOUTPUT %s'%(input_file_name, output_file_name))
     print('Selction: \n\tcontrol_flow: %d'%control_flow)
     print('\treach_defination: %d'%reach_defination)
@@ -86,21 +86,24 @@ def main(input_file_name, output_file_name, control_flow=False, reach_defination
     #print(json.dumps(ir_json['body'], sort_keys=True, indent=4))
     #print(json.dumps(ir_json['functionlist'][0]['body'], sort_keys=True, indent=4))
     for function_no, function_json in enumerate(ir_json['functionlist']):
-        print('parsing function %s body ...\n'%function_json["name"])
+        print('\n---------------------------------------------------------')
+        print('\nparsing the body of function "%s" ...\n'%function_json["name"])
         new_body, new_labellist = do_optimization(function_json, control_flow, \
                                                   reach_defination, loop, debug_print=True)
         print('function %d body parsed successfully.\n'%function_no)
         function_json['body'] = new_body
         function_json['labellist'] = new_labellist
 
-    print('parsing main function body ...\n')
+    print('\n---------------------------------------------------------')
+    print('\nparsing the body of main function ...\n')
     new_body, new_labellist = do_optimization(ir_json, control_flow, \
                                               reach_defination, loop, debug_print=True)
     print('program body parsed successfully.\n')
     ir_json['body'] = new_body
     ir_json['labellist'] = new_labellist
 
-    print('Write output file...\n')
+    print('\n---------------------------------------------------------')
+    print('\nWrite output file...\n')
     with open(output_file_name, 'w') as output_file:
         ir_str = json.dumps(ir_json, sort_keys=True, indent=4)
         output_file.write(ir_str)
