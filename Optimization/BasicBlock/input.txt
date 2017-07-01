@@ -1,0 +1,25 @@
+i = 1
+L1:
+j = 1
+L2:
+L4:
+t1 = 10 * i
+t2 = t1 + j
+t3 = 8 * t2
+L5:
+t4 = t3 - 88
+a4 = 0.0
+j = j + 1
+if j <= 10 goto L2
+i = i + 1
+if i <= 10 goto L4
+i = 1
+L3:
+t5 = i - 1
+t6 = 88 * t5
+a6 = 1.0
+i = i + 1
+if i <= 10 goto L3
+ret
+i = i + 1
+
