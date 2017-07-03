@@ -1,6 +1,6 @@
 import unittest
-from backend_in_py.asm.operand import *
-from backend_in_py.asm.statistics import *
+from backend.asm.operand import *
+from backend.asm.statistics import *
 
 class TestImmediate (unittest.TestCase):
     def setUp(self):

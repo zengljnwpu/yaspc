@@ -1,4 +1,4 @@
-from backend_in_py.asm.assembly import *
+from backend.asm.assembly import *
 
 
 class Statistics ():

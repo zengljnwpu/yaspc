@@ -1,5 +1,5 @@
-from backend_in_py.ir.ir import *
-from backend_in_py.sys_dep.x86.code_generator import *
+from backend.ir.ir import *
+from backend.sys_dep.x86.code_generator import *
 import json
 
 with open ("data.json", "r") as f:

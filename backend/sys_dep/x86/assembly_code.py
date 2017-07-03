@@ -1,10 +1,10 @@
-from backend_in_py.asm.type import *
-from backend_in_py.asm.assembly import *
-from backend_in_py.asm.literal import *
-from backend_in_py.asm.operand import *
-from backend_in_py.asm.statistics import *
-from backend_in_py.asm.symbol_table import *
-from backend_in_py.sys_dep.x86.register import *
+from backend.asm.type import *
+from backend.asm.assembly import *
+from backend.asm.literal import *
+from backend.asm.operand import *
+from backend.asm.statistics import *
+from backend.asm.symbol_table import *
+from backend.sys_dep.x86.register import *
 
 
 # Describe a kind of ASM DSL (Domain Specific Languages) so that it can convert from ASM objects to ASM codes easily

@@ -1,8 +1,8 @@
-from backend_in_py.sys_dep.x86.assembly_code import *
-from backend_in_py.ir.expr import *
-from backend_in_py.ir.op import *
-from backend_in_py.ir.stmt import *
-from backend_in_py.sys_dep.x86.register import RegisterClass
+from backend.sys_dep.x86.assembly_code import *
+from backend.ir.expr import *
+from backend.ir.op import *
+from backend.ir.stmt import *
+from backend.sys_dep.x86.register import RegisterClass
 
 
 class CodeGenerator():
@@ -317,7 +317,6 @@ class CodeGenerator():
         self.__prologue(file, frame.save_regs, frame.frame_size())
         # if self._options.is_positions_independent() and body.does_uses (self.__GOT_base_reg()):
         #   self.__load_GOT_base_address(file, self.__GOT_base_reg())
-
         file.add_all(body.assemblies())
         self.__epilogue(file, frame.save_regs)
         file.virtual_stack.fix_offset(0)

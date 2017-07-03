@@ -1,5 +1,5 @@
 import unittest
-from backend_in_py.asm.type import *
+from backend.asm.type import *
 
 
 class TypeTest (unittest.TestCase):

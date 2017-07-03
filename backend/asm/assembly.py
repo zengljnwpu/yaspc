@@ -1,5 +1,5 @@
-from backend_in_py.asm.literal import *
-from backend_in_py.asm.operand import *
+from backend.asm.literal import *
+from backend.asm.operand import *
 
 
 class Assembly ():

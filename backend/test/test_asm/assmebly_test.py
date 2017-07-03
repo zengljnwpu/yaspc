@@ -1,7 +1,7 @@
 import unittest
-from backend_in_py.asm.assembly import *
-from backend_in_py.asm.symbol_table import *
-from backend_in_py.asm.statistics import *
+from backend.asm.assembly import *
+from backend.asm.symbol_table import *
+from backend.asm.statistics import *
 
 class TestAssembly(unittest.TestCase):
     def setUp(self):

@@ -1,6 +1,6 @@
-from backend_in_py.entity.entity import Entity
-import backend_in_py.ir.expr
-from backend_in_py.asm.assembly import *
+from backend.entity.entity import Entity
+import backend.ir.expr
+from backend.asm.assembly import *
 
 class Stmt ():
     def __init__ (self, loc):
@@ -20,8 +20,8 @@ class Stmt ():
 class Assign (Stmt):
     def __init__ (self, loc, lhs, rhs):
         super(Assign, self).__init__(loc)
-        self._lhs = backend_in_py.ir.expr.Expr.expr_factory(value = lhs)
-        self._rhs = backend_in_py.ir.expr.Expr.expr_factory(value = rhs)
+        self._lhs = backend.ir.expr.Expr.expr_factory(value = lhs)
+        self._rhs = backend.ir.expr.Expr.expr_factory(value = rhs)
 
     def lhs (self):
         return self._lhs
@@ -110,7 +110,7 @@ class LabelStmt (Stmt):
 class Return (Stmt):
     def __init__(self, loc, expr):
         super(Return, self).__init__(loc)
-        self._expr = backend_in_py.ir.expr.Expr.expr_factory (value=expr)
+        self._expr = backend.ir.expr.Expr.expr_factory (value=expr)
 
     def expr(self):
         return self._expr

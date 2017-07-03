@@ -1,9 +1,9 @@
-from backend_in_py.asm.operand import *
-from backend_in_py.entity.entity import *
-from backend_in_py.asm.type import *
-from backend_in_py.ir.dumper import *
-from backend_in_py.ir.op import *
-import backend_in_py.type.type
+from backend.asm.operand import *
+from backend.entity.entity import *
+from backend.asm.type import *
+from backend.ir.dumper import *
+from backend.ir.op import *
+import backend.type.type
 
 class Expr():
     @staticmethod
@@ -16,7 +16,7 @@ class Expr():
             return Addr(type=value["type"], entity = entity_map[value["variable"]])
 
     def __init__(self, type):
-        self._type = backend_in_py.type.type.Type.type_factory(type = type, obj = None)
+        self._type = backend.type.type.Type.type_factory(type = type, obj = None)
 
     def type(self):
         return self._type
@@ -116,8 +116,10 @@ class Bin(Expr):
 class Call(Expr):
     def __init__(self, type: Type, expr, args:list):
         super(Call, self).__init__(type)
-        self.__expr = expr
-        self.__args = args
+        self.__expr = Expr.expr_factory(expr)
+        self.__args = list()
+        for i in args:
+            self.__args.append(Expr.expr_factory(i))
 
     def expr(self):
         return self.__expr

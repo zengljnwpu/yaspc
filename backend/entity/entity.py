@@ -1,8 +1,8 @@
-from backend_in_py.asm.assembly import *
-from backend_in_py.asm.operand import *
-from backend_in_py.asm.literal import *
-import backend_in_py.type.type
-import backend_in_py.ir.ir
+from backend.asm.assembly import *
+from backend.asm.operand import *
+from backend.asm.literal import *
+import backend.type.type
+import backend.ir.ir
 
 entity_map = dict()
 
@@ -10,7 +10,7 @@ class Entity (object):
     def __init__ (self, priv:bool, type: str, name:str):
         self._name = name
         self._is_private = priv
-        self._type = backend_in_py.type.type.Type.type_factory(type, name)
+        self._type = backend.type.type.Type.type_factory(type, name)
         self.n_refered = 0
         self._mem_ref = None
         self._address = None
@@ -166,7 +166,7 @@ class DefinedFuntion (Function):
         self._scope = scope
         self._ir = list()
         for i in self._body:
-            self._ir.append(backend_in_py.ir.ir.inst_factory(i))
+            self._ir.append(backend.ir.ir.inst_factory(i))
 
 
     def is_defined(self):
@@ -261,7 +261,7 @@ class DefinedVariable (Variable):
 
     @classmethod
     def tmp (cls, t):
-        return DefinedVariable (False, backend_in_py.type.type.Type.type_factory(t, obj = None), "@tmp" + str(cls.tmp_seq), None)
+        return DefinedVariable (False, backend.type.type.Type.type_factory(t, obj = None), "@tmp" + str(cls.tmp_seq), None)
 
     def is_defined(self):
         return True

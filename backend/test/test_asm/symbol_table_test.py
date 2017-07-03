@@ -1,5 +1,5 @@
 import unittest
-from backend_in_py.asm.symbol_table import *
+from backend.asm.symbol_table import *
 
 class TestSymbolTable (unittest.TestCase):
     def test_init(self):

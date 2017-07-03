@@ -1,12 +1,12 @@
-from backend_in_py.asm.type import *
-from backend_in_py.asm.operand import *
-from backend_in_py.entity.entity import *
-from backend_in_py.asm.type import *
-from backend_in_py.ir.dumper import *
-from backend_in_py.ir.stmt import *
-from backend_in_py.ir.op import *
-from backend_in_py.ir.expr import *
-from backend_in_py.entity.scope import *
+from backend.asm.type import *
+from backend.asm.operand import *
+from backend.entity.entity import *
+from backend.asm.type import *
+from backend.ir.dumper import *
+from backend.ir.stmt import *
+from backend.ir.op import *
+from backend.ir.expr import *
+from backend.entity.scope import *
 
 
 def import_ir (data: dict()):
@@ -31,6 +31,8 @@ def inst_factory (insn):
         return Return (loc = insn ["line_number"], expr= insn["expr"])
     elif insn["name"] == "bin":
         return Bin (left= insn["left"], right= insn["right"], op= insn["op"], type= insn["type"], value= insn["value"])
+    elif insn["name"] == "call":
+        return Call (args= insn["args"], expr= insn["expr"], type= insn["type"])
     else:
         raise Exception ("Feature not implemented")
 

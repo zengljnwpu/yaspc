@@ -1,7 +1,7 @@
 import unittest
-from backend_in_py.asm.literal import *
-from backend_in_py.asm.symbol_table import *
-from backend_in_py.asm.statistics import *
+from backend.asm.literal import *
+from backend.asm.symbol_table import *
+from backend.asm.statistics import *
 
 class TestInteger(unittest.TestCase):
     def setUp(self):

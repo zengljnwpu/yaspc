@@ -1,5 +1,5 @@
 import unittest
-from backend_in_py.asm.statistics import *
+from backend.asm.statistics import *
 
 class TestStat (unittest.TestCase):
     def test_register (self):

@@ -1,6 +1,6 @@
 from enum import Enum, auto
-from backend_in_py.asm.operand import Register
-from backend_in_py.asm.type import *
+from backend.asm.operand import Register
+from backend.asm.type import *
 
 class RegisterClass (Enum):
     AX = auto()

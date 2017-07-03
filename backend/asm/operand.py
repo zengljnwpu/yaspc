@@ -1,4 +1,4 @@
-from backend_in_py.asm.symbol_table import *
+from backend.asm.symbol_table import *
 
 
 class Operand (object):

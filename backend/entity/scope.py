@@ -1,5 +1,5 @@
-from backend_in_py.entity.entity import *
-import backend_in_py.type.type
+from backend.entity.entity import *
+import backend.type.type
 
 
 #Used to describe scope of variables
