@@ -9,16 +9,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
 import json
-import yaspc.Optimization.Instruction.instruction as instruction
-import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
-import yaspc.Optimization.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
-import yaspc.Optimization.BasicBlock.DestructBasicBlock as DestructBasicBlock
-import yaspc.Optimization.IR_IO.irParser as irParser
-import yaspc.Optimization.BasicBlock.ud as ud
-import yaspc.Optimization.BasicBlock.PeepholeOptimization as PeepholeOptimization
-import yaspc.Optimization.BasicBlock.loop as loop
+from yaspc.Optimization.BasicBlock import ConstructBasicBlock
+from yaspc.Optimization.BasicBlock import DestructBasicBlock
+from yaspc.Optimization.IR_IO import irParser
+from yaspc.Optimization.DataFlow import ud
+from yaspc.Optimization.Peephole import PeepholeOptimization
+from yaspc.Optimization.Loop import loop
 
 
 def main():

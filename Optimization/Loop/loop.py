@@ -11,7 +11,7 @@ from __future__ import print_function
 
 import copy
 from yaspc.Optimization.BasicBlock import BasicBlock
-from yaspc.Optimization.BasicBlock import ud
+from yaspc.Optimization.DataFlow import ud
 from yaspc.Optimization.Instruction import instruction
 
 DEBUG = False

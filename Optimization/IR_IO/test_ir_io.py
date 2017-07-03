@@ -16,7 +16,7 @@ from yaspc.Optimization.Instruction import instruction
 from yaspc.Optimization.BasicBlock import ConstructBasicBlock
 from yaspc.Optimization.BasicBlock import DestructBasicBlock
 from yaspc.Optimization.IR_IO import irParser
-from yaspc.Optimization.BasicBlock import PeepholeOptimization
+from yaspc.Optimization.Peephole import PeepholeOptimization
 
 def test_module():
     '''

@@ -14,13 +14,13 @@ from __future__ import print_function
 import json
 import argparse
 
-from yaspc.Optimization.Instruction import instruction
+
 from yaspc.Optimization.BasicBlock import ConstructBasicBlock
 from yaspc.Optimization.BasicBlock import DestructBasicBlock
 from yaspc.Optimization.IR_IO import irParser
-from yaspc.Optimization.BasicBlock import PeepholeOptimization
-from yaspc.Optimization.BasicBlock import ud
-from yaspc.Optimization.BasicBlock import loop
+from yaspc.Optimization.Peephole import PeepholeOptimization
+from yaspc.Optimization.DataFlow import ud
+from yaspc.Optimization.Loop import loop
 
 def do_optimization(function_json, control_flow=False, reach_defination=False, optimize_loop=False, debug_print=True):
     """optimize a body of a function or a program (JSON format object)
@@ -108,6 +108,7 @@ def main(input_file_name, output_file_name, control_flow=False, reach_defination
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    # add positional arguments
     parser.add_argument(
         'input_file_name',
         type=str,
@@ -143,15 +144,9 @@ if __name__ == '__main__':
     # parse arguments
     args = parser.parse_args()
     # set default value
-    control_flow_flag = True
-    if args.no_control_flow:
-        control_flow_flag = False
-    reach_defination_flag = True
-    if args.no_reach_defination:
-        reach_defination_flag = False
-    loop_optimization_flag = True
-    if args.no_loop:
-        loop_optimization_flag = False
+    control_flow_flag = not args.no_control_flow
+    reach_defination_flag = not  args.no_reach_defination
+    loop_optimization_flag = not args.no_loop
 
     main(args.input_file_name, args.output_file_name, control_flow_flag,
          reach_defination_flag, loop_optimization_flag)
