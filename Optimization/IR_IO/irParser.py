@@ -11,10 +11,147 @@ from __future__ import division
 from __future__ import print_function
 
 import json
-
+import re
 import yaspc.Optimization.Instruction.instruction as instruction
 
+##################################################################
+# TAC IR Format:
+# Instruction: Three adress format
+#       three-address code (often abbreviated to TAC or 3AC) is an intermediate code used by
+#       optimizing compilers to aid in the implementation of code-improving transformations.
+#       Each TAC instruction has at most three operands and is typically a combination of
+#       assignment and a binary operator.
+# No space allowed in any member
+# e.g.
+#   cjump   cond thenlabel elselabel
+#   jump    label
+#   label_definition      labelname
+#   variable_definition   variablename var_type
+#   load    adress value
+#   store   adress value
+#   bin     op left right value
+#   uni     op variable value
+#   call    functionname parameterlist value
+#   return  ret
+###################################################################
+def __get_entity_from_str(entity_str):
+    """Entity:
+    Attention: entity is processed as "int32"
+        var(variable) : int
+        val(value)    : integer
+    e.g.
+        var:i
+        val:1
+    """
+    var_entity_dict = {"object": "variable", "type": "int32", "name": "%0"}
+    val_entity_dict = {"object": "value", "type": "int32", "value": 0}
+    if entity_str.find(':') == -1:
+        print('wrong entity format: %s'%entity_str)
+        return None
+    if entity_str[0:3] == 'var':
+        var_entity_dict['name'] = entity_str[4:]
+        return instruction.Variable(**var_entity_dict)
+    elif entity_str[0:3] == 'val':
+        val_entity_dict['value'] = int(entity_str[4:])
+        return instruction.Value(**val_entity_dict)
+    else:
+        print('wrong entity format: %s'%entity_str)
+        return None
 
+def parse_single_inst_from_TAC(inst_string):
+    '''
+    Read a instruction and generate a Instruction Object
+    Return None if wrong
+    Attention: value entity is processed as integer
+    '''
+    split = re.split(r'\s+', inst_string)
+    if split[0] == 'variable_definition':
+        return instruction.AllocaInst(split[0], variablename=split[1], var_type="int32")
+
+    elif split[0] == 'cjump':
+        cond = __get_entity_from_str(split[1])
+        if cond is None:
+            print('wrong cjump instruction: %s'%inst_string)
+            return None
+        return instruction.CJumpInst(split[0], cond=cond, thenlabel=split[2], elselabel=split[3])
+
+    elif split[0] == 'jump':
+        return instruction.JumpInst(split[0], label=split[1])
+
+    elif split[0] == 'bin':
+        left = __get_entity_from_str(split[2])
+        right = __get_entity_from_str(split[3])
+        value = __get_entity_from_str(split[4])
+        if left is None or right is None or value is None:
+            print('wrong bin instruction: %s'%inst_string)
+            return None
+        return instruction.BinaryInst(split[0], op=split[1], left=left, right=right, value=value)
+
+    elif split[0] == 'uni':
+        variable = __get_entity_from_str(split[2])
+        value = __get_entity_from_str(split[3])
+        print(variable)
+        print(value)
+        if variable is None or value is None:
+            print('wrong uni instruction: %s'%inst_string)
+            return None
+        return instruction.UnaryInst(split[0], op=split[1], variable=variable, value=value)
+
+    elif split[0] == 'load':
+        address = __get_entity_from_str(split[1])
+        value = __get_entity_from_str(split[2])
+        if address is None or value is None:
+            print('wrong load instruction: %s'%inst_string)
+            return None
+        return instruction.LoadInst(split[0], address=address, value=value)
+
+    elif split[0] == 'store':
+        address = __get_entity_from_str(split[1])
+        value = __get_entity_from_str(split[2])
+        if address is None or value is None:
+            print('wrong load instruction: %s'%inst_string)
+            return None
+        return instruction.StoreInst(split[0], address=address, value=value)
+
+    elif split[0] == 'call':
+        # TODO: parameterlist is not support now
+        value = __get_entity_from_str(split[3])
+        if value is None:
+            print('wrong call instruction: %s'%inst_string)
+            return None
+        return instruction.CallInst(split[0], functionname=split[1], parameterlist=split[2], value=value)
+
+    elif split[0] == 'return':
+        ret = __get_entity_from_str(split[1])
+        if ret is None:
+            print('wrong ret instruction: %s'%inst_string)
+            return None
+        return instruction.RetureInst(split[0], ret=ret)
+
+    elif split[0] == 'label_definition':
+        return instruction.LabelInst(split[0], labelname=split[1])
+
+    else:
+        print('unkown instruction: %s'%inst_string)
+        return None
+
+def decode_TAC_list(tac_list):
+    '''decode function body, Three adress format,
+    return instruction list
+    '''
+    inst_list = []
+    for ith, inst_dict in enumerate(tac_list):
+        inst = parse_single_inst_from_TAC(inst_dict)
+        if inst is None:
+            continue
+        inst.pos = ith + 1
+        inst_list.append(inst)
+    return inst_list
+
+#################################
+# JSON style IR Format:
+#     see IR.md
+#################################
 def parse_single_inst_from_json(inst_dict):
     '''
     Read a instruction dict (json format) and generate a Instruction Object
@@ -49,14 +186,33 @@ def encode_single_inst_from_json(one_inst):
     '''
     Read a Instruction Object and generate a instruction dict (json format)
     '''
-    inst_dict = one_inst.__dict__.copy()
-    # remember remove items which shouldn't be in IR
-    inst_dict.pop('pos', False)
-    return inst_dict
+    return one_inst.to_dict()
+
+def decode_variablelist(variablelist):
+    '''decode function variablelist,
+    generate store instructions,
+    return instruction list
+    '''
+    inst_list = []
+    for ith, var_dict in enumerate(variablelist):
+        var_name = var_dict["variablename"]
+        initvalue = var_dict["initvalue"]
+        line_number = var_dict["line_number"]
+        const = var_dict["const"]
+        var_type = var_dict["var_type"]
+        is_private = var_dict["is_private"]
+
+        address = instruction.Variable("variable", var_type, var_name, is_private, const)
+        value = instruction.Value("value", var_type, initvalue)
+
+        inst = instruction.StoreInst('store', line_number=line_number, address=address, value=value)
+        inst.pos = ith + 1
+        inst_list.append(inst)
+    return inst_list
 
 def generate_labellist(inst_list):
-    """遍历instruction list获得labellist
-    格式举例：
+    """traverse instruction list to generate labellist
+    e.g：
     "labellist": [{ "object": "label",  "name": "forstartlabel1",  "pos": 2 }, ...]
     """
     labellist = []
@@ -87,13 +243,9 @@ def encode_body(inst_list):
         body_list.append(encode_single_inst_from_json(inst))
     return body_list
 
-def encode_labellist(labellist):
-    '''encode function labellist
-    and return labellist(json format)
+def renumbering(inst_list):
+    '''numbering for instruction list again
     '''
-    label_list_json = []
-    for label in labellist:
-        label_list_json.append(label.__dict__)
-    return label_list_json
-
-
+    for ith, inst in enumerate(inst_list):
+        inst.pos = ith + 1
+    return inst_list

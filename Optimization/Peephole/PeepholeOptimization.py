@@ -11,6 +11,35 @@ from __future__ import print_function
 
 import yaspc.Optimization.Instruction.instruction as instruction
 
+DEBUG = True
+
+def remove_unused_label(inst_list):
+    """remove unused label"""
+    # remove a JumpInst if its target is followed label
+    new_inst_list = []
+    for inst_no, inst in enumerate(inst_list):
+        if isinstance(inst, instruction.JumpInst):
+            if inst_no+1 < len(inst_list) and inst.label == inst_list[inst_no+1].labelname:
+                continue
+        new_inst_list.append(inst)
+    inst_list = new_inst_list
+    # find the valid label
+    used_label_set = set()    # a set for valid label
+    for inst in inst_list:
+        if isinstance(inst, instruction.CJumpInst):
+            used_label_set.add(inst.thenlabel)
+            used_label_set.add(inst.elselabel)
+        elif isinstance(inst, instruction.JumpInst):
+            used_label_set.add(inst.label)
+    # remove unused label
+    new_inst_list = []
+    for inst in inst_list:
+        if isinstance(inst, instruction.LabelInst):
+            if not inst.labelname in used_label_set:
+                continue
+        new_inst_list.append(inst)
+    return new_inst_list
+
 
 def control_flow_optimization(block_list, inst_list):
     """控制流优化"""
@@ -33,7 +62,7 @@ def control_flow_optimization(block_list, inst_list):
                             else:
                                 preinst.elselabel = label
                                 change = False
-    DEBUG = 1
+
     if DEBUG:
         for ith, inst in enumerate(inst_list):
             #inst.pos = ith

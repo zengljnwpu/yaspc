@@ -9,10 +9,10 @@ begin
 for i:=2 to num do 
 	if num mod i = 0 then g:=true;
 prime:=g;
-end
+end;
 
 begin
 	n:=123;
 	f:=false;
 	f:=prime(n);
-end
+end.

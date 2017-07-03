@@ -14,11 +14,9 @@
 
 - label
 
-- entity
+- variable
 
-	- variable
-
-	- value
+- value
 
 - instruction
 
@@ -35,7 +33,9 @@
 	- jump
 
 	- call
+
 	- return
+
 	- bin
 
 	- uni
@@ -60,7 +60,9 @@
 
 		{
 
-			"object": "variable_definition",
+			"object": "instruction",
+
+			"name": "variable_definition",
 
 			...
 
@@ -68,7 +70,7 @@
 
 		...
 
-	]
+	],
 
 	"functionlist": [
 
@@ -82,7 +84,7 @@
 
 		...
 
-	]
+	],
 
 	"labellist": [
 
@@ -96,7 +98,7 @@
 
 		...
 
-	]
+	],
 
 	"body": [
 
@@ -154,7 +156,9 @@
 
 		{
 
-			"object": "variable_definition",
+			"object": "instruction",
+
+			"name": "variable_definition",
 
 			...
 
@@ -162,7 +166,7 @@
 
 		...
 
-	]
+	],
 
 	"labellist": [
 
@@ -176,7 +180,7 @@
 
 		...
 
-	]
+	],
 
 	"body": [
 
@@ -216,25 +220,21 @@
 
 
 
-## entity
-
-
-
-### variable
+## variable
 
 ```JSON
 
 {
 
-    "object": "entity",
+    "object": "variable",
 
     "type": "int8",
 
-    "name": "variable",
-
-	"variable": "a",
+	"name": "a",
 
 	"const": true,
+
+	"is_private": false
 
 }
 
@@ -242,17 +242,15 @@
 
 
 
-### value
+## value
 
 ```JSON
 
 {
 
-    "object": "entity",
-
     "type": "int8",
 
-    "name": "value",
+    "object": "value",
 
 	"value": 1
 
@@ -326,23 +324,23 @@
 
 	"left": {
 
-		"object": "entity",
+    	"object": "variable",
 
-		"type": "int32",
+		"type": "int8",
 
-		"name": "variable",
+		"name": "a",
 
-		"variable": "a"
+		"const": true,
+
+		"is_private": false
 
 	},
 
 	"right": {
 
-		"object": "entity",
+    	"type": "int8",
 
-		"type": "int32",
-
-		"name": "value",
+    	"object": "value",
 
 		"value": 1
 
@@ -350,20 +348,22 @@
 
 	"value": {
 
-		"object": "entity",
+    	"object": "variable",
 
-		"type": "int32",
+		"type": "int8",
 
-		"name": "variable",
+		"name": "%1",
 
-		"variable": "%cond1"
+		"const": false,
+
+		"is_private": false
 
 	}
 
 }
 ```
 
-`variable_definition variablename var_type const value`
+`variable_definition variablename var_type const is_private initvalue value`
 
 定义变量，`variablename` 为string, `var_type` 为type `const` 为bool `value`
 
@@ -598,954 +598,3 @@
 
 
 
-# IR 规范---高级结构翻译(样例)
-
-
-
-## if-else
-
-####example
-
-```
-
-if a>2 then a:=2 else a:=1;
-
-```
-
-####cond calculation
-
-```
-
-{
-
-	"object": "instruction",
-
-	"name": "variable_definition",
-
-	"variablename": "%cond1",
-
-	"var_type": int32
-
-}, 
-
-{
-
-	"object": "instruction",
-
-	"name": "bin",
-
-	"op": "S_GT",
-
-	"left": {
-
-		"object": "entity",
-
-		"type": "int32",
-
-		"name": "variable",
-
-		"variable": "a"
-
-	},
-
-	"right": {
-
-		"object": "entity",
-
-		"type": "int32",
-
-		"name": "value",
-
-		"value": 1
-
-	},
-
-	"value": {
-
-		"object": "entity",
-
-		"type": "int32",
-
-		"name": "variable",
-
-		"variable": "%cond1"
-
-	}
-
-},
-
-```
-
-####cjump
-
-```
-
-{
-
-	"object": "instruction",
-
-	"name": "cjump",
-
-	"cond": {
-
-		"object": "entity",
-
-		"type": "int32",
-
-		"name": "variable",
-
-		"variable": "%cond1"
-
-	},
-
-	"thenlabel": "ifthenlabel1",
-
-	"elselabel": "ifelselabel1"
-
-},
-
-```
-
-####ifthenlabel definition
-
-```
-
-{
-
-	"object": "instruction",
-
-	"name": "label_definition",
-
-	"labelname": "ifthenlabel1"
-
-},
-
-```
-
-####then block
-
-```
-
-{
-
-	"object": "instruction",
-
-	"name": "store",
-
-	"address": {
-
-		"object": "entity",
-
-		"type": "int32*",
-
-		"name": "variable",
-
-		"variable": "a"
-
-	},
-
-	"value": {
-
-		"object": "entity",
-
-		"type": "int32",
-
-		"name": "value",
-
-		"value": 2
-
-	}
-
-}
-
-```
-
-####jump to end
-
-```
-
-{
-
-	"object": "instruction",
-
-	"name": "jump",
-
-	"label": "ifendlabel1"
-
-}
-
-```
-
-####ifelselabel definition
-
-```
-
-{
-
-	"object": "instruction",
-
-	"name": "label_definition",
-
-	"labelname": "ifelselabel1"
-
-}
-
-```
-
-####else block
-
-```
-
-{
-
-	"object": "instruction",
-
-	"name": "store",
-
-	"address": {
-
-		"object": "entity",
-
-		"type": "int32*",
-
-		"name": "variable",
-
-		"variable": "a"
-
-	},
-
-	"value": {
-
-		"object": "entity",
-
-		"type": "int32",
-
-		"name": "value",
-
-		"value": 1
-
-	}
-
-}
-
-```
-
-####endlabel definition
-
-```
-
-{
-
-	"object": "instruction",
-
-	"name": "label_definition",
-
-	"labelname": "ifendlabel1"
-
-}
-
-```
-
-## goto
-
-```pascal
-L:
-goto L;
-```
-example
-
-```JSON
-{
-
-	"object": "instruction",
-
-	"name": "label_definition",
-
-	"labelname": "L"
-
-}
-{
-
-	"object": "instruction",
-
-	"name": "jump",
-
-	"label": "L"
-
-}
-```
-
-
-## switch
-
-
-```pascal
-case (grade) of
-	'A' : a:=1;
-	'B', 'C': a:=2;
-	'D' : a:=3;
-	'E' : a:=4;
-
-```
-####change into if_else
-
-```pascal
-if grade='A' then a:=1 else
-	if grade='B' or grade='C' then a:=2 else
-		if grade='D' then a:=3 else
-			if grade='E' then a"=4;
-
-```
-
-## for
-
-```pascal
-
-for i:=2 to 10 do
-begin
-	f := f + 1;
-end;
-
-```
-####change it into if_else and goto
-```pascal
-
-i:=2
-Lstart:
-if i<=10 then f:=f+1 else goto Lend;
-i:=i+1;
-goto Lstart;
-Lend:
-
-```
-
-
-##repeat
-```pascal
-a=0;
-repeat
-	a=a+1;
-until a>2;
-```
-####change it into if_else
-```pascal
-a=0;
-Lstart:
-a=a+1;
-if a>2 then goto Lend else goto Lstart;
-Lend:
-```
-
-# a complete IR example
-输入一个数据x,判断这个数是否为素数
-
-```pascal
-1	program dsq;
-2	var n:longint;
-3		f:boolean;
-
-4	function prime(num: integer): boolean;
-5	var i:longint;
-6		g:boolean;
-7	begin
-8	for i:=2 to num do 
-9		if num mod i = 0 then g:=true;
-10	prime:=g;
-11	end
-
-12	begin
-13		n:=123;
-14		f:=false;
-15		f:=prime(n);
-16	end.
-```
-
-```JSON
-{
-
-	"object": "program_definition",
-	"name": "dsq",
-	"variablelist": [
-		{
-			"object": "entity",
-			"type": "bool",
-			"name": "variable",
-			"variable": "%1",
-			"const": false
-		}
-	],
-
-	"labellist": [],
-	"functionlist": [
-		{
-			"object": "function_definition",
-			"filename": "dsq.pas",
-			"line_number": 4,
-			"name": "prime",
-			"type": "bool",
-			"parameterlist": [
-				{
-					"object": "entity",
-					"type": "int32",
-					"name": "variable",
-					"variable": "num",
-					"const": false
-				}
-			],
-
-			"variablelist": [
-				{
-					"object": "entity",
-					"type": "int32",
-					"name": "variable",
-					"variable": "i",
-					"const": false
-
-				},
-				{
-					"object": "entity",
-					"type": "bool",
-					"name": "variable",
-					"variable": "g",
-					"const": false
-				},
-				{
-					"object": "entity",
-					"type": "bool",
-					"name": "variable",
-					"variable": "%1",
-					"const": false
-				},
-				{
-					"object": "entity",
-					"type": "int32",
-					"name": "variable",
-					"variable": "%2",
-					"const": false
-				},
-				{
-					"object": "entity",
-					"type": "int32",
-					"name": "variable",
-					"variable": "%3",
-					"const": false
-				},
-				{
-					"object": "entity",
-					"type": "int32",
-					"name": "variable",
-					"variable": "%4",
-					"const": false
-				}
-			],
-
-			"labellist": [
-				{
-					"object": "label",
-					"name": "forstartlabel1",
-					"pos": 2
-				},
-				{
-					"object": "label",
-					"name": "ifthenlabel1",
-					"pos": 6
-				},
-				{
-					"object": "label",
-					"name": "ifthenlabel2",
-					"pos": 12
-
-				},
-				{
-					"object": "label",
-					"name": "ifelselabel2",
-					"pos": 14
-
-				},
-				{
-					"object": "label",
-					"name": "ifendlabel2",
-					"pos": 15
-
-				},
-				{
-					"object": "label",
-					"name": "ifelselabel1",
-					"pos": 17
-
-				},
-				{
-					"object": "label",
-					"name": "ifendlabel1",
-					"pos": 19
-
-				},
-				{
-					"object": "label",
-					"name": "forendlabel1",
-					"pos": 24
-
-				}
-
-			],
-
-			"body": [
-
-				{
-					"object": "instruction",
-					"name": "store",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"address": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "i",
-						"const": false
-
-					},
-					"value": {
-						"object": "entity",
-						"type": "int32",
-						"name": "value",
-						"value": "2"
-
-					}
-
-				},
-				{
-					"object": "instruction",
-					"name": "label_definition",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"labelname": "forstartlabel1"
-
-				},
-				{
-					"object": "instruction",
-					"name": "variable_definition",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"variablename": "%1",
-					"var_type": "bool"
-				}, 
-
-				{
-					"object": "instruction",
-					"name": "bin",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"op": "S_LT",
-
-					"left": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "i",
-						"const": false
-
-					},
-
-					"right": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "num",
-						"const": false
-
-					},
-
-					"value": {
-						"object": "entity",
-						"type": "bool",
-						"name": "variable",
-						"variable": "%1",
-						"const": false
-
-					}
-
-				},
-
-				{
-					"object": "instruction",
-					"name": "cjump",
-					"filename": "dsq.pas",
-					"line_number": 8,
-
-					"cond": {
-
-						"object": "entity",
-						"type": "bool",
-						"name": "variable",
-						"variable": "%1",
-						"const": false
-					},
-					"thenlabel": "ifthenlabel1",
-					"elselabel": "ifelselabel1"
-				},
-
-				{
-					"object": "instruction",
-					"name": "label_definition",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"labelname": "ifthenlabel1"
-
-				},
-
-				{
-					"object": "instruction",
-					"name": "variable_definition",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"variablename": "%2",
-					"var_type": "int32"
-
-				},
-
-				{
-					"object": "instruction",
-					"name": "bin",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"op": "U_MOD",
-
-					"left": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "num",
-						"cosnt": false
-
-					},
-
-					"right": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "i",
-						"const": false
-
-					},
-
-					"value": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "%2",
-						"const": false
-
-					}
-
-				},
-				{
-					"object": "instruction",
-					"name": "variable_definition",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"variablename": "%3",
-					"var_type": "int32"
-
-				},
-				{
-
-					"object": "instruction",
-					"name": "bin",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"op": "EQ",
-
-					"left": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "i",
-						"cosnt": false
-
-					},
-
-					"right": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "%2",
-						"const": false
-
-					},
-
-					"value": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "%3",
-						"const": false
-					}
-				},
-
-				{
-					"object": "instruction",
-					"name": "cjump",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"cond": {
-						"object": "entity",
-						"type": "bool",
-						"name": "variable",
-						"variable": "%3"
-					},
-
-					"thenlabel": "ifthenlabel2",
-					"elselabel": "ifelselabel2"
-				},
-
-				{
-					"object": "instruction",
-					"name": "label_definition",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"labelname": "ifthenlabel2"
-				},
-
-				{
-					"object": "instruction",
-					"name": "jump",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"label": "ifendlabel2"
-				},
-
-				{
-					"object": "instruction",
-					"name": "label_definition",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"labelname": "ifelselabel2"
-				},
-
-				{
-					"object": "instruction",
-					"name": "label_definition",
-					"filename": "dsq.pas",
-					"line_number": 9,
-					"labelname": "ifendlabel2"
-				},
-
-				{
-					"object": "instruction",
-					"name": "jump",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"label": "ifendlabel1"
-				},
-				{
-					"object": "instruction",
-					"name": "label_definition",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"labelname": "ifelselabel1"
-				},
-
-				{
-					"object": "instruction",
-					"name": "jump",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"label": "forendlabel1"
-				},
-
-				{
-					"object": "instruction",
-					"name": "label_definition",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"labelname": "ifendlabel1"
-
-				},
-				{
-
-					"object": "instruction",
-					"name": "variable_definition",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"variablename": "%4",
-					"var_type": "int32"
-
-				},
-				{
-
-					"object": "instruction",
-					"name": "bin",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"op": "ADD",
-
-					"left": {
-
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "i",
-						"cosnt": false
-
-					},
-
-					"right": {
-
-						"object": "entity",
-						"type": "int32",
-						"name": "value",
-						"value": 1
-					},
-
-					"value": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "%4",
-						"const": false
-					}
-
-				},
-				{
-					"object": "instruction",
-					"name": "store",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"address": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "i",
-						"const": false
-					},
-					"value": {
-						"object": "entity",
-						"type": "int32",
-						"name": "variable",
-						"variable": "%4",
-						"const": false
-					}
-				},
-				{
-					"object": "instruction",
-					"name": "jump",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"label": "forstartlabel1"
-				},
-				{
-					"object": "instruction",
-					"name": "label_definition",
-					"filename": "dsq.pas",
-					"line_number": 8,
-					"labelname": "forendlabel1"
-				},
-				{
-					"object": "instruction",
-					"name": "return",
-					"filename": "dsq.pas",
-					"line_number": 10,
-					"ret": {
-						"object": "entity",
-						"type": "bool",
-						"name": "variable",
-						"variable": "g",
-						"const": false
-					}
-				}
-			]
-		}
-	],
-	"body": [
-		{
-			"object": "instruction",
-			"name": "store",
-			"filename": "dsq.pas",
-			"line_number": 13,
-			"address": {
-				"object": "entity",
-				"type": "int32",
-				"name": "variable",
-				"variable": "n",
-				"const": false
-			},
-			"value": {
-				"object": "entity",
-				"type": "int32",
-				"name": "value",
-				"value": 123
-			}
-		},
-		{
-			"object": "instruction",
-			"name": "store",
-			"filename": "dsq.pas",
-			"line_number": 14,
-			"address": {
-				"object": "entity",
-				"type": "bool",
-				"name": "variable",
-				"variable": "f",
-				"const": false
-			},
-			"value": {
-				"object": "entity",
-				"type": "bool",
-				"name": "value",
-				"value": false
-			}
-		},
-		{
-			"object": "instruction",
-			"name": "variable_definition",
-			"filename": "dsq.pas",
-			"line_number": 15,
-			"variablename": "%1",
-			"var_type": "bool"
-		},
-		{
-			"object": "instruction",
-			"name": "call",
-			"filename": "dsq.pas",
-			"line_number": 15,
-			"functionname": "prime",
-			"parameterlist": [
-				{
-					"object": "entity",
-					"type": "int32",
-					"name": "variable",
-					"variable": "n",
-					"const": false
-				}
-			],
-			"value": {
-				"object": "entity",
-				"type": "bool",
-				"name": "variable",
-				"variable": "%1",
-				"const": false
-			}
-		},
-		{
-			"object": "instruction",
-			"name": "store",
-			"filename": "dsq.pas",
-			"line_number": 15,
-			"address": {
-				"object": "entity",
-				"type": "bool",
-				"name": "variable",
-				"variable": "f",
-				"const": false
-			},
-			"value": {
-				"object": "entity",
-				"type": "bool",
-				"name": "variable",
-				"variable": "%1",
-				"const": false
-			}
-		}
-	]
-}
-```

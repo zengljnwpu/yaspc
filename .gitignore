@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 
-#vim:
+# gedit / vim:
 *~
 *.swp
 
@@ -12,6 +11,7 @@
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+<<<<<<< HEAD
 *.py[cod]
 *$py.class
 
@@ -19,11 +19,12 @@ __pycache__/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 backend/__pycache__/
+=======
+backend_in_py/__pycache__/
+>>>>>>> 71df27aa0c8d11d4ec27e1c60e8d8467665c5b02
 *.py[cod]
 *$py.class
 
-
->>>>>>> backend
 # C extensions
 *.so
 
@@ -42,10 +43,7 @@ parts/
 sdist/
 var/
 wheels/
-<<<<<<< HEAD
-=======
 
->>>>>>> backend
 *.egg-info/
 .installed.cfg
 *.egg
@@ -123,8 +121,5 @@ ENV/
 /site
 
 # mypy
-<<<<<<< HEAD
 .mypy_cache/
-=======
-.mypy_cache/
->>>>>>> backend
+
