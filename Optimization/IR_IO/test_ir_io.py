@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Author : lzc80234@qq.com (liuzhaoci) , axiqia
 # Created : 2017/5/24
