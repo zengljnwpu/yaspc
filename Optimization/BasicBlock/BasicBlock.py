@@ -6,7 +6,7 @@ Created on Fri May 12 10:54:38 2017
 @author: hellolzc axiqia
 """
 
-import yaspc.Optimization.Instruction.instruction as instruction
+from yaspc.Optimization.IR_IO import instruction
 
 class BasicBlock:
     def __init__(self, number=0):

@@ -12,7 +12,7 @@ from __future__ import print_function
 import copy
 from yaspc.Optimization.BasicBlock import BasicBlock
 from yaspc.Optimization.DataFlow import ud
-from yaspc.Optimization.Instruction import instruction
+from yaspc.Optimization.IR_IO import instruction
 
 DEBUG = False
 
@@ -229,11 +229,19 @@ class Loop(object):
         # 或  b. 当控制从L的出口节点离开循环时，变量A不再活跃
         if DEBUG:
             print('Test condition 3...')
+        ud.live_variable_analysis(block_list)
         self.find_exit(block_list)
         for block in block_list:
             if block.blockNum in self.exit:
-                if the_block.blockNum not in dominator_dict[block.blockNum]:
-                    # print('%d not in %s'%(the_block.blockNum, str(dominator_dict[block.blockNum])))
+                condition_a_flag = False
+                condition_b_flag = False
+                if the_block.blockNum in dominator_dict[block.blockNum]:
+                    print('%d is in %s'%(the_block.blockNum, str(dominator_dict[block.blockNum])))
+                    condition_a_flag = True
+                if var_A_name not in block.live_def_set:
+                    print('%s is not in %s'%(var_A_name, str(block.live_def_set)))
+                    condition_b_flag = True
+                if not (condition_a_flag or condition_b_flag):
                     return False
         # 三个条件均满足，返回真
         return True
@@ -325,7 +333,6 @@ def do_loop_optimization(block_list, debug_print=True):
         ud.set_debug_print(False)
         var_reduce = ud.reach_def_iteration(block_list)
         ud.ud_set(block_list, var_reduce)
-        ud.set_debug_print(True)
         # Loop-invariant expressions can be hoisted out of loops
         loop.hoist_loop_invariant_expressions(block_list, D, var_reduce)
-
+        ud.set_debug_print(True)
