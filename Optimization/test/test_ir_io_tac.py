@@ -12,7 +12,6 @@ from __future__ import print_function
 
 import json
 
-import yaspc.Optimization.Instruction.instruction as instruction
 import yaspc.Optimization.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
 import yaspc.Optimization.BasicBlock.DestructBasicBlock as DestructBasicBlock
 import yaspc.Optimization.IR_IO.irParser as irParser

@@ -26,7 +26,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from yaspc.Optimization.Instruction import instruction
+from yaspc.Optimization.IR_IO import instruction
 
 class VariableList(object):
     """see this file's doc string

@@ -12,7 +12,7 @@ from __future__ import print_function
 import copy
 from yaspc.Optimization.BasicBlock import BasicBlock
 from yaspc.Optimization.DataFlow import ud
-from yaspc.Optimization.Instruction import instruction
+from yaspc.Optimization.IR_IO import instruction
 
 DEBUG = False
 

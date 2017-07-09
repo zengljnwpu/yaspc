@@ -12,7 +12,7 @@ from __future__ import print_function
 
 import json
 import re
-import yaspc.Optimization.Instruction.instruction as instruction
+from yaspc.Optimization.IR_IO import instruction
 
 ##################################################################
 # TAC IR Format:

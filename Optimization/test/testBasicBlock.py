@@ -22,7 +22,7 @@ def main():
     '''
     run a example of parser Three-address code and generate Basicblock list
     '''
-    with open('../DataFlow/udtest.tac.txt', 'r') as input_file:
+    with open('udtest.tac.txt', 'r') as input_file:
         ir_strs = input_file.readlines()
     print(ir_strs)
     print('=====================================')

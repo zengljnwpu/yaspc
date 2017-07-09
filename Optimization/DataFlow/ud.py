@@ -9,8 +9,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import yaspc.Optimization.Instruction.instruction as instruction
-import yaspc.Optimization.BasicBlock.BasicBlock as BasicBlock
+from yaspc.Optimization.IR_IO import instruction
 
 DEBUG = True
 def_inst = (instruction.BinaryInst, instruction.UnaryInst,\
