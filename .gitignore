@@ -11,17 +11,17 @@
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
-<<<<<<< HEAD
+
 *.py[cod]
 *$py.class
 
-=======
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 backend/__pycache__/
-=======
+
 backend_in_py/__pycache__/
->>>>>>> 71df27aa0c8d11d4ec27e1c60e8d8467665c5b02
+
 *.py[cod]
 *$py.class
 
@@ -30,7 +30,7 @@ backend_in_py/__pycache__/
 
 # Distribution / packaging
 .Python
-env/
+
 build/
 develop-eggs/
 dist/
@@ -102,11 +102,12 @@ celerybeat-schedule
 # SageMath parsed files
 *.sage.py
 
-# dotenv
-.env
 
-# virtualenv
+# Environments
+.env
 .venv
+env/
+
 venv/
 ENV/
 
@@ -122,4 +123,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+
+# yply generated file
+frontend/lextable.py
+frontend/parsetable.py
 
