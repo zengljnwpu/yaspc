@@ -11,6 +11,7 @@ from frontend import compiler
 
 from argparse import ArgumentParser
 from argparse import RawTextHelpFormatter
+from frontend import explain
 
 __version__ = 0.4
 __date__ = '2017-06-02'
@@ -85,6 +86,11 @@ def run(argv=None):
         synthesize = (args.ir_code or args.bit_code or
                       args.obj_code or args.asm_code or
                       args.exe)
+
+
+        a = explain.explain()
+        a.programEplain(c.ast, c.ctx)
+        a.store()
 
         if synthesize:
             c.synthesize(args.triple, args.cpu)

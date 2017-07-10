@@ -32,9 +32,8 @@ from __future__ import absolute_import, print_function
 
 from ply import yacc
 
-from frontend import log
-from frontend.ast import *
-from frontend.lexer import *
+from frontend.ast import * #@UnusedWildImport
+from frontend.lexer import * #@UnusedWildImport
 
 
 def get_pos(p, num):

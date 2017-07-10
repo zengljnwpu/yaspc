@@ -184,8 +184,8 @@ def f_trunc(mod):
 
 def f_powf(mod):
     '''libc: power function'''
-    ret = Type.float()
-    args = [Type.float(), Type.float()]
+    ret = ir.FloatType().float()
+    args = [ir.FloatType().float(), ir.FloatType().float()]
 
     type_ = ir.FunctionType(ret, args)
     return ir.Function(mod, type_, 'powf')
@@ -242,8 +242,8 @@ def f_sqrt(mod):
 
 def f_sqrtf(mod):
     '''libc: square root function'''
-    ret = Type.float()
-    args = [Type.float()]
+    ret = ir.FloatType().float()
+    args = [ir.FloatType().float()]
 
     type_ = ir.FunctionType(ret, args)
     return ir.Function(mod, type_, 'sqrtf')

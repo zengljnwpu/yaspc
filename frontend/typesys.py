@@ -6,6 +6,11 @@ from __future__ import absolute_import, print_function
 import math
 import sys
 
+from frontend.symtab import SymtabException
+
+def assert_is_type(ty):
+    if not isinstance(ty, Type):
+        raise SymtabException("Invalid type '%s'", type(ty))
 
 class Type(object):
 
@@ -435,8 +440,3 @@ class FileType(Type):
     @property
     def id(self):
         return "file of %s" % self.component
-
-
-def assert_is_type(ty):
-    if not isinstance(ty, Type):
-        raise SymtabException("Invalid type '%s'", type(ty))

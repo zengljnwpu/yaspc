@@ -678,23 +678,6 @@ class RefParameterNode(Node):
         return "Reference parameter"
 
 
-class ProcedureNode(Node):
-
-    def __init__(self, header, block, attr=None):
-        self.attr = attr
-        self.header = header
-        self.block = block
-
-    @property
-    def children(self):
-        return [self.attr,
-                self.header,
-                self.block]
-
-    def __str__(self):
-        return "Procedure"
-
-
 class FunctionNode(Node):
 
     def __init__(self, header, block, attr=None):
@@ -725,20 +708,6 @@ class FunctionHeadNode(Node):
 
     def __str__(self):
         return "Function head"
-
-
-class ProcedureHeadNode(Node):
-
-    def __init__(self, identifier, param_list=None):
-        self.identifier = identifier
-        self.param_list = param_list
-
-    @property
-    def children(self):
-        return [self.identifier, self.param_list]
-
-    def __str__(self):
-        return "Procedure head"
 
 
 class StatementListNode(Node):
@@ -774,27 +743,6 @@ class LabeledStatementNode(Node):
 
     def __str__(self):
         return "Labeled Statement"
-
-
-class StatementListNode(Node):
-
-    def __init__(self, stmt, stmt_list=None):
-        self._children = list()
-
-        if stmt_list:
-            self._children.extend(stmt_list._children)
-
-        if isinstance(stmt, StatementListNode):
-            self._children.extend(stmt._children)
-        else:
-            self._children.append(stmt)
-
-    @property
-    def children(self):
-        return filter(None, self._children)
-
-    def __str__(self):
-        return "Statement list"
 
 
 class RepeatNode(Node):
@@ -1044,22 +992,6 @@ class CaseListElementNode(Node):
 
     def __str__(self):
         return "Case list element"
-
-
-class IdentifierListNode(Node):
-    def __init__(self, ident, ident_list=None):
-        self._children = list()
-        if ident_list:
-            self._children.extend(ident_list._children)
-
-        self._children.append(ident)
-
-    @property
-    def children(self):
-        return self._children
-
-    def __str__(self):
-        return "Identifier list"
 
 
 class VarLoadNode(Node):

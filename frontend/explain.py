@@ -5,12 +5,10 @@ from __future__ import absolute_import, print_function, with_statement
 
 import json
 
-from frontend.ast import *
-from frontend.exchange import *
-from frontend.compiler import *
-from frontend.typesys import *
-
-
+from frontend.ast import * #@UnusedWildImport
+from frontend.exchange import * #@UnusedWildImport
+from frontend.compiler import * #@UnusedWildImport
+from frontend.typesys import * #@UnusedWildImport
 
 class explain(object):
     varno = 0
@@ -27,7 +25,7 @@ class explain(object):
     #programNode is given by user
     def programEplain(self,programNode,realctx):
         if programNode != None:
-            ctx = realctx
+            # ctx = realctx
             name = str(programNode.identifier.name)
             line_number = int(programNode.position.lineno)
             varlist = []
@@ -87,7 +85,6 @@ class explain(object):
             vartype = str(self.typeExplain(constdeclNode.type))+"*"
             line_number = int(constdeclNode.position.lineno)
             constdefdata = {}
-            vardata = {}
             constname = str(constdeclNode.identifier.name)
             constdefExc(constdefdata,line_number,constname,vartype,value)
             varlist.append(constdefdata)
@@ -238,16 +235,20 @@ class explain(object):
 
 
 
-    def unaExplain(self,body,unaNode,value):
-        if unaNode != None:
-            line_number = int(unaNode.position.lineno)
-            op = opExplain(str(unaNode.name),1,0)
+    def uniExplain(self,varlist,body,uniNode,value):
+        if uniNode != None:
+            line_number = str(uniNode.position.lineno)
+            op = str(uniNode.name)
             entity = {}
-            self.exprExplain(body,unaNode.expr,entity)
-            value = newvarExplain(str(self.typeExplain(uniNode.type)))
-            unadata = {}
-            unaExc(unidata,line_number,op,variable,entity)
-            body.append(unadata)
+            self.exprExplain(varlist,body,uniNode.expr,entity)
+            varname = str("%"+str(self.varno))
+            self.varno = self.varno+1
+            vartype = str(self.typeExplain(uniNode.type))
+            variableExc(value,varname,vartype,False)
+            varlist.append(value)
+            unidata = {}
+            uniExc(unidata,line_number,op, value,entity)
+            body.append(unidata)
 
 
 
@@ -450,7 +451,7 @@ class explain(object):
             self.cjumpExplain(body,exprNode,thenlabelname,elselabelname)
             self.labeldefExplain(labellist,body,line_number,thenlabelname)
             self.stmtlistExplain(labellist,body,forNode.body,functionname)
-            varppNode=BinaryOpNode(OpNode("ADD"),VarAccessNode(forNode.var),IntegerNode(1))
+            BinaryOpNode(OpNode("ADD"),VarAccessNode(forNode.var),IntegerNode(1))
             addleft = {}
             self.exprExplain(body,forNode.var,addleft)
             addright = {}
@@ -467,7 +468,7 @@ class explain(object):
             self.labeldefExplain(labellist,body,line_number,elselabelname)
         
 
-    def typeExplain(type,vartype):
+    def typeExplain(self, vartype):
         if isinstance(vartype,UIntType):
             return "u_int"+str(vartype.width)
         elif isinstance(vartype,SIntType):
@@ -550,9 +551,9 @@ def con_binExplain(binNode):
         elif binNode.op.name == "^":
             return con_exprExplain(binNode.left)^con_exprExplain(binNode.right)
         elif binNode.op.name == "<<":
-            return con_exprExplain(unaNode.left)<<con_exprExplain(binNode.right)
+            return con_exprExplain(binNode.left)<<con_exprExplain(binNode.right)
         elif binNode.op.name == ">>":
-            return con_exprExplain(unaNode.left)>>con_exprExplain(binNode.right)
+            return con_exprExplain(binNode.left)>>con_exprExplain(binNode.right)
         else:
             return 0
     else:
@@ -648,11 +649,6 @@ def opExplain(op,UorS,OorT):
     else:
         return "S_CAST"
 
-wqttest = Compiler("a.pas")
-wqttest.analyze()
-a = explain()
-a.programEplain(wqttest.ast,wqttest.ctx)
-a.store()
 
 
 

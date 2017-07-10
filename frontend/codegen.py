@@ -3,13 +3,11 @@ LLVM-IR code generation.
 '''
 from __future__ import absolute_import, print_function
 
-import llvmlite as llvm
 import llvmlite.ir as ir
 import llvmlite.llvmpy.core as lc
 
 from frontend import ast
 from frontend import symtab
-from frontend import builtin
 from frontend import log
 from frontend import typesys
 from frontend import builtin
@@ -1088,7 +1086,7 @@ class CodegenVisitor(visitor.DefaultVisitor):
         self.ctx.enter_scope()
         self.func_scope_level = 0
 
-        self.ctx.module = ir.Module('frontend.main')
+        self.ctx.module = ir.Module('main')
 
         self.ctx.install_typedef('Boolean' , typesys.BoolType())
         self.ctx.install_typedef('char'    , typesys.CharType())
@@ -1385,7 +1383,7 @@ class CodegenVisitor(visitor.DefaultVisitor):
 
         cond = node.expr.accept(self)
 
-        branch = self.ctx.builder.cbranch(cond.handle, bb_true, bb_false)
+        self.ctx.builder.cbranch(cond.handle, bb_true, bb_false)
 
         self.ctx.builder.position_at_end(bb_true)
         if node.iftrue:
@@ -1872,8 +1870,8 @@ class CodegenVisitor(visitor.DefaultVisitor):
             lo = ir.Constant(type_, node.type.lo)
             hi = ir.Constant(type_, node.type.hi)
 
-            #md = lc.MetaData.get(self.ctx.module, [lo, hi])
-            #load.set_metadata('range', md)
+            md = lc.MetaData.get(self.ctx.module, [lo, hi])
+            load.set_metadata('range', md)
 
         return symtab.ConstantValue(load, node.type)
 

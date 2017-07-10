@@ -1153,7 +1153,7 @@ class TypeSetVisitor(visitor.DefaultVisitor):
 
         try:
             node.type = self.ctx.find_typedef(name)
-        except symtab.SymtabException as e:
+        except symtab.SymtabException:
             node.type = typesys.DeferredType(name)
 
         return node.type

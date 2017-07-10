@@ -2,9 +2,7 @@
 
 from __future__ import absolute_import, print_function, with_statement
 
-from ply import yacc
-
-from ast import *
+from ast import * #@UnusedWildImport
 
 
 #program definition
@@ -171,7 +169,7 @@ def binExc(bindata,line_number,op,left,right,value):
 
 
 #uni
-def unaExc(unadata,line_number,op,variable,value):
+def uniExc(unadata,line_number,op,variable,value):
     unadata['object'] = "instruction"
     unadata['line_number'] = line_number
     unadata['op'] = op
