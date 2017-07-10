@@ -1,5 +1,27 @@
+
+# gedit / vim:
+*~
+*.swp
+
+# vscode
+.vscode/*
+
+# pycharm
+.idea/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
+
+*.py[cod]
+*$py.class
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+backend/__pycache__/
+
+backend_in_py/__pycache__/
+
 *.py[cod]
 *$py.class
 
@@ -8,6 +30,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+
 build/
 develop-eggs/
 dist/
@@ -20,6 +43,7 @@ parts/
 sdist/
 var/
 wheels/
+
 *.egg-info/
 .installed.cfg
 *.egg
@@ -78,10 +102,12 @@ celerybeat-schedule
 # SageMath parsed files
 *.sage.py
 
+
 # Environments
 .env
 .venv
 env/
+
 venv/
 ENV/
 
@@ -98,6 +124,8 @@ ENV/
 # mypy
 .mypy_cache/
 
+
 # yply generated file
 frontend/lextable.py
 frontend/parsetable.py
+
