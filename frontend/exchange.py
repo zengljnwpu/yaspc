@@ -25,7 +25,7 @@ def functionExc(funcdata,name,line_number,functype,paralist,varlist,labellist,bo
     funcdata['line_number'] = int(line_number)
     funcdata['type'] = str(functype)
     funcdata['parameterlsit'] = paralist
-    funcdata['variablelsit'] = varlist
+    funcdata['variablelist'] = varlist
     funcdata['labellist'] = labellist   
     funcdata['body'] = body
 
@@ -37,7 +37,7 @@ def procedureExc(procdata,name,line_number,paralist,varlist,labellist,body):
     procdata['line_number'] = int(line_number)
     procdata['type'] = "void"
     procdata['parameterlsit'] = paralist
-    procdata['variablelsit'] = varlist
+    procdata['variablelist'] = varlist
     procdata['labellist'] = labellist
     procdata['body'] = body
 
@@ -139,11 +139,11 @@ def jumpExc(jumpdata,line_number,label):
 
 
 #call
-def callExc(calldata,line_number,functionname,paramaterlist,value):
+def callExc(calldata,line_number,functionname,parameterlist,value):
     calldata['object'] = "instruction"
     calldata['line_number'] = line_number
     calldata['functionname'] = functionname
-    calldata['paramaterlist'] = paramaterlist
+    calldata['parameterlist'] = parameterlist
     calldata['value'] = value
     calldata['name'] = "call"
 
@@ -153,7 +153,7 @@ def retExc(retdata,line_number,ret):
     retdata['object'] = "instruction"
     retdata['line_number'] = line_number
     retdata['ret'] = ret
-    retdata['name'] = "ret"
+    retdata['name'] = "return"
 
 
 

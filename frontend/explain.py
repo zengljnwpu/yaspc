@@ -19,7 +19,7 @@ class explain(object):
     #store the final data dictionary
     def store(self):
         with open('data.json', 'w') as json_file:
-            json_file.write(json.dumps(self.programdata))
+            json_file.write(json.dumps(self.programdata, sort_keys=True, indent=4))
 
 
     #programNode is given by user
@@ -204,18 +204,18 @@ class explain(object):
             calldata = {}
             line_number = int(funccallNode.position.lineno)
             functionname = str(funccallNode.identifier.name)
-            paramaterlist = []
-            self.argulistExplain(paramaterlist,body,funccallNode.arg_list)
-            callExc(calldata,line_number,functionname,paramaterlist,value)
+            parameterlist = []
+            self.argulistExplain(parameterlist,body,funccallNode.arg_list)
+            callExc(calldata,line_number,functionname,parameterlist,value)
             body.append(calldata)
 
 
-    def argulistExplain(self,paramaterlist,body,argulistNode):
+    def argulistExplain(self,parameterlist,body,argulistNode):
         if argulistNode != None:
             for i in range(len(argulistNode._children)):
                 value = {}
                 self.exprExplain(body,argulistNode._children[i].expr,value)
-                paramaterlist.append(value)
+                parameterlist.append(value)
 
 
 
