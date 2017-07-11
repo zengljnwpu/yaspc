@@ -232,6 +232,11 @@ def constant_propagation(block_list, var_reduce, inst_list):
         change = False
         for block in block_list:
             for inst in block.instList:
+                """ there is a unique definition of each operand V
+                    that reaches current instruction, 
+                    and definition is the form store c to V for a constant c,
+                    then we can replace V with c 
+                """
                 if isinstance(inst, instruction.BinaryInst):
                     left_ud = inst.left_ud
                     right_ud = inst.right_ud
