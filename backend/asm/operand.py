@@ -95,8 +95,8 @@ class MemoryReference (Operand):
 
 
 class IndirectMemoryReference (MemoryReference):
-    def __init__(self, offset: int, base: Register, fixed = True):
-        super().__init__()
+    def __init__(self, offset, base, fixed = True):
+        super(IndirectMemoryReference, self).__init__()
         self._offset = None
         if isinstance(offset, IntegerLiteral):
             self._offset = offset
@@ -153,8 +153,8 @@ class IndirectMemoryReference (MemoryReference):
 
 
 class DirectMemoryReference (MemoryReference):
-    def __init__ (self, val: Literal):
-        super().__init__()
+    def __init__ (self, val):
+        super(DirectMemoryReference, self).__init__()
         self._value = val
 
     def value(self):

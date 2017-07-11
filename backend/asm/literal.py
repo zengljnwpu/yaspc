@@ -1,4 +1,4 @@
-class Literal ():
+class Literal (object):
     def to_source (self, table = None):
         return
 
@@ -19,7 +19,7 @@ class Literal ():
 
 
 class IntegerLiteral (Literal):
-    def __init__ (self, n:int):
+    def __init__ (self, n):
         self._value = int(n)
 
     def value(self):
@@ -112,7 +112,7 @@ class BaseSymbol (Symbol):
 
 class NamedSymbol (BaseSymbol):
     def __init__(self, name):
-        super().__init__()
+        super(NamedSymbol, self).__init__()
         if name == "":
             raise Exception ("NamedSymbol must have _name")
         self._name = name
@@ -180,7 +180,7 @@ class UnnamedSymbol (BaseSymbol):
 
 
 class SuffixedSymbol (Symbol):
-    def __init__(self, base: Symbol, suffix: str):
+    def __init__(self, base, suffix):
        super().__init__()
        self._base = base
        self._suffix = suffix

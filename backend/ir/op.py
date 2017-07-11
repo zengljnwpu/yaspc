@@ -1,38 +1,38 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class Op (Enum):
-    ADD = auto()
-    SUB = auto(),
-    MUL = auto(),
-    S_DIV = auto(),
-    U_DIV = auto(),
-    S_MOD = auto(),
-    U_MOD = auto(),
-    BIT_AND = auto(),
-    BIT_OR = auto(),
-    BIT_XOR = auto(),
-    BIT_LSHIFT = auto(),
-    BIT_RSHIFT = auto(),
-    ARITH_RSHIFT = auto(),
+    ADD = 1
+    SUB = 2
+    MUL = 3
+    S_DIV = 4
+    U_DIV = 5
+    S_MOD = 6
+    U_MOD = 7
+    BIT_AND = 8
+    BIT_OR = 9
+    BIT_XOR = 10,
+    BIT_LSHIFT = 11,
+    BIT_RSHIFT = 12,
+    ARITH_RSHIFT = 13,
 
-    EQ = auto(),
-    NEQ = auto(),
-    S_GT = auto(),
-    S_GTEQ = auto(),
-    S_LT = auto(),
-    S_LTEQ = auto(),
-    U_GT = auto(),
-    U_GTEQ = auto(),
-    U_LT = auto(),
-    U_LTEQ = auto(),
+    EQ = 20,
+    NEQ = 21,
+    S_GT = 22,
+    S_GTEQ = 23,
+    S_LT = 24,
+    S_LTEQ = 25,
+    U_GT = 26,
+    U_GTEQ = 27,
+    U_LT = 28,
+    U_LTEQ = 29,
 
-    UMINUS = auto(),
-    BIT_NOT = auto(),
-    NOT = auto(),
+    UMINUS = 30,
+    BIT_NOT = 31,
+    NOT = 32,
 
-    S_CAST = auto(),
-    U_CAST = auto()
+    S_CAST = 33,
+    U_CAST = 34
 
     def __eq__(self, other):
         if not isinstance(other, Op):
@@ -45,7 +45,7 @@ class Op (Enum):
 
 
     @staticmethod
-    def op_factory (op: str):
+    def op_factory (op):
         if op == "+":
             return Op.ADD
         elif op == "-" :
@@ -82,7 +82,7 @@ class Op (Enum):
            raise Exception ("unknown binary op: " + op)
 
     @staticmethod
-    def intern_binary (op: str, is_signed: bool):
+    def intern_binary (op, is_signed):
         if op == "+":
             return Op.ADD
         elif op == "-" :
@@ -140,7 +140,7 @@ class Op (Enum):
            raise Exception ("unknown binary op: " + op)
 
     @staticmethod
-    def intern_unary (op: str):
+    def intern_unary (op):
         if op == "+":
             raise Exception ("unary+ should not be in the ir")
         elif op == "-":

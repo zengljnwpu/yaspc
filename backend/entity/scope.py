@@ -1,20 +1,19 @@
 from backend.entity.entity import *
 import backend.type.type
 
-
 #Used to describe scope of variables
 class LocalScope (object):
     def __init__(self, local):
-        super().__init__()
+        super(LocalScope, self).__init__()
         self._variables = dict()
         for i in local:
             t = DefinedVariable (priv = False, type = i["type"], init = i["value"], name = i["name"])
             self._variables[i["name"]] = t
 
-    def is_defined_locally (self, name: str):
+    def is_defined_locally (self, name):
         return name in self._variables
 
-    def defined_variable (self, var: DefinedVariable):
+    def defined_variable (self, var):
         if var._name in self._variables:
             raise Exception ("duplicated variable: " + var._name)
         self._variables[var._name] = var
