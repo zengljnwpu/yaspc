@@ -14,7 +14,7 @@ from __future__ import print_function
 import json
 import argparse
 
-
+from yaspc.frontend import log
 from yaspc.Optimization.BasicBlock import ConstructBasicBlock
 from yaspc.Optimization.BasicBlock import DestructBasicBlock
 from yaspc.Optimization.IR_IO import irParser
@@ -33,39 +33,38 @@ def optimize_a_function(function_json, control_flow=False, reach_defination=Fals
     inst_list = irParser.renumbering(inst_list)
     if debug_print:
         for inst in inst_list:
-            print('%3d\t%s'%(inst.pos, str(inst)))
-    print('\nConstrusting basicblock...')
+            log.d('optimization', '%3d\t%s'%(inst.pos, str(inst)))
+    log.i('optimization', '\nConstrusting basicblock...')
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
 
     if control_flow:
-        print('\nOptimizing control flow...')
+        log.i('optimization', '\nOptimizing control flow...')
         inst_list = PeepholeOptimization.control_flow_optimization(block_list, inst_list)
         block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
 
     if reach_defination:
-        print('\nAnalyzing reach defination...')
+        log.i('optimization', '\nAnalyzing reach defination...')
         var_reduce = ud.reach_def_iteration(block_list)
         ud.ud_set(block_list, var_reduce)
         ud.constant_propagation(block_list, var_reduce, inst_list)
         ud.live_variable_analysis(block_list)
 
     if optimize_loop:
-        print('\nAnalyzing loop...')
+        log.i('optimization', '\nAnalyzing loop...')
         loop.do_loop_optimization(block_list)
 
-    print('\nGenerating New IR...')
+    log.i('optimization', '\nGenerating New IR...')
     inst_list = DestructBasicBlock.BlockList_to_InstList(block_list)
     inst_list = PeepholeOptimization.remove_unused_label(inst_list)
     new_labellist = DestructBasicBlock.generate_labellist(inst_list)
     inst_list_json = irParser.encode_body(inst_list)
     labellist_json = new_labellist
 
-    if debug_print:
-        print ("============LinearInstructionList==================")
-        for inst in inst_list:
-            print('%3d\t%s'%(inst.pos, str(inst)))
-        print ("=================LabelList=========================")
-        print(json.dumps(labellist_json, sort_keys=True, indent=4))
+    log.d('optimization', "============LinearInstructionList==================")
+    for inst in inst_list:
+        log.d('optimization', '%3d\t%s'%(inst.pos, str(inst)))
+    log.d('optimization', "=================LabelList=========================")
+    log.d('optimization', json.dumps(labellist_json, sort_keys=True, indent=4))
     return inst_list_json, labellist_json
 
 def optimize_a_program(program_json, control_flow=False, reach_defination=False, loop=False):
@@ -73,19 +72,19 @@ def optimize_a_program(program_json, control_flow=False, reach_defination=False,
     return optimized program (JSON format object)
     """
     for function_no, function_json in enumerate(program_json['functionlist']):
-        print('\n---------------------------------------------------------')
-        print('\nparsing the body of function "%s" ...\n'%function_json["name"])
+        log.i('optimization', '\n---------------------------------------------------------')
+        log.i('optimization', '\nparsing the body of function "%s" ...\n'%function_json["name"])
         new_body, new_labellist = optimize_a_function(function_json, control_flow, \
                                                   reach_defination, loop, debug_print=True)
-        print('function %d body parsed successfully.\n'%function_no)
+        log.i('optimization', 'function %d body parsed successfully.\n'%function_no)
         function_json['body'] = new_body
         function_json['labellist'] = new_labellist
 
-    print('\n---------------------------------------------------------')
-    print('\nparsing the body of main function ...\n')
+    log.i('optimization', '\n---------------------------------------------------------')
+    log.i('optimization', '\nparsing the body of main function ...\n')
     new_body, new_labellist = optimize_a_function(program_json, control_flow, \
                                               reach_defination, loop, debug_print=True)
-    print('program body parsed successfully.\n')
+    log.i('optimization', 'program body parsed successfully.\n')
     program_json['body'] = new_body
     program_json['labellist'] = new_labellist
     return program_json
@@ -95,18 +94,18 @@ def main(input_file_name, output_file_name, control_flow=False, reach_defination
     '''
     The main function of all optimization
     '''
-    print('\nWelcome!')
-    print('INPUT: %s \tOUTPUT %s'%(input_file_name, output_file_name))
-    print('Selction: \n\toptimize control flow: %s'%control_flow)
-    print('\toptimize reach defination: %s'%reach_defination)
-    print('\toptimize loop: %s\n'%loop)
+    log.i('optimization', '\nWelcome!')
+    log.i('optimization', 'INPUT: %s \tOUTPUT %s'%(input_file_name, output_file_name))
+    log.i('optimization', 'Selction: \n\toptimize control flow: %s'%control_flow)
+    log.i('optimization', '\toptimize reach defination: %s'%reach_defination)
+    log.i('optimization', '\toptimize loop: %s\n'%loop)
     with open(input_file_name, 'r') as input_file:
         ir_str = input_file.read()
         ir_json = json.loads(ir_str)
-    #print(json.dumps(ir_json, sort_keys=True, indent=4))
+    #log.i('optimization', json.dumps(ir_json, sort_keys=True, indent=4))
     ir_json = optimize_a_program(ir_json)
-    print('\n---------------------------------------------------------')
-    print('\nWrite output file...\n')
+    log.i('optimization', '\n---------------------------------------------------------')
+    log.i('optimization', '\nWrite output file...\n')
     with open(output_file_name, 'w') as output_file:
         ir_str = json.dumps(ir_json, sort_keys=True, indent=4)
         output_file.write(ir_str)
