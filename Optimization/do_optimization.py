@@ -22,7 +22,7 @@ from yaspc.Optimization.Peephole import PeepholeOptimization
 from yaspc.Optimization.DataFlow import ud
 from yaspc.Optimization.Loop import loop
 
-def do_optimization(function_json, control_flow=False, reach_defination=False, optimize_loop=False, debug_print=True):
+def optimize_a_function(function_json, control_flow=False, reach_defination=False, optimize_loop=False, debug_print=True):
     """optimize a body of a function or a program (JSON format object)
     return optimized body and updated label list (JSON format object)
     """
@@ -68,6 +68,28 @@ def do_optimization(function_json, control_flow=False, reach_defination=False, o
         print(json.dumps(labellist_json, sort_keys=True, indent=4))
     return inst_list_json, labellist_json
 
+def optimize_a_program(program_json, control_flow=False, reach_defination=False, loop=False):
+    """optimize a program (JSON format object)
+    return optimized program (JSON format object)
+    """
+    for function_no, function_json in enumerate(program_json['functionlist']):
+        print('\n---------------------------------------------------------')
+        print('\nparsing the body of function "%s" ...\n'%function_json["name"])
+        new_body, new_labellist = optimize_a_function(function_json, control_flow, \
+                                                  reach_defination, loop, debug_print=True)
+        print('function %d body parsed successfully.\n'%function_no)
+        function_json['body'] = new_body
+        function_json['labellist'] = new_labellist
+
+    print('\n---------------------------------------------------------')
+    print('\nparsing the body of main function ...\n')
+    new_body, new_labellist = optimize_a_function(program_json, control_flow, \
+                                              reach_defination, loop, debug_print=True)
+    print('program body parsed successfully.\n')
+    program_json['body'] = new_body
+    program_json['labellist'] = new_labellist
+    return program_json
+
 
 def main(input_file_name, output_file_name, control_flow=False, reach_defination=False, loop=False):
     '''
@@ -82,23 +104,7 @@ def main(input_file_name, output_file_name, control_flow=False, reach_defination
         ir_str = input_file.read()
         ir_json = json.loads(ir_str)
     #print(json.dumps(ir_json, sort_keys=True, indent=4))
-    for function_no, function_json in enumerate(ir_json['functionlist']):
-        print('\n---------------------------------------------------------')
-        print('\nparsing the body of function "%s" ...\n'%function_json["name"])
-        new_body, new_labellist = do_optimization(function_json, control_flow, \
-                                                  reach_defination, loop, debug_print=True)
-        print('function %d body parsed successfully.\n'%function_no)
-        function_json['body'] = new_body
-        function_json['labellist'] = new_labellist
-
-    print('\n---------------------------------------------------------')
-    print('\nparsing the body of main function ...\n')
-    new_body, new_labellist = do_optimization(ir_json, control_flow, \
-                                              reach_defination, loop, debug_print=True)
-    print('program body parsed successfully.\n')
-    ir_json['body'] = new_body
-    ir_json['labellist'] = new_labellist
-
+    ir_json = optimize_a_program(ir_json)
     print('\n---------------------------------------------------------')
     print('\nWrite output file...\n')
     with open(output_file_name, 'w') as output_file:

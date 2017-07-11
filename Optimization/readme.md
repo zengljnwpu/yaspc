@@ -2,7 +2,7 @@
 
 优化整体的入口为 `do_optimization.py` 。
 该程序可以直接运行，可以使用命令行参数，使用--help选项查看详细参数。
-另一种方式是`import`该代码，调用其中的`main`函数或`do_optimization`函数。
+另一种方式是`import`该代码，调用其中的`main`函数或`optimize_a_program`函数。
 
 ## 中间表示的形式：
 优化部分代码支持两种形式的IR：

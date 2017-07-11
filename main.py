@@ -13,6 +13,8 @@ from argparse import ArgumentParser
 from argparse import RawTextHelpFormatter
 from frontend import explain
 
+from Optimization import do_optimization
+
 __version__ = 0.4
 __date__ = '2017-06-02'
 
@@ -68,6 +70,25 @@ def run(argv=None):
         parser.add_argument('-V', '--version', action='version', version=program_version_message)
         parser.add_argument(dest="file", metavar="file")
 
+        # add conflicting options
+        group1 = parser.add_mutually_exclusive_group()
+        group1.add_argument('--control_flow', action="store_true",
+                            help='optimize control flow')
+        group1.add_argument('--no_control_flow', action="store_true",
+                            help='do not optimize control flow (default)')
+
+        group2 = parser.add_mutually_exclusive_group()
+        group2.add_argument('--reach_defination', action="store_true",
+                            help='optimize reach defination')
+        group2.add_argument('--no_reach_defination', action="store_true",
+                            help='do not optimize reach defination (default)')
+
+        group3 = parser.add_mutually_exclusive_group()
+        group3.add_argument('--loop', action="store_true",
+                            help='optimize loop')
+        group3.add_argument('--no_loop', action="store_true",
+                            help='do not optimize loop (default)')
+
         # Process arguments
         args = parser.parse_args()
 
@@ -90,6 +111,14 @@ def run(argv=None):
 
         a = explain.explain()
         a.programEplain(c.ast, c.ctx)
+
+        # set default value
+        control_flow_flag = args.control_flow
+        reach_defination_flag = args.reach_defination
+        loop_optimization_flag = args.loop
+        a.programdata = do_optimization.optimize_a_program(a.programdata, control_flow_flag,
+                                             reach_defination_flag, loop_optimization_flag)
+
         a.store()
 
         if synthesize:
