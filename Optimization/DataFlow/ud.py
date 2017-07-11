@@ -128,7 +128,7 @@ def reach_def_iteration(block_list):
         block.kill_set = set()
 
     """ init var_reduce
-        var_reduce: Record the where the variable was killed
+        var_reduce: Record where the variable was killed
             key : left value 
             value : a set where the key variable definition
     """

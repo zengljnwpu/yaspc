@@ -8,6 +8,9 @@
 
 import re
 class DAGNode:
+    """
+        a node object with left and right child
+    """
     def __init__(self, val=""):
         self.id = []
         self.op = None
@@ -41,6 +44,9 @@ class DAGNode:
 
 
 class DAGGraph:
+    """
+        a Graph with DAGNode
+    """
     def __init__(self):
         """
 
@@ -111,6 +117,7 @@ class DAGGraph:
 
 
 class QUA():
+    """ Quadruple object"""
     def __init__(self):
         self.type = None
         self.op = None
@@ -120,6 +127,7 @@ class QUA():
 
 
 def calCons1(op, op1):
+    """ calculate the unary instruction """
     if op == "!":
         temp = int(op1)
         temp = not temp
@@ -131,6 +139,7 @@ def calCons1(op, op1):
 
 
 def calCons2(op, op1, op2):
+    """ calculate the binary instruction """
     temp = None
     if op == "+":
         temp = int(op1) + int(op2)
@@ -146,7 +155,7 @@ def calCons2(op, op1, op2):
 
 
 def makeDAG(instList):
-
+    """ make DAGGraph """
     graph = DAGGraph()
     for qua in instList:
         newleft = 0
