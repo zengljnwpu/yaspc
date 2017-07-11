@@ -5,7 +5,7 @@ from backend.ir.dumper import *
 from backend.ir.op import *
 import backend.type.type
 
-class Expr():
+class Expr(object):
     @staticmethod
     def expr_factory(value):
         if value["name"] == "value":
@@ -39,7 +39,7 @@ class Expr():
     def mem_ref(self):
         raise Exception("__expr#memref called\n")
 
-    def address_node(self, type: Type):
+    def address_node(self, type):
         raise Exception("unexpected node for LHS: " + str(type))
 
     def det_entity_force(self):
@@ -48,7 +48,7 @@ class Expr():
     def accept(self, visitor):
         return
 
-    def dump(self, d: Dumper):
+    def dump(self, d):
         d.print_class(self)
         d.print_member("type", self._type)
         self._dump(self, d=d)
@@ -58,8 +58,8 @@ class Expr():
 
 
 class Addr(Expr):
-    def __init__(self, type: Type, entity: Entity):
-        super().__init__(type)
+    def __init__(self, type, entity):
+        super(Addr, self).__init__(type)
         self.entity = entity
 
     def is_addr(self):
@@ -85,7 +85,7 @@ class Addr(Expr):
 
 
 class Bin(Expr):
-    def __init__(self, type: Type, op: str, left, right, value):
+    def __init__(self, type, op, left, right, value):
         super(Bin, self).__init__(type)
         self._op = Op.op_factory(op)
         self._left = Expr.expr_factory (left)
@@ -114,7 +114,7 @@ class Bin(Expr):
 
 
 class Call(Expr):
-    def __init__(self, type: Type, expr, args:list):
+    def __init__(self, type, expr, args):
         super(Call, self).__init__(type)
         self.__expr = Expr.expr_factory(expr)
         self.__args = list()
@@ -251,10 +251,10 @@ class Var(Expr):
         return True
 
     def type(self):
-        if (super().type() == False):
+        if (super(Var, self).type() == False):
             raise Exception("Var is too big to load by 1 insn\n")
         else:
-            return super().type()
+            return super(Var, self).type()
 
     def name(self):
         return self._entity.name()

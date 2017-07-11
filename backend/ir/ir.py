@@ -9,7 +9,7 @@ from backend.ir.expr import *
 from backend.entity.scope import *
 
 
-def import_ir (data: dict()):
+def import_ir (data):
     def_vars = list()
     def_funs = list()
 

@@ -1,4 +1,6 @@
-from backend.ir.ir import *
+from __future__ import absolute_import, print_function
+
+from backend.ir.ir import import_ir
 from backend.sys_dep.x86.code_generator import *
 import json
 

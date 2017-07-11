@@ -2,7 +2,7 @@ from backend.asm.literal import *
 from backend.asm.operand import *
 
 
-class Assembly ():
+class Assembly (object):
     def to_source (self, table):
         return
 
@@ -27,7 +27,7 @@ class Assembly ():
 
 class Label (Assembly):
     def __init__ (self, sym = None):
-        super().__init__()
+        super(Label, self).__init__()
         self._symbol = None
         if sym:
             self._symbol = sym
@@ -48,7 +48,7 @@ class Label (Assembly):
 
 
 class Instruction (Assembly):
-    def __init__ (self, mnemonic: str, suffix:str = None, a1:Operand = None, a2:Operand = None, reloc:bool = None):
+    def __init__ (self, mnemonic, suffix = None, a1 = None, a2 = None, reloc = None):
         self._mnemonic = mnemonic
         self._operands = []
         if suffix:
@@ -64,7 +64,7 @@ class Instruction (Assembly):
         else:
             self._need_relocation = False
     
-    def build (self, mnemonic:str, o1:Operand, o2:Operand = None):
+    def build (self, mnemonic, o1, o2 = None):
         if not o2:
             return Instruction (mnemonic= mnemonic, suffix = self._suffix, a1 = o1, reloc = self._need_relocation)
         else:
@@ -123,8 +123,8 @@ class Instruction (Assembly):
 
 
 class Directive (Assembly):
-    def __init__(self, content: str):
-        super().__init__()
+    def __init__(self, content):
+        super(Directive, self).__init__()
         self._content = content
 
     def is_directive(self):

@@ -2,7 +2,7 @@ from backend.asm.literal import *
 
 
 class SymbolTable ():
-    def __init__(self, base: str):
+    def __init__(self, base):
         self._base = base
         self._map = dict ({})
         self._seq= 0

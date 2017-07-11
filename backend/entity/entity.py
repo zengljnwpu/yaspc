@@ -7,7 +7,7 @@ import backend.ir.ir
 entity_map = dict()
 
 class Entity (object):
-    def __init__ (self, priv:bool, type: str, name:str):
+    def __init__ (self, priv, type, name):
         self._name = name
         self._is_private = priv
         self._type = backend.type.type.Type.type_factory(type, name)
@@ -59,7 +59,7 @@ class Entity (object):
         self._check_address()
         return self._mem_ref
 
-    def set_mem_ref(self, mem: MemoryReference):
+    def set_mem_ref(self, mem):
         self._mem_ref = mem
 
     def address(self):
@@ -120,8 +120,8 @@ class Constant (Entity):
 
 
 class Function (Entity):
-    def __init__(self, priv: bool, t, name: str):
-        super().__init__(priv, t, name)
+    def __init__(self, priv, t, name):
+        super(Function, self).__init__(priv, t, name)
         self._calling_symbol = None
         self._label = None
 
@@ -140,7 +140,7 @@ class Function (Entity):
     def is_void (self):
         return self.return_type().is_void()
 
-    def set_calling_symbol (self, sym: Symbol):
+    def set_calling_symbol (self, sym):
         if self._calling_symbol:
             raise Exception ("must not happen: Function#callingSymbol was set again")
         self._calling_symbol = sym
@@ -159,7 +159,7 @@ class Function (Entity):
 
 
 class DefinedFuntion (Function):
-    def __init__(self, priv: bool, type, name: str, params, body, scope):
+    def __init__(self, priv, type, name, params, body, scope):
         super(DefinedFuntion, self).__init__(priv, type, name)
         self._params = Params (loc = 0, param_descs = params)
         self._body = body
@@ -223,7 +223,7 @@ class UndefinedFunction (Function):
         return visitor.visit()
 
 class Variable (Entity):
-    def __init__(self, priv:bool, type, name):
+    def __init__(self, priv, type, name):
         super(Variable, self).__init__(priv, type, name)
 
 
@@ -316,7 +316,7 @@ class Parameter (DefinedVariable):
 
 
 class ParamSlot (object):
-    def __init__(self, loc, param_descs: list, var_arg: bool):
+    def __init__(self, loc, param_descs, var_arg):
         self._location = loc
         self._param_descriptors = list()
         for i in param_descs:

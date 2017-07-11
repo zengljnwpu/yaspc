@@ -25,7 +25,7 @@ class Statistics ():
     def num_instruction_usage (self, insn):
         return self.fetch_count (self._insn_usage, insn)
 
-    def instruction_used(self, insn:str):
+    def instruction_used(self, insn):
         self.increment_count(self._insn_usage, insn)
 
     def does_symbol_used (self, sym):
