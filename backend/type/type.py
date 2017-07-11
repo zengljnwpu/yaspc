@@ -4,7 +4,7 @@ class Type (object):
     size_unknown = -1
 
     @staticmethod
-    def type_factory(type: str, obj):
+    def type_factory(type, obj):
         if type == "INT32":
             return IntegerType(4, False, obj)
 
@@ -100,7 +100,7 @@ class Type (object):
 
 
 class IntegerType (Type):
-    def __init__ (self, size: int, is_signed: bool, name: str):
+    def __init__ (self, size, is_signed, name):
         super (IntegerType, self).__init__()
         self._size = size
         self._is_signed = is_signed
@@ -123,7 +123,7 @@ class IntegerType (Type):
     def max_value (self):
         return 4294967295
 
-    def is_in_domain (self, i: int):
+    def is_in_domain (self, i):
         return self.min_value() <= i and self.max_value() >= i
 
     def __eq__(self, other):

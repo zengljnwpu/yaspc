@@ -1,3 +1,5 @@
+from __future__ import absolute_import, print_function
+
 from backend.sys_dep.x86.assembly_code import *
 from backend.ir.expr import *
 from backend.ir.op import *
@@ -329,7 +331,7 @@ class CodeGenerator():
         self.__extend_stack(file, frame_size)
 
     def __epilogue(self, file, saved_regs=list()):
-        temp_list = saved_regs.copy()
+        temp_list = saved_regs[:]
         temp_list.reverse()
         for reg in temp_list:
             file.virtual_pop(reg)
@@ -379,7 +381,7 @@ class CodeGenerator():
     #
     def visit(self, node):
         if isinstance(node, Call):
-            temp_list = list(node.args().copy())
+            temp_list = list(node.args()[:])
             temp_list.reverse()
             for arg in temp_list:
                 self.__compile(arg)
@@ -592,7 +594,7 @@ class CodeGenerator():
             raise Exception
 
     # Load variable content to the register
-    def __load_variable(self, var: Var, dest: x86Register):
+    def __load_variable(self, var, dest):
         if not var.mem_ref():
             a = dest.for_type(self._natural_type)
             self.__as.mov(var.address(), a)
@@ -671,5 +673,5 @@ class CodeGenerator():
         self.__as.mov(reg, mem)
 
 
-def align(n: int, alignment: int):
+def align(n, alignment):
     return int((n + alignment - 1) / alignment) * alignment

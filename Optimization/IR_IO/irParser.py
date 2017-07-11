@@ -64,10 +64,12 @@ def parse_single_inst_from_TAC(inst_string):
     Return None if wrong
     Attention: value entity is processed as integer
     '''
+    # AllocaInst Format:  variable_definition   variablename var_type
     split = re.split(r'\s+', inst_string)
     if split[0] == 'variable_definition':
         return instruction.AllocaInst(split[0], variablename=split[1], var_type="int32")
 
+    # CJumpInst Format:  cjump   cond thenlabel elselabel
     elif split[0] == 'cjump':
         cond = __get_entity_from_str(split[1])
         if cond is None:
@@ -75,9 +77,11 @@ def parse_single_inst_from_TAC(inst_string):
             return None
         return instruction.CJumpInst(split[0], cond=cond, thenlabel=split[2], elselabel=split[3])
 
+    # JumpInst Format:  jump    label
     elif split[0] == 'jump':
         return instruction.JumpInst(split[0], label=split[1])
 
+    # BinaryInst Format:  bin     op left right value
     elif split[0] == 'bin':
         left = __get_entity_from_str(split[2])
         right = __get_entity_from_str(split[3])
@@ -87,6 +91,7 @@ def parse_single_inst_from_TAC(inst_string):
             return None
         return instruction.BinaryInst(split[0], op=split[1], left=left, right=right, value=value)
 
+    # UnaryInst Format:  uni     op variable value
     elif split[0] == 'uni':
         variable = __get_entity_from_str(split[2])
         value = __get_entity_from_str(split[3])
@@ -97,6 +102,7 @@ def parse_single_inst_from_TAC(inst_string):
             return None
         return instruction.UnaryInst(split[0], op=split[1], variable=variable, value=value)
 
+    # LoadInst Format:  load    adress value
     elif split[0] == 'load':
         address = __get_entity_from_str(split[1])
         value = __get_entity_from_str(split[2])
@@ -105,6 +111,7 @@ def parse_single_inst_from_TAC(inst_string):
             return None
         return instruction.LoadInst(split[0], address=address, value=value)
 
+    # StoreInst Format:  store   adress value
     elif split[0] == 'store':
         address = __get_entity_from_str(split[1])
         value = __get_entity_from_str(split[2])
@@ -113,6 +120,7 @@ def parse_single_inst_from_TAC(inst_string):
             return None
         return instruction.StoreInst(split[0], address=address, value=value)
 
+    # CallInst Format:  call    functionname parameterlist value
     elif split[0] == 'call':
         # TODO: parameterlist is not support now
         value = __get_entity_from_str(split[3])
@@ -121,6 +129,7 @@ def parse_single_inst_from_TAC(inst_string):
             return None
         return instruction.CallInst(split[0], functionname=split[1], parameterlist=split[2], value=value)
 
+    # RetureInst Format:  return  ret
     elif split[0] == 'return':
         ret = __get_entity_from_str(split[1])
         if ret is None:
@@ -128,6 +137,7 @@ def parse_single_inst_from_TAC(inst_string):
             return None
         return instruction.RetureInst(split[0], ret=ret)
 
+    # LabelInst Format:  label_definition      labelname
     elif split[0] == 'label_definition':
         return instruction.LabelInst(split[0], labelname=split[1])
 

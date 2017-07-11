@@ -1,11 +1,11 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class Type (Enum):
-    INT8 = auto()
-    INT16 = auto()
-    INT32 = auto()
-    INT64 = auto()
+    INT8 = 1
+    INT16 = 2
+    INT32 = 4
+    INT64 = 8
 
     @classmethod
     def get (cls, size):

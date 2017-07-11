@@ -2,7 +2,7 @@ from backend.entity.entity import Entity
 import backend.ir.expr
 from backend.asm.assembly import *
 
-class Stmt ():
+class Stmt (object):
     def __init__ (self, loc):
         self._location = loc
 
@@ -123,7 +123,7 @@ class Return (Stmt):
 
 
 class Case():
-    def __init__(self, value: int, label: Label):
+    def __init__(self, value, label):
         self._value = value
         self._label = label
 

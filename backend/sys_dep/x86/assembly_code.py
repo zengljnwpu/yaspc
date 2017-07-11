@@ -9,7 +9,7 @@ from backend.sys_dep.x86.register import *
 
 # Describe a kind of ASM DSL (Domain Specific Languages) so that it can convert from ASM objects to ASM codes easily
 class AssemblyCode():
-    def __init__(self, natural_type: Type, stack_wordsize: int, label_Symbols: SymbolTable, verbose: bool):
+    def __init__(self, natural_type, stack_wordsize, label_Symbols, verbose):
         self.natural_type = natural_type
         self.stack_wordsize = stack_wordsize
         self.label_symbols = label_Symbols
@@ -22,7 +22,7 @@ class AssemblyCode():
     def assemblies(self):
         return self._assemblies
 
-    def add_all (self, assemblies: list):
+    def add_all (self, assemblies):
         return self._assemblies.extend(assemblies)
 
     def to_source (self):
@@ -45,10 +45,10 @@ class AssemblyCode():
             self._statistics = Statistics.collect(self._assemblies)
         return self._statistics
 
-    def does_uses (self, reg: x86Register):
+    def does_uses (self, reg):
         return self._statistics.does_register_used (reg.base_name())
 
-    def comment (self, str: str):
+    def comment (self, str):
         self._assemblies.append (Comment (str, self._comment_indent_level))
 
     def indent_comment (self):
@@ -57,7 +57,7 @@ class AssemblyCode():
     def unindent_comment (self):
         self._comment_indent_level -= 1
 
-    def label (self, sym: Symbol):
+    def label (self, sym):
         if isinstance(sym, Symbol):
             self._assemblies.append(Label (sym))
         elif isinstance(sym, Symbol):
@@ -73,10 +73,10 @@ class AssemblyCode():
                 result.append(asm)
         self._assemblies = result
 
-    def _directive (self, direc: str):
+    def _directive (self, direc):
         self._assemblies.append(Directive(direc))
 
-    def _insn (self, t: Type = None, op: str = None, suffix:str = None, a: Operand = None,b: Operand = None):
+    def _insn (self, t = None, op = None, suffix = None, a = None,b = None):
         if op and not t and not suffix and not a and not b:
             self._assemblies.append(Instruction (mnemonic = op))
         elif op and not t and not suffix and a and not b:
@@ -92,7 +92,7 @@ class AssemblyCode():
         else:
             raise Exception ("wrong operand")
 
-    def _type_suffix (self, t1: Type, t2: Type = None):
+    def _type_suffix (self, t1, t2 = None):
         str = ""
         if t1:
             if t1.size() == Type.INT8.size():
@@ -119,7 +119,7 @@ class AssemblyCode():
         return str
 
     #directives
-    def _file (self, name: str):
+    def _file (self, name):
         self._directive(".file\t" + name)
 
     def _text (self):
@@ -128,22 +128,22 @@ class AssemblyCode():
     def _data (self):
         self._directive("\t.data")
 
-    def _section (self, name: str, flags:str = None, type:str = None, group:str = None, linkage:str = None):
+    def _section (self, name, flags = None, type = None, group = None, linkage = None):
         if flags and type and group and linkage:
             self._directive("\t.section\t" + name + "," + flags + "," + type + "," + group + "," + linkage)
         elif (not flags) and (not type) and (not group) and (not linkage):
             self._directive("\t.section\t" + name)
 
-    def _globl (self, sym: Symbol):
+    def _globl (self, sym):
         self._directive(".globl " + sym.name())
 
-    def _local (self, sym: Symbol):
+    def _local (self, sym):
         self._directive(".local " + sym.name())
 
-    def _hidden (self, sym: Symbol):
+    def _hidden (self, sym):
         self._directive("\t.hidden\t", sym.name())
 
-    def _comm (self, sym: Symbol, size: int, alignment: int):
+    def _comm (self, sym, size, alignment):
         self._directive("\t.comm\t" + sym.name() + "," + str (size) + "," + str (alignment))
 
     def _align (self, n):
@@ -179,17 +179,17 @@ class AssemblyCode():
         elif isinstance(val, Literal):
             self._directive(".quad\t" + val.to_source())
 
-    def _string(self, str: str):
+    def _string(self, str):
         self._directive("\t.string\t" + str)
 
-    def virtual_push(self, reg: x86Register):
+    def virtual_push(self, reg):
         if self.verbose:
             self.comment("push " + reg.base_name() + " -> " + self.virtual_stack.top())
         else:
             self.virtual_stack.extent(self.stack_wordsize)
             self.mov (reg, self.virtual_stack.top())
 
-    def virtual_pop(self, reg: x86Register):
+    def virtual_pop(self, reg):
         if self.verbose:
             self.comment("pop " + reg.base_name() + " <- " + self.virtual_stack.top())
         else:
@@ -321,12 +321,12 @@ class VirtualStack ():
         def reset (self):
             self.__offset = 0
             self.__max = 0
-            self.__mem_refs.clear()
+            self.__mem_refs = []
 
         def max_size(self):
             return self.__max
 
-        def extent (self, len: int):
+        def extent (self, len):
             self.__offset += len
             self.__max = max (self.__offset, self.__max)
 

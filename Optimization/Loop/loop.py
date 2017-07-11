@@ -289,12 +289,12 @@ class Loop(object):
             for block in block_list:
                 if block.blockNum in self.blockNum_set:
                     for inst in block.instList:
-                        if inst.unchanged_flag is True:
-                            if self.__check_expression(block_list, block, inst, dominator_dict, var_reduce):
-                                if DEBUG:
-                                    print("Loop-invariant expression Found: %d\n"%inst.pos)
-                                # Loop-invariant expressions can be hoisted out of loops
-                                loop_changed_flag = self.__hoist_expression(block_list, block, inst)
+                        if inst.unchanged_flag is True and \
+                          self.__check_expression(block_list, block, inst, dominator_dict, var_reduce):
+                            if DEBUG:
+                                print("Loop-invariant expression Found: %d\n"%inst.pos)
+                            # Loop-invariant expressions can be hoisted out of loops
+                            loop_changed_flag = self.__hoist_expression(block_list, block, inst)
 
 
 def do_loop_optimization(block_list, debug_print=True):
