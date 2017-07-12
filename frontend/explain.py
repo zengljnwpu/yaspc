@@ -22,8 +22,8 @@ class explain(object):
     ctx = [] #符号表
 
     #store the final data dictionary
-    def store(self, json_path):
-        with open(json_path, 'w') as json_file:
+    def store(self):
+        with open('data.json', 'w') as json_file:
             json_file.write(json.dumps(self.programdata, sort_keys=True, indent=4))
 
 
