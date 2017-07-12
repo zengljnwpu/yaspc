@@ -1,7 +1,17 @@
 import unittest
-from backend.asm.assembly import *
-from backend.asm.symbol_table import *
-from backend.asm.statistics import *
+
+from backend.asm.assembly import Assembly
+from backend.asm.assembly import Label
+from backend.asm.assembly import Instruction
+from backend.asm.assembly import Directive
+from backend.asm.assembly import Comment
+from backend.asm.symbol_table import dummy
+from backend.asm.operand import AbsoluteAddress
+from backend.asm.operand import DirectMemoryReference
+from backend.asm.literal import NamedSymbol
+from backend.asm.literal import IntegerLiteral
+from backend.asm.statistics import Statistics
+from backend.sys_dep.x86.register import x86Register
 
 class TestAssembly(unittest.TestCase):
     def setUp(self):
