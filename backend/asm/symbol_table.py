@@ -4,19 +4,19 @@ from backend.asm.literal import *
 class SymbolTable ():
     def __init__(self, base):
         self._base = base
-        self._map = dict ({})
-        self._seq= 0
+        self._map = dict({})
+        self._seq = 0
 
     def _new_string(self):
         new_str = self._base + str(self._seq)
         self._seq += 1
         return new_str
 
-    def new_symbol (self):
-        return NamedSymbol (self._new_string())
+    def new_symbol(self):
+        return NamedSymbol(self._new_string())
 
-    def symbol_string (self, sym):
-        str = self._map.get (sym)
+    def symbol_string(self, sym):
+        str = self._map.get(sym)
         if str:
             return str
         else:
@@ -25,9 +25,9 @@ class SymbolTable ():
             return new_str
 
     @staticmethod
-    def dummp ():
+    def dummp():
         return dummy
+
 
 __DUMMY_SYMBOL_BASE = "L"
 dummy = SymbolTable(__DUMMY_SYMBOL_BASE)
-

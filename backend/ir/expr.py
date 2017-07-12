@@ -5,18 +5,19 @@ from backend.ir.dumper import *
 from backend.ir.op import *
 import backend.type.type
 
+
 class Expr(object):
     @staticmethod
     def expr_factory(value):
         if value["name"] == "value":
             return Int(type=value["type"], value=value["value"])
         elif value["name"] == "variable":
-            return Var(type=value["type"], entity = entity_map[value["variable"]])
+            return Var(type=value["type"], entity=entity_map[value["variable"]])
         elif value["name"] == "variable*":
-            return Addr(type=value["type"], entity = entity_map[value["variable"]])
+            return Addr(type=value["type"], entity=entity_map[value["variable"]])
 
     def __init__(self, type):
-        self._type = backend.type.type.Type.type_factory(type = type, obj = None)
+        self._type = backend.type.type.Type.type_factory(type=type, obj=None)
 
     def type(self):
         return self._type
@@ -88,14 +89,14 @@ class Bin(Expr):
     def __init__(self, type, op, left, right, value):
         super(Bin, self).__init__(type)
         self._op = Op.op_factory(op)
-        self._left = Expr.expr_factory (left)
-        self._right = Expr.expr_factory (right)
-        self._value = Expr.expr_factory (value)
+        self._left = Expr.expr_factory(left)
+        self._right = Expr.expr_factory(right)
+        self._value = Expr.expr_factory(value)
 
     def left(self):
         return self._left
 
-    def right (self):
+    def right(self):
         return self._right
 
     def value(self):
@@ -278,4 +279,4 @@ class Var(Expr):
         return visitor.visit(self)
 
     def _dump(self, d):
-        d.print_member ("entity", self._entity.name())
+        d.print_member("entity", self._entity.name())
