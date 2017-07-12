@@ -19,7 +19,7 @@ from backend.sys_dep.x86.code_generator import *
 
 import json
 
-#from Optimization import do_optimization
+from Optimization import do_optimization
 
 __version__ = 0.4
 __date__ = '2017-06-02'
@@ -70,6 +70,9 @@ def run(argv=None):
         
         parser.add_argument("-F", "--json-frontend", dest="json_frontend", metavar="PATH",
                             action="store", help="generate json IR to PATH")
+
+        parser.add_argument("-P", "--json-opt", dest="json_opt", metavar="PATH",
+                            action="store", help="generate json IR to PATH")
         
         parser.add_argument("-A", "--json-asm", dest="json_asm", metavar="PATH",
                             action="store", help="translate PAS to ASM")
@@ -80,7 +83,7 @@ def run(argv=None):
                             action="store", help="save LLVM-IR (bit code) to PATH")
         parser.add_argument("-o", "--object-code", dest="obj_code",
                             metavar="PATH", action="store", help="save object code to PATH")
-        parser.add_argument("-O", "--optimize", dest="opt", metavar="LEVEL", action="store", choices=[
+        parser.add_argument("-O", "--optimize", dest="optimize", metavar="LEVEL", action="store", choices=[
                             '0', '1', '2', '3'], default='0', 
                             help="run various optimizations on the LLVM-IR code")
         parser.add_argument('-a', '--asm', dest='asm_code', metavar='PATH',
@@ -99,24 +102,6 @@ def run(argv=None):
                             version=program_version_message)
         parser.add_argument(dest="file", metavar="file")
 
-        # add conflicting options
-        group1 = parser.add_mutually_exclusive_group()
-        group1.add_argument('--control_flow', action="store_true",
-                            help='optimize control flow')
-        group1.add_argument('--no_control_flow', action="store_true",
-                            help='do not optimize control flow (default)')
-
-        group2 = parser.add_mutually_exclusive_group()
-        group2.add_argument('--reach_defination', action="store_true",
-                            help='optimize reach defination')
-        group2.add_argument('--no_reach_defination', action="store_true",
-                            help='do not optimize reach defination (default)')
-
-        group3 = parser.add_mutually_exclusive_group()
-        group3.add_argument('--loop', action="store_true",
-                            help='optimize loop')
-        group3.add_argument('--no_loop', action="store_true",
-                            help='do not optimize loop (default)')
 
         # Process arguments
         args = parser.parse_args()
@@ -163,18 +148,30 @@ def run(argv=None):
             if args.json_frontend:
                 ir_json = explain.explain()
                 ir_json.programEplain(current_compiler.ast, current_compiler.ctx)
-                ir_json.store(args.json_ir)
+                ir_json.store(args.json_frontend)
 
-            '''
-            # set default value
-            control_flow_flag = args.control_flow
-            reach_defination_flag = args.reach_defination
-            loop_optimization_flag = args.loop
-            ir_json.programdata = \
-                do_optimization.optimize_a_program(
-                    ir_json.programdata, control_flow_flag,
-                    reach_defination_flag, loop_optimization_flag)
-            '''
+            if args.optimize != 0:
+                if args.json_frontend:
+                    opt_input_file = args.json_frontend
+                    opt_output_file = args.json_frontend
+                else:
+                    opt_input_file = args.file
+                    opt_output_file = args.file
+                # set default value
+                control_flow_flag = False
+                reach_defination_flag = False
+                loop_optimization_flag = False
+                if args.optimize >= 3:
+                    loop_optimization_flag = True
+                if args.optimize >= 2:
+                    reach_defination_flag = True
+                if args.optimize >= 1:
+                    loop_optimization_flag = True
+                # do optimization
+                do_optimization.main(
+                        opt_input_file, opt_output_file, control_flow_flag,
+                        reach_defination_flag, loop_optimization_flag)
+
 
             '''
             if args.json_asm:

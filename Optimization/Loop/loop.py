@@ -238,8 +238,8 @@ class Loop(object):
                 if the_block.blockNum in dominator_dict[block.blockNum]:
                     print('%d is in %s'%(the_block.blockNum, str(dominator_dict[block.blockNum])))
                     condition_a_flag = True
-                if var_A_name not in block.live_def_set:
-                    print('%s is not in %s'%(var_A_name, str(block.live_def_set)))
+                if var_A_name not in block.live_out_set:
+                    print('%s is not in %s'%(var_A_name, str(block.live_out_set)))
                     condition_b_flag = True
                 if not (condition_a_flag or condition_b_flag):
                     return False
