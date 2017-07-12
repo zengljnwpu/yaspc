@@ -17,11 +17,15 @@ def_inst = (instruction.BinaryInst, instruction.UnaryInst,\
 
 
 def ud_set(block_list, var_reduce):
-    """
-    cal use-def set of every inst
-    :param block_list:
-    :return:
-        add left_ud, right_ud or var_ud properties for every instruction
+    """Calculates the "use-define" chain of variables in each instruction.
+
+    :type block_list: list
+    :param block_list: a basic block list 
+    
+    :type var_reduce: 
+    :param var_reduce:
+       
+    Note: add left_ud, right_ud or var_ud properties which is a set of for every instruction
         var_ud is a list of set (block.in_set & var_reduce before this instruction in this block)
     """
     for (block_index, block) in enumerate(block_list):
@@ -99,25 +103,28 @@ def ud_set(block_list, var_reduce):
             print()
 
 def reach_def_iteration(block_list):
-    """
-    calculate reaching-definition of every block.
-      parameter: type block_list: a list of BasicBlock.
+    """Calculate reaching-definition of every block.
+    
+    :type: block_list: list
+    :param: block_list: a list of basic block
+    
       return: var_reduce : Record the where the variable was killed.
             key : left value;
             value : a set where the key variable definition.
-    add properties of gen_set and kill_set for every block.
+    Note: add properties of gen_set and kill_set for every block.
     """
 
-    """
-        find all variable of block
-        map variable defined to inst num
-    """
+    # record all left value to a set and map it to the position line
     for (block_index, block) in enumerate(block_list):
+        # a dictionary which key is the left value of a instruction
+        # and value is position where it's last definition
         block.var_dict = dict()
+
+        # a set of left value of every instruction in a block
         block.var_set = set()
         for inst in block.instList:
-            # only considrate the last gen of the same variable
-            if isinstance(inst, def_inst): # BinaryInst UnaryInst StoreInst
+            # only considerate the last gen of the same variable
+            if isinstance(inst, def_inst):   # BinaryInst UnaryInst StoreInst
                 if isinstance(inst, instruction.StoreInst):
                     block.var_dict[inst.address.name] = inst.pos
                     block.var_set.add(inst.address.name)
@@ -138,6 +145,7 @@ def reach_def_iteration(block_list):
             continue
         for (key, value) in block.var_dict.items():
             var_reduce[key] = set()
+
     for (block_index, block) in enumerate(block_list):
         if block_index == 0 or block_index == len(block_list)-1:
             continue
@@ -227,6 +235,19 @@ def __new_entity_value(entity_type, value):
 
 
 def constant_propagation(block_list, var_reduce, inst_list):
+    """Do the constant value propagation
+
+    :type block_list: list
+    :param block_list: a basic block list 
+    
+    :type var_reduce:
+    :param var_reduce:
+    
+    :type inst_list:
+    :param inst_list:
+   
+    """
+
     change = True
     while change:
         change = False
@@ -256,14 +277,29 @@ def constant_propagation(block_list, var_reduce, inst_list):
 
 
 def live_variable_analysis(block_list):
+    """Do live variable analysis of every basic block
+    
+    :type block_list: list
+    :param block_list: a basic block list 
+    
+    Note: add live_def_set, live_use_set, live_in_set, and live_out_set which type is a set for every block
+        
+    """
+
     for block in block_list:
+        # live_def_set: a set with variable which is defined in the block and not used before the definition
+        # live_use_set: a set with variable which is used in the block and not defined before the using
+        # live_in_set: a set with variable which is live before the block
+        # live_out_set: a set with variable which is live after the block
         block.live_def_set = set()
         block.live_use_set = set()
         block.live_in_set = set()
         block.live_out_set = set()
+
+        # calculate live_def_set and live_use_set of every block
         for inst in block.instList:
             if isinstance(inst, instruction.BinaryInst):
-                """ left operand is a variable, 
+                """ left operand is a const value, 
                     or left operand is a const value which should not consider
                 """
                 if inst.left.is_variable() is True:
@@ -278,13 +314,8 @@ def live_variable_analysis(block_list):
                     value = inst.value.name
                     if value not in block.live_use_set:
                         block.live_def_set.add(value)
-                #left_var = inst.left["variable"]
-                #right_var = inst.right["variable"]
-                #value = inst.value["variable"]
 
             elif isinstance(inst, instruction.UnaryInst):
-                #var = inst.variable["variable"]
-                #value = inst.value["variable"]
                 if inst.variable.is_variable():
                     var = inst.variable.name
                     if var not in block.live_def_set:
@@ -296,6 +327,8 @@ def live_variable_analysis(block_list):
     if DEBUG:
         for block in block_list:
             print(block.blockNum, "def:", block.live_def_set, ";\t", block.live_use_set)
+
+    # calculate live_out_set and live_in_set of every block
     change = True
     while change:
         change = False
