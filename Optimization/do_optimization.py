@@ -14,13 +14,13 @@ from __future__ import print_function
 import json
 import argparse
 
-from yaspc.frontend import log
-from yaspc.Optimization.BasicBlock import ConstructBasicBlock
-from yaspc.Optimization.BasicBlock import DestructBasicBlock
-from yaspc.Optimization.IR_IO import irParser
-from yaspc.Optimization.Peephole import PeepholeOptimization
-from yaspc.Optimization.DataFlow import ud
-from yaspc.Optimization.Loop import loop
+from frontend import log
+from Optimization.BasicBlock import ConstructBasicBlock
+from Optimization.BasicBlock import DestructBasicBlock
+from Optimization.IR_IO import irParser
+from Optimization.Peephole import PeepholeOptimization
+from Optimization.DataFlow import ud
+from Optimization.Loop import loop
 
 def optimize_a_function(function_json, control_flow=False, reach_defination=False, optimize_loop=False, debug_print=True):
     """optimize a body of a function or a program (JSON format object)

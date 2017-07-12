@@ -12,8 +12,8 @@ from __future__ import division
 from __future__ import print_function
 
 import copy
-from yaspc.Optimization.IR_IO import instruction
-from yaspc.Optimization.BasicBlock import BasicBlock
+from Optimization.IR_IO import instruction
+from Optimization.BasicBlock import BasicBlock
 
 
 DEBUG = False
