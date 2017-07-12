@@ -147,7 +147,7 @@ def run(argv=None):
         else:
             if args.json_frontend:
                 ir_json = explain.explain()
-                ir_json.programEplain(current_compiler.ast, current_compiler.ctx)
+                ir_json.programExplain(current_compiler.ast, current_compiler.ctx)
                 ir_json.store(args.json_frontend)
 
             if args.optimize != 0:
@@ -171,7 +171,6 @@ def run(argv=None):
                 do_optimization.main(
                         opt_input_file, opt_output_file, control_flow_flag,
                         reach_defination_flag, loop_optimization_flag)
-
 
             '''
             if args.json_asm:

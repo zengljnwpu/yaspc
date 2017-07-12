@@ -1,5 +1,3 @@
-
-
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, with_statement
 
@@ -9,23 +7,31 @@ from frontend.ast import * #@UnusedWildImport
 from frontend.exchange import * #@UnusedWildImport
 from frontend.compiler import * #@UnusedWildImport
 from frontend.typesys import * #@UnusedWildImport
+from frontend.symtab import * #@UnusedWildImport
+from frontend.codegen import * #@UnusedWildImport
+'''
+此py文件主要将语法树进行进一步解析，生成IR。
+主要包括了语法树各个节点的解释。
+每个解释函数的基本思路均为通过已知Node找出各个需求的指令的信息，并生成指令字典。
+'''
 
 class explain(object):
-    varno = 0
-    labelno = 0
-    programdata = {}
-    ctx = None
+    varno = 0 #用于对临时变量进行命名
+    labelno = 0 #用于对临时label进行命名
+    programdata = {} #最终字典
+    ctx = [] #符号表
 
     #store the final data dictionary
-    def store(self, json_path):
+    def store(self,json_path):
         with open(json_path, 'w') as json_file:
             json_file.write(json.dumps(self.programdata, sort_keys=True, indent=4))
 
 
     #programNode is given by user
-    def programEplain(self,programNode,realctx):
+    def programEplain(self,programNode):
         if programNode != None:
-            # ctx = realctx
+            v = codegen.CodegenVisitor()
+            self.ctx = v.ctx #得到符号表
             name = str(programNode.identifier.name)
             line_number = int(programNode.position.lineno)
             varlist = []
@@ -39,13 +45,13 @@ class explain(object):
             programExc(self.programdata,name,line_number,varlist,funclist,labellist,body)
 
 
-    def users_var_defExplain(self,varlist,varlistNode):
+    def users_var_defExplain(self,varlist,varlistNode):#根据varlistNode得到varlist
         if varlistNode != None:
             for i in range(len(varlistNode._children)):
                 self.vardefExplain(varlist,varlistNode._children[i])
 
 
-    def users_con_defExplain(self,varlist,constlistNode):
+    def users_con_defExplain(self,varlist,constlistNode):#根据constlistNode得到varlist
         if constlistNode != None:
             for i in range(len(constlistNode._children)):
                 self.constdefExplain(varlist,constlistNode._children[i])
@@ -54,35 +60,26 @@ class explain(object):
 
     def vardefExplain(self,varlist,vardeclNode):
         if vardeclNode != None:
-            line_number = int(vardeclNode.position.lineno)
-            if isinstance(vardeclNode.type_denoter,ArrayTypeNode):
-                vartype = str(vardeclNode.type_denoter.component_type.identifier.name)+"*"
-                for i in range(len(vardeclNode.identifier_list._children)):
-                    vardefdata = {}
-                    variablename = str(vardeclNode.identifier_list._children[i].name)
-                    number = 1
-                    for j in range(len(vardeclNode.type_denoter.index_list._children)):
-                        start = vardeclNode.type_denoter.index_list._children[j].start.value
-                        stop = vardeclNode.type_denoter.index_list._children[j].stop.value
-                        if stop > start:
-                            number = number*(stop-start+1)
-                        else:
-                            number = number*(start-stop+1)
-                    vardefExc(vardefdata,line_number,variablename,vartype,number)
-                    varlist.append(vardefdata)
-            else:
-                vartype = str(vardeclNode.type_denoter.identifier.name)+"*"
-                for i in range(len(vardeclNode.identifier_list._children)):
+            if isinstance(vardeclNode.type_denoter,ArrayTypeNode): #若为数组类型，则单独处理，目前数组类型尚存在问题
+                arraydefExplain(varlist,vardeclNode.type_denoter)
+            else: #若非数组类型
+                line_number = int(vardeclNode.position.lineno)
+                vartype = str(vardeclNode.type_denoter.identifier.name)+"*" 
+                #用户定义的变量类型均为指针，以达到可读可写的标准。
+                for i in range(len(vardeclNode.identifier_list._children)): #每个vardeclNode中有很多id
                     vardefdata = {}
                     variablename = str(vardeclNode.identifier_list._children[i].name)
                     vardefExc(vardefdata,line_number,variablename,vartype,1)
                     varlist.append(vardefdata)
 
 
+
+
     def constdefExplain(self,varlist,constdeclNode):
         if constdeclNode != None:
             value = con_exprExplain(constdeclNode.expr)
             vartype = str(self.typeExplain(constdeclNode.type))+"*"
+            #用户定义的变量类型均为指针，以达到可读可写的标准。
             line_number = int(constdeclNode.position.lineno)
             constdefdata = {}
             constname = str(constdeclNode.identifier.name)
@@ -91,22 +88,42 @@ class explain(object):
 
 
 
+
+    def arraydefExplain(self,varlist,arraydeclNode):#目前闲置
+        if arraydeclNode != None:
+            line_number = int(arraydeclNode.position.lineno)
+            vartype = str(arraydeclNode.type_denoter.component_type.identifier.name)+"*"
+            for i in range(len(arraydeclNode.identifier_list._children)):
+                vardefdata = {}
+                variablename = str(arraydeclNode.identifier_list._children[i].name)
+                number = 1
+                for j in range(len(arraydeclNode.type_denoter.index_list._children)):
+                    start = arraydeclNode.type_denoter.index_list._children[j].start.value
+                    stop = arraydeclNode.type_denoter.index_list._children[j].stop.value
+                    if stop > start:
+                        number = number*(stop-start+1)
+                    else:
+                        number = number*(start-stop+1)
+                vardefExc(vardefdata,line_number,variablename,vartype,number)
+                varlist.append(vardefdata)
+
+
+
+
     def funclistExplain(self,funclist,funclistNode):
         if funclistNode != None:
             for i in range(len(funclistNode._children)):
                 if isinstance(funclistNode._children[i],FunctionNode):
-                    funcdata = {}
-                    self.funcExplain(funcdata,funclistNode._children[i])
-                    funclist.append(funcdata)
+                    self.funcExplain(funclist,funclistNode._children[i])
                 else:
-                    procdata = {}
-                    self.procExplain(procdata,funclistNode._children[i])
-                    funclist.append(procdata)
+                    self.procExplain(proclist,funclistNode._children[i])
 
 
 
-    def funcExplain(self,funcdata,funcNode):
+
+    def funcExplain(self,funclist,funcNode):
         if funcNode != None:
+            funcdata = {}
             name = str(funcNode.header.identifier.name)
             line_number = int(funcNode.position.lineno)
             functype = str(self.typeExplain(funcNode.header.return_type))
@@ -119,11 +136,13 @@ class explain(object):
             body = []
             self.stmtlistExplain(labellist,body,funcNode.block.stmt,name)
             functionExc(funcdata,name,line_number,functype,paralist,varlist,labellist,body)
+            funclist.append(funcdata)
 
 
 
-    def procExplain(self,procdata,procNode):
+    def procExplain(self,proclist,procNode):
         if procNode != None:
+            frocdata = {}
             name = str(procNode.header.identifier.name)
             line_number = int(procNode.position.lineno)
             paralist = []
@@ -135,7 +154,7 @@ class explain(object):
             body = []
             self.stmtlistExplain(labellist,body,procNode.block.stmt,name)
             procedureExc(procdata,name,line_number,paralist,varlist,labellist,body)
-                
+            proclist.append(procdata)    
 
 
 
@@ -177,24 +196,24 @@ class explain(object):
 
 
 
-    def exprExplain(self,body,exprNode,value):
+    def exprExplain(self,body,exprNode,value): #对表达式节点进行区分
         if exprNode != None:
-            if isinstance(exprNode,BinaryOpNode):
+            if isinstance(exprNode,BinaryOpNode):#二元
                 self.binExplain(body,exprNode,value)
-            elif isinstance(exprNode,UnaryOpNode):
+            elif isinstance(exprNode,UnaryOpNode):#一元
                 self.unaExplain(body,exprNode,value)
-            elif isinstance(exprNode,FunctionCallNode):
+            elif isinstance(exprNode,FunctionCallNode):#函数调用
                 self.funccallExplain(body,exprNode,value)
-            elif isinstance(exprNode,VarAccessNode):
+            elif isinstance(exprNode,VarAccessNode):#变量
                 self.varExplain(body,exprNode,value)
-            elif isinstance(exprNode,VarLoadNode):
+            elif isinstance(exprNode,VarLoadNode):#varload也是变量，结构多了一层
                 if isinstance(exprNode.var_access,IndexedVarNode):
                     self.arrayExplain(body,exprNode,value)
                 else:
                     self.varExplain(body,exprNode.var_access,value)
-            elif isinstance(exprNode,IdentifierNode):
+            elif isinstance(exprNode,IdentifierNode):#id
                 self.idExplain(body,exprNode,value)
-            else:
+            else:#值
                 self.valueExplain(value,exprNode)
 
 
@@ -210,7 +229,7 @@ class explain(object):
             body.append(calldata)
 
 
-    def argulistExplain(self,parameterlist,body,argulistNode):
+    def argulistExplain(self,parameterlist,body,argulistNode):#获取参数列表到parameterlist
         if argulistNode != None:
             for i in range(len(argulistNode._children)):
                 value = {}
@@ -228,7 +247,7 @@ class explain(object):
             op = opExplain(binNode.op.name,1,0)
             rightentity = {}
             self.exprExplain(body,binNode.right,rightentity)
-            self.newvarExplain(value,str(self.typeExplain(binNode.type)))
+            self.newvarExplain(value,str(self.typeExplain(binNode.type)))#生成新的临时变量
             bindata = {}
             binExc(bindata,line_number,op,leftentity,rightentity,value)
             body.append(bindata)
@@ -241,10 +260,7 @@ class explain(object):
             op = str(uniNode.name)
             entity = {}
             self.exprExplain(varlist,body,uniNode.expr,entity)
-            varname = str("%"+str(self.varno))
-            self.varno = self.varno+1
-            vartype = str(self.typeExplain(uniNode.type))
-            variableExc(value,varname,vartype,False)
+            self.newvarExplain(value,str(self.typeExplain(uniNode.type)))#生成新的临时变量
             varlist.append(value)
             unidata = {}
             uniExc(unidata,line_number,op, value,entity)
@@ -265,17 +281,21 @@ class explain(object):
             body.append(loaddata)
             
 
+
     def idExplain(self,body,idNode,value):
         if idNode != None:
             line_number = int(idNode.position.lineno)
             addrname = str(idNode.name)
-            addrtype = str(self.typeExplain(idNode.type))+"*"
-            address = {}
-            variableExc(address,addrname,addrtype,False)
-            self.newvarExplain(value,str(self.typeExplain(idNode.type)))
+            vartype = self.ctx.find_typedef(idNode.name)
+            addrtype = str(self.typeExplain(vartype))+"*"
+            addr = {}
+            variableExc(addr,addrname,addrtype,False)
+            self.newvarExplain(value,str(self.typeExplain(vartype)))
             loaddata = {}
-            loadExc(loaddata,line_number,address,value)
+            loadExc(loaddata,line_number,addr,value)
             body.append(loaddata)
+
+
 
     def valueExplain(self,valuedata,valueNode):
         if valueNode != None:
@@ -285,7 +305,7 @@ class explain(object):
    
 
 
-    def arrayExplain(self,body,arrayNode,value):
+    def arrayExplain(self,body,arrayNode,value):#目前闲置
         valtype = str(self.typeExplain(arrayNode.var_access.var_access.type))+"*"
         line_number = int(arrayNode.position.lineno)
         left = {}
@@ -345,23 +365,23 @@ class explain(object):
                 self.stmtExplain(labellist,body,stmtlistNode._children[i],functionname)
 
 
-    def stmtExplain(self,labellist,body,stmtNode,functionname):
+    def stmtExplain(self,labellist,body,stmtNode,functionname):#对指令进行区分
         if stmtNode != None:
-            if isinstance(stmtNode,AssignmentNode):
-                if isinstance(stmtNode.var_access,IndexedVarNode):
+            if isinstance(stmtNode,AssignmentNode):#赋值
+                if isinstance(stmtNode.var_access,IndexedVarNode):#是否为数组
                     self.asignExplain(body,stmtNode)
                 else:
-                    if stmtNode.var_access.identifier.name == functionname:
-                        self.retExplain(labellist,body,stmtNode)
+                    if stmtNode.var_access.identifier.name == functionname:#是否为返回值
+                        self.retExplain(body,stmtNode)
                     else:
                         self.asignExplain(body,stmtNode)
-            elif isinstance(stmtNode, IfNode):
+            elif isinstance(stmtNode, IfNode):#if
                 self.ifExplain(labellist,body,stmtNode,functionname)
-            elif isinstance(stmtNode, ForNode):
+            elif isinstance(stmtNode, ForNode):#for
                 self.forExplain(labellist,body,stmtNode,functionname)
 
 
-    def retExplain(self,labellist,body,retNode):
+    def retExplain(self,body,retNode):
         if retNode != None:
             value = {}
             self.exprExplain(body,retNode.expr,value)
@@ -370,19 +390,22 @@ class explain(object):
             retExc(retdata,line_number,value)
             body.append(retdata)
 
+
+
+
     def asignExplain(self,body,asignNode):
         if asignNode != None:
             line_number = int(asignNode.position.lineno)
             address = {}
-            if isinstance(asignNode.var_access,IndexedVarNode):
+            if isinstance(asignNode.var_access,IndexedVarNode):#根据数组解析address
                 self.arrayExplain(body,asignNode,address)
-            elif isinstance(asignNode.var_access,VarAccessNode):
+            elif isinstance(asignNode.var_access,VarAccessNode):#根据变量解析address
                 addrname = str(asignNode.var_access.identifier.name)
                 addrtype = str(self.typeExplain(asignNode.var_access.type))+"*"
                 variableExc(address,addrname,addrtype,False)
-            else:
-                addrname = str(asignNode.var_access.name)
-                addrtype = str(self.typeExplain(asignNode.var_access.type))+"*"
+            else:#根据id解析address
+                addrname = str(asignNode.identifier.name)
+                addrtype = str(self.typeExplain(self.ctx.find_typedef(asignNode.identifier.name)))+"*"
                 variableExc(address,addrname,addrtype,False)
             value = {}
             self.exprExplain(body,asignNode.expr,value)
@@ -393,20 +416,20 @@ class explain(object):
 
     def ifExplain(self,labellist,body,ifNode,functionname):
         if ifNode != None:
-            thenlabelname=str("ifthenlabel_"+str(self.labelno))
-            elselabelname=str("ifelselabel_"+str(self.labelno))
-            endlabelname=str("ifendlabel_"+str(self.labelno))
+            thenlabelname=str("ifthenlabel_"+str(self.labelno))#if条件通过后的位置
+            elselabelname=str("ifelselabel_"+str(self.labelno))#if条件未通过后的位置
+            endlabelname=str("ifendlabel_"+str(self.labelno))#if语句结束的位置
             self.labelno=self.labelno+1
             self.cjumpExplain(body,ifNode.expr,thenlabelname,elselabelname)
-            self.labeldefExplain(labellist,body,len(body),thenlabelname)
-            self.stmtlistExplain(labellist,body,ifNode.iftrue,functionname)
+            self.labeldefExplain(labellist,body,len(body),thenlabelname)#if条件通过后的位置
+            self.stmtlistExplain(labellist,body,ifNode.iftrue,functionname)#if条件通过后
             line_number = ifNode.position.lineno
             jumpdata={}
-            jumpExc(jumpdata,line_number,endlabelname)
+            jumpExc(jumpdata,line_number,endlabelname)#条件通过时最后跳至结尾
             body.append(jumpdata)
-            self.labeldefExplain(labellist,body,line_number,elselabelname)
-            self.stmtlistExplain(labellist,body,ifNode.iffalse,functionname)
-            self.labeldefExplain(labellist,body,line_number,endlabelname)
+            self.labeldefExplain(labellist,body,line_number,elselabelname)#if条件未通过后的位置
+            self.stmtlistExplain(labellist,body,ifNode.iffalse,functionname)#if条件未通过
+            self.labeldefExplain(labellist,body,line_number,endlabelname)#if语句结束的位置
         
 
 
@@ -423,7 +446,7 @@ class explain(object):
     def cjumpExplain(self,body,exprNode,thenlabelname,elselabelname):
         if exprNode != None:
             condvalue = {}
-            self.exprExplain(body,exprNode,condvalue)
+            self.exprExplain(body,exprNode,condvalue)#先得到表达式的结果
             line_number = int(exprNode.position.lineno)
             cjumpdata = {}
             cjumpExc(cjumpdata,line_number,condvalue,thenlabelname,elselabelname)
@@ -433,39 +456,43 @@ class explain(object):
         
     def forExplain(self,labellist,body,forNode,functionname):
         if forNode != None:
-            startlabelname=str("forstartlabel_"+str(self.labelno))
-            thenlabelname=str("forthenlabel_"+str(self.labelno))
-            elselabelname=str("forelselabel_"+str(self.labelno))
+            startlabelname=str("forstartlabel_"+str(self.labelno))#for循环的开头
+            thenlabelname=str("forthenlabel_"+str(self.labelno))#for循环体开头
+            elselabelname=str("forelselabel_"+str(self.labelno))#for循环条件不满足
             self.labelno = self.labelno + 1
             line_number = int(forNode.position.lineno)
-            address1 = {}
-            variableExc(address1,forNode.var.name,forNode.var.type,False)
-            value1 = {}
-            self.exprExplain(body,forNode.value_start,value1)
-            self.newasignExplain(line_number,body,address1,value1)
-            self.labeldefExplain(labellist,body,line_number,startlabelname)
+            forvar = {}#循环变量值
+            forend = {}#循环变量尾值
+            forstart = {}#循环变量初值
+            forvaraddress = {}#循环变量地址
+            self.exprExplain(body,forNode.var,forvar)#循环变量值
+            self.exprExplain(body,forNode.value_end,forend)#循环变量尾值
+            self.exprExplain(body,forNode.value_start,forstart)#循环变量初值
+            forvartype = str(self.typeExplain(self.ctx.find_typedef(idNode.name)))+"*"
+            variableExc(forvaraddress,forNode.var.name,forvartype,False)#循环变量地址
+            self.newasignExplain(line_number,body,forvaraddress,forstart)#循环赋初值
+            self.labeldefExplain(labellist,body,line_number,startlabelname)#for循环的开头
+            condvalue = {}#判断是否跳出循环，判定
             if forNode.direction==1:
-                exprNode=BinaryOpNode(OpNode("S_LTEQ"),VarAccessNode(forNode.var),forNode.value_end)
+                self.newbinExplain(body,line_number,"S_LTEQ",forvar,forend,condvalue)
             else:
-                exprNode=BinaryOpNode(OpNode("S_GTEQ"),VarAccessNode(forNode.var),forNode.value_end)
-            self.cjumpExplain(body,exprNode,thenlabelname,elselabelname)
-            self.labeldefExplain(labellist,body,line_number,thenlabelname)
-            self.stmtlistExplain(labellist,body,forNode.body,functionname)
-            BinaryOpNode(OpNode("ADD"),VarAccessNode(forNode.var),IntegerNode(1))
-            addleft = {}
-            self.exprExplain(body,forNode.var,addleft)
+                self.newbinExplain(body,line_number,"S_GTEQ",forvar,forend,condvalue)
+            self.cjumpExc(body,exprNode,thenlabelname,elselabelname)#判断是否跳出循环，语句
+            self.labeldefExplain(labellist,body,line_number,thenlabelname)#for循环体开头
+            self.stmtlistExplain(labellist,body,forNode.body,functionname)#循环内语句
+            addvalue = {}
             addright = {}
             valueExc(addright,"s_int16",1)
-            addvalue = {}
             self.newvarExplain(addvalue,addleft['type'])
-            self.newbinExplain(body,line_number,"ADD",addleft,addright,addvalue)
-            address2 = {}
-            self.exprExplain(body,forNode.var,address2)
-            self.newasignExplain(line_number,body,address2,addvalue)
+            if forNode.direction==1:#循环变量加1
+                self.newbinExplain(body,line_number,"ADD",forvar,addright,addvalue)
+            else:#循环变量减1
+                self.newbinExplain(body,line_number,"SUB",forvar,addright,addvalue)
+            self.newasignExplain(line_number,body,forvaraddress,addvalue)#加减1后存入循环变量
             jumpdata={}
-            jumpExc(jumpdata,line_number,startlabelname)
+            jumpExc(jumpdata,line_number,startlabelname)#返回到循环的开头
             body.append(jumpdata)
-            self.labeldefExplain(labellist,body,line_number,elselabelname)
+            self.labeldefExplain(labellist,body,line_number,elselabelname)#for循环条件不满足
         
 
     def typeExplain(self, vartype):
@@ -484,6 +511,15 @@ class explain(object):
         else:
             return str(vartype)
 
+
+
+
+
+#所有带有new开头的函数区别于不带new开头的函数。
+#不带new的函数一般用于解析，
+#参数一般为Node
+#带new的函数一般直接构造，
+#参数一般为值或字典
 
 
     def newbinExplain(self,body,line_number,op,left,right,value):
@@ -507,6 +543,78 @@ class explain(object):
 
 
 
+def opExplain(op,UorS,OorT):#将op进行翻译
+    if op == "+":
+        return "ADD"
+    elif op == "-":
+        if OorT:
+            return "UMINUS"
+        else:
+            return "SUB"
+    elif op == "*":
+        return "MUL"
+    elif op == "/":
+        if UorS:
+            return "U_DIV"
+        else:
+            return "S_DIV"
+    elif op == "%":
+        if UorS:
+            return "U_MOD"
+        else:
+            return "S_MOD"
+    elif op == "<<":
+        return "BIT_LSHIFT"
+    elif op == ">>":
+        if UorS:
+            return "BIT_RSHIFT"
+        else:
+            return "ARITH_RSHIFT"
+    elif op == "==":
+        return "EQ"
+    elif op == "!=":
+        return "NEQ"
+    elif op == ">":
+        if UorS:
+            return "U_GT"
+        else:
+            return "S_GT"
+    elif op == "<":
+        if UorS:
+            return "U_LT"
+        else:
+            return "S_LT"
+    elif op == ">=":
+        if UorS:
+            return "U_GTEQ"
+        else:
+            return "S_GTRQ"
+    elif op == "<=":
+        if UorS:
+            return "U_LTEQ"
+        else:
+            return "S_LTEQ"
+    elif op == "~":
+        return "BIT_NOT"
+    elif op == "&":
+        return "BIT_AND"
+    elif op == "|":
+        return "BIT_OR"
+    elif op == "^":
+        return "BIT_XOR"
+    elif op == "!":
+        return "NOT"
+    elif UorS:
+        return "U_CAST"
+    else:
+        return "S_CAST"
+
+
+
+
+'''
+后面用于const类型，先闲置
+'''
 
 def con_exprExplain(exprNode):
     if exprNode != None:
@@ -582,72 +690,6 @@ def con_valueExplain(valueNode):
         return 0
 
 
-
-def opExplain(op,UorS,OorT):
-    if op == "+":
-        return "ADD"
-    elif op == "-":
-        if OorT:
-            return "UMINUS"
-        else:
-            return "SUB"
-    elif op == "*":
-        return "MUL"
-    elif op == "/":
-        if UorS:
-            return "U_DIV"
-        else:
-            return "S_DIV"
-    elif op == "%":
-        if UorS:
-            return "U_MOD"
-        else:
-            return "S_MOD"
-    elif op == "<<":
-        return "BIT_LSHIFT"
-    elif op == ">>":
-        if UorS:
-            return "BIT_RSHIFT"
-        else:
-            return "ARITH_RSHIFT"
-    elif op == "==":
-        return "EQ"
-    elif op == "!=":
-        return "NEQ"
-    elif op == ">":
-        if UorS:
-            return "U_GT"
-        else:
-            return "S_GT"
-    elif op == "<":
-        if UorS:
-            return "U_LT"
-        else:
-            return "S_LT"
-    elif op == ">=":
-        if UorS:
-            return "U_GTEQ"
-        else:
-            return "S_GTRQ"
-    elif op == "<=":
-        if UorS:
-            return "U_LTEQ"
-        else:
-            return "S_LTEQ"
-    elif op == "~":
-        return "BIT_NOT"
-    elif op == "&":
-        return "BIT_AND"
-    elif op == "|":
-        return "BIT_OR"
-    elif op == "^":
-        return "BIT_XOR"
-    elif op == "!":
-        return "NOT"
-    elif UorS:
-        return "U_CAST"
-    else:
-        return "S_CAST"
 
 
 
