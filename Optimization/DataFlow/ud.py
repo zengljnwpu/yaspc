@@ -22,8 +22,9 @@ def ud_set(block_list, var_reduce):
     :type block_list: list
     :param block_list: a basic block list 
     
-    :type var_reduce: 
-    :param var_reduce:
+    :type var_reduce: dict
+    :param var_reduce: which key is left variable and 
+                        value is a set where the variable is defined in each block
        
     Note: add left_ud, right_ud or var_ud properties which is a set of for every instruction
         var_ud is a list of set (block.in_set & var_reduce before this instruction in this block)
@@ -102,16 +103,17 @@ def ud_set(block_list, var_reduce):
                     print(inst.pos, ":\t", inst.var_ud)
             print()
 
+
 def reach_def_iteration(block_list):
-    """Calculate reaching-definition of every block.
+    """Calculate reaching-definition of every block, return where the left value was defined
     
     :type: block_list: list
     :param: block_list: a list of basic block
     
-      return: var_reduce : Record the where the variable was killed.
-            key : left value;
-            value : a set where the key variable definition.
-    Note: add properties of gen_set and kill_set for every block.
+    :return: var_reduce: Record where the left value was defined
+            key : left value 
+            value : a set with positions where the key variable is defined in each block
+    Note: add properties of gen_set, kill_set, in_set, out_set for every block.
     """
 
     # record all left value to a set and map it to the position line
@@ -121,6 +123,7 @@ def reach_def_iteration(block_list):
         block.var_dict = dict()
 
         # a set of left value of every instruction in a block
+        # init gen_set and kill_set for every block
         block.var_set = set()
         for inst in block.instList:
             # only considerate the last gen of the same variable
@@ -134,11 +137,7 @@ def reach_def_iteration(block_list):
         block.gen_set = set(block.var_dict.values())
         block.kill_set = set()
 
-    """ init var_reduce
-        var_reduce: Record where the variable was killed
-            key : left value 
-            value : a set where the key variable definition
-    """
+    # init var_reduce
     var_reduce = dict()
     for (block_index, block) in enumerate(block_list):
         if block_index == 0 or block_index == len(block_list)-1:
@@ -146,6 +145,7 @@ def reach_def_iteration(block_list):
         for (key, value) in block.var_dict.items():
             var_reduce[key] = set()
 
+    # calculate var_reduce
     for (block_index, block) in enumerate(block_list):
         if block_index == 0 or block_index == len(block_list)-1:
             continue
@@ -167,8 +167,7 @@ def reach_def_iteration(block_list):
                 print(gen_num, end="\t")
             print()
 
-    """ kill set of blocks
-    """
+    # calculate kill set of blocks
     for (block_index, block) in enumerate(block_list):
         if block_index == 0 or block_index == len(block_list) - 1:
             continue
@@ -185,6 +184,8 @@ def reach_def_iteration(block_list):
             for kill_num in block.kill_set:
                 print(kill_num, end="\t")
             print()
+
+    # calculate in_set and out_set of every block
     for (block_index, block) in enumerate(block_list):
         block.in_set = set()
         block.out_set = block.gen_set
@@ -210,6 +211,7 @@ def reach_def_iteration(block_list):
                 change = True
                 block.in_set = new_in
                 block.out_set = (block.in_set - block.kill_set) | block.gen_set
+
     if DEBUG:
         print("===========IN SET of blocks==============")
         for (block_index, block) in enumerate(block_list):
@@ -240,11 +242,12 @@ def constant_propagation(block_list, var_reduce, inst_list):
     :type block_list: list
     :param block_list: a basic block list 
     
-    :type var_reduce:
-    :param var_reduce:
+    :type var_reduce: dict
+    :param var_reduce: which key is left variable and 
+                        value is a set where the variable is defined in each block
     
-    :type inst_list:
-    :param inst_list:
+    :type inst_list: list 
+    :param inst_list: a list of instructions
    
     """
 
@@ -282,7 +285,8 @@ def live_variable_analysis(block_list):
     :type block_list: list
     :param block_list: a basic block list 
     
-    Note: add live_def_set, live_use_set, live_in_set, and live_out_set which type is a set for every block
+    Note: add live_def_set, live_use_set, live_in_set, 
+            and live_out_set which type is a set for every block
         
     """
 

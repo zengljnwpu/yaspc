@@ -18,14 +18,27 @@ DEBUG = False
 
 
 def SplitBasicBlock(inst_list, blockDict, labelDict, blockList):
-    """ 
-        construct a list of block named blockList,
-        every block has a block num, and we map the num to the block named blockDict
-        the first block num is 0, which is the ENTRY block,
-        the last block num is -1, which is the EXIT block and we can index by -1 in python,
-        it's must be noted that there is no labelInst in every block,
-        and we map the label name of labelInst to block num named labelDict
+    """Split instructions into different basic block 
+    Construct a list of block named blockList,
+    every block has a block num, and we map the num to the block named blockDict
+    the first block num is 0, which is the ENTRY block,
+    the last block num is -1, which is the EXIT block and we can index by -1 in python,
+    it's must be noted that there is no labelInst in every block,
+    and we map the label name of labelInst to block num named labelDict
+    
+    :type inst_list: list 
+    :param inst_list: a list of instructions
+    
+    :type blockDict: dict
+    :param blockDict: key is the number of block, and map to block object 
+    
+    :type labelDict: dict   
+    :param labelDict: key is the label of instruction, and map to block object
+    
+    :type blockList: list 
+    :param blockList: a list of basic block
     """
+
     ''' new the basic block '''
     block = None
     number = 1
@@ -141,13 +154,26 @@ def SplitBasicBlock(inst_list, blockDict, labelDict, blockList):
 
 
 def LinkBasicBlock(inst_list, blockDict, labelDict, blockList):
+    """Link basic block among each other 
+    For every block in block list, 
+    the last instruction must be a JumpInst, CJumpInst, or ReturnInst
+    so we can index labelDict by label name to get the succBasicBlock' blockNum,
+    and index blockDict by the blockNum to get the block,
+    then we can get preBasicBlock of the succBasicBlock
+    
+    :type inst_list: list 
+    :param inst_list: a list of instructions
+    
+    :type blockDict: dict
+    :param blockDict: key is the number of block, and map to block object 
+    
+    :type labelDict: dict   
+    :param labelDict: key is the label of instruction, and map to block object
+    
+    :type blockList: list 
+    :param blockList: a list of basic block
     """
-        for every block in block list, 
-        the last instruction must be a JumpInst, CJumpInst, or ReturnInst
-        so we can index labelDict by label name to get the succBasicBlock' blockNum,
-        and index blockDict by the blockNum to get the block,
-        then we can get preBasicBlock of the succBasicBlock
-    """
+
     for i, block in enumerate(blockList):
         '''add jump target for every block'''
         if i == 0:
@@ -215,19 +241,23 @@ def LinkBasicBlock(inst_list, blockDict, labelDict, blockList):
 
 
 def ConstructBlockList(inst_list):
-    """
-        remove the unused label,
-        split the basic block and 
-        link the succeed basic block and precursor basic block
+    """Construct basic block list 
+    Remove the unused label,
+    split the basic block and 
+    link the succeed basic block and precursor basic block
+    
+    :type inst_list: list 
     :param inst_list: a list of every instruction
+    
     :return: blockList: a list of basic block
     """
     ''' remove the invalid label '''
     inst_list = PeepholeOptimization.remove_unused_label(inst_list)
 
-    blockDict = {}      # key is the number of instruction, and map to inst
-    labelDict = {}      # key is the label of instruction, and map to block
+    blockDict = {}      # key is the number of block, and map to block object
+    labelDict = {}      # key is the label of instruction, and map to block object
     blockList = []
+
     SplitBasicBlock(inst_list, blockDict, labelDict, blockList)
     LinkBasicBlock(inst_list, blockDict, labelDict, blockList)
 

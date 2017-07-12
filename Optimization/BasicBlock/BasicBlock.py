@@ -9,6 +9,9 @@ Created on Fri May 12 10:54:38 2017
 from Optimization.IR_IO import instruction
 
 class BasicBlock:
+    """Basic block class
+    
+    """
     def __init__(self, number=0):
         self.preBasicBlock = set()
         self.succBasicBlock = set()
@@ -31,7 +34,7 @@ class BasicBlock:
             return None
 
     def gen_block_label_inst(self):
-        '''generate block labelInst from blockNum'''
+        """generate block labelInst from blockNum"""
         label_name = self.gen_block_label_string()
         if len(self.instList) >= 1:
             line_number = self.get_first_inst().line_number
@@ -42,7 +45,7 @@ class BasicBlock:
         return block_label_inst
 
     def gen_block_label_string(self):
-        '''generate block label string from blockNum'''
+        """generate block label string from blockNum"""
         if self.blockNum == -1:
             label_name = 'LabelBlockExit'
         else:
