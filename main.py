@@ -6,14 +6,20 @@ from __future__ import absolute_import, print_function
 import sys
 import os
 
+from argparse import ArgumentParser
+from argparse import RawTextHelpFormatter
+
 from frontend import log
 from frontend import compiler
 
-from argparse import ArgumentParser
-from argparse import RawTextHelpFormatter
 from frontend import explain
 
-from Optimization import do_optimization
+from backend.ir.ir import import_ir
+from backend.sys_dep.x86.code_generator import *
+
+import json
+
+#from Optimization import do_optimization
 
 __version__ = 0.4
 __date__ = '2017-06-02'
@@ -54,20 +60,43 @@ def run(argv=None):
 
     try:
         # Setup argument parser
-        parser = ArgumentParser(prog=program_name, description=program_shortdesc, formatter_class=RawTextHelpFormatter)
-        parser.add_argument("-t", "--syntax-tree", dest="tree", action="store_true", help="print the syntax tree to stdout")
-        parser.add_argument("-S", "--emit-llvm", dest="ir_code", metavar="PATH", action="store", help="save LLVM-IR (plain text) to PATH")
-        parser.add_argument("-b", "--bit-code", dest="bit_code", metavar="PATH", action="store", help="save LLVM-IR (bit code) to PATH")
-        parser.add_argument("-o", "--object-code", dest="obj_code", metavar="PATH", action="store", help="save object code to PATH")
-        parser.add_argument("-O", "--optimize", dest="opt", metavar="LEVEL", action="store", choices=['0', '1', '2', '3'], default='0', help="run various optimizations on the LLVM-IR code")
-        parser.add_argument('-a', '--asm', dest='asm_code', metavar='PATH', action='store', help='save native assembly code to PATH')
-        parser.add_argument('-e', '--executable', dest='exe', metavar='PATH', action='store', help='generate executable file using clang and save to PATH')
+        parser = ArgumentParser(
+            prog=program_name, description=program_shortdesc, formatter_class=RawTextHelpFormatter)
+        parser.add_argument("-t", "--syntax-tree", dest="tree",
+                            action="store_true", help="print the syntax tree to stdout")
 
-        parser.add_argument("-T", "--triple", dest="triple", action="store", default=None, help="define the target triple, e.g. x86_64-pc-linux or i686-pc-win32")
-        parser.add_argument("-mcpu", dest="cpu", default=None, help='target specific cpu type')
+        parser.add_argument("-C", "--json-code", dest="json_code", metavar="PATH",
+                            action="store", help="translate json IR to ASM PATH")
+        
+        parser.add_argument("-F", "--json-frontend", dest="json_frontend", metavar="PATH",
+                            action="store", help="generate json IR to PATH")
+        
+        parser.add_argument("-A", "--json-asm", dest="json_asm", metavar="PATH",
+                            action="store", help="translate PAS to ASM")
 
-        parser.add_argument("-v", "--verbosity", dest="verbosity", action="count", default=0)
-        parser.add_argument('-V', '--version', action='version', version=program_version_message)
+        parser.add_argument("-S", "--emit-llvm", dest="ir_code", metavar="PATH",
+                            action="store", help="save LLVM-IR (plain text) to PATH")
+        parser.add_argument("-b", "--bit-code", dest="bit_code", metavar="PATH",
+                            action="store", help="save LLVM-IR (bit code) to PATH")
+        parser.add_argument("-o", "--object-code", dest="obj_code",
+                            metavar="PATH", action="store", help="save object code to PATH")
+        parser.add_argument("-O", "--optimize", dest="opt", metavar="LEVEL", action="store", choices=[
+                            '0', '1', '2', '3'], default='0', 
+                            help="run various optimizations on the LLVM-IR code")
+        parser.add_argument('-a', '--asm', dest='asm_code', metavar='PATH',
+                            action='store', help='save native assembly code to PATH')
+        parser.add_argument('-e', '--executable', dest='exe', metavar='PATH',
+                            action='store', help='generate executable file using clang and save to PATH')
+
+        parser.add_argument("-T", "--triple", dest="triple", action="store", default=None,
+                            help="define the target triple, e.g. x86_64-pc-linux or i686-pc-win32")
+        parser.add_argument("-mcpu", dest="cpu", default=None,
+                            help='target specific cpu type')
+
+        parser.add_argument("-v", "--verbosity",
+                            dest="verbosity", action="count", default=0)
+        parser.add_argument('-V', '--version', action='version',
+                            version=program_version_message)
         parser.add_argument(dest="file", metavar="file")
 
         # add conflicting options
@@ -97,50 +126,69 @@ def run(argv=None):
         else:
             log.set_verbosity(0)
 
-        c = compiler.Compiler(args.file)
 
-        c.analyze()
-
-        if args.tree:
-            c.print_tree()
-
-        synthesize = (args.ir_code or args.bit_code or
+        llvm_ir = (args.ir_code or args.bit_code or
                       args.obj_code or args.asm_code or
                       args.exe)
 
+        if llvm_ir or args.json_frontend or args.json_asm:
+            current_compiler = compiler.Compiler(args.file)
+            current_compiler.analyze()
 
-        a = explain.explain()
-        a.programEplain(c.ast, c.ctx)
+        if args.tree:
+            current_compiler.print_tree()
 
-        # set default value
-        control_flow_flag = args.control_flow
-        reach_defination_flag = args.reach_defination
-        loop_optimization_flag = args.loop
-        a.programdata = do_optimization.optimize_a_program(a.programdata, control_flow_flag,
-                                             reach_defination_flag, loop_optimization_flag)
+        if llvm_ir:
+            current_compiler.synthesize(args.triple, args.cpu)
 
-        a.store()
+            if args.opt:
+                current_compiler.optimize(int(args.opt))
 
-        if synthesize:
-            c.synthesize(args.triple, args.cpu)
+            if args.ir_code:
+                current_compiler.save_ir(args.ir_code)
 
-        if args.opt and synthesize:
-            c.optimize(int(args.opt))
+            if args.bit_code:
+                current_compiler.save_bit_code(args.bit_code)
 
-        if args.ir_code:
-            c.save_ir(args.ir_code)
+            if args.obj_code:
+                current_compiler.save_obj_code(args.obj_code)
 
-        if args.bit_code:
-            c.save_bit_code(args.bit_code)
+            if args.asm_code:
+                current_compiler.save_asm_code(args.asm_code)
 
-        if args.obj_code:
-            c.save_obj_code(args.obj_code)
-        
-        if args.asm_code:
-            c.save_asm_code(args.asm_code)
+            if args.exe:
+                current_compiler.save_executable(args.exe)
 
-        if args.exe:
-            c.save_executable(args.exe)
+        else:
+            if args.json_frontend:
+                ir_json = explain.explain()
+                ir_json.programEplain(current_compiler.ast, current_compiler.ctx)
+                ir_json.store(args.json_ir)
+
+            '''
+            # set default value
+            control_flow_flag = args.control_flow
+            reach_defination_flag = args.reach_defination
+            loop_optimization_flag = args.loop
+            ir_json.programdata = \
+                do_optimization.optimize_a_program(
+                    ir_json.programdata, control_flow_flag,
+                    reach_defination_flag, loop_optimization_flag)
+            '''
+
+            '''
+            if args.json_asm:
+            '''
+            
+            if args.json_code:
+                with open (args.file, "r") as json_ir_file:
+                    json_file_str = json_ir_file.read()
+                    data = json.loads(json_file_str)
+                    json_ir = import_ir(data)
+                    asm = CodeGenerator (None, Type.INT32)
+                    json_new_file = asm.generate(json_ir)
+                    json_file_str = json_new_file.to_source()
+                    print (json_file_str)
 
         return 0
 
