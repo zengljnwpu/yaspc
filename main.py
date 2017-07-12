@@ -150,7 +150,8 @@ def run(argv=None):
                 ir_json.programExplain(current_compiler.ast)
                 ir_json.store(args.json_frontend)
 
-            if args.optimize != 0:
+            optimize_level = int(args.optimize)
+            if optimize_level != 0:
                 if args.json_frontend:
                     opt_input_file = args.json_frontend
                     opt_output_file = args.json_frontend
@@ -161,12 +162,12 @@ def run(argv=None):
                 control_flow_flag = False
                 reach_defination_flag = False
                 loop_optimization_flag = False
-                if args.optimize >= 3:
+                if optimize_level >= 3:
                     loop_optimization_flag = True
-                if args.optimize >= 2:
+                if optimize_level >= 2:
                     reach_defination_flag = True
-                if args.optimize >= 1:
-                    loop_optimization_flag = True
+                if optimize_level >= 1:
+                    control_flow_flag = True
                 # do optimization
                 do_optimization.main(
                         opt_input_file, opt_output_file, control_flow_flag,
