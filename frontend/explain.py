@@ -8,7 +8,7 @@ from frontend.exchange import * #@UnusedWildImport
 from frontend.compiler import * #@UnusedWildImport
 from frontend.typesys import * #@UnusedWildImport
 from frontend.symtab import * #@UnusedWildImport
-
+from frontend.codegen import * #@UnusedWildImport
 '''
 此py文件主要将语法树进行进一步解析，生成IR。
 主要包括了语法树各个节点的解释。
@@ -22,16 +22,16 @@ class explain(object):
     ctx = [] #符号表
 
     #store the final data dictionary
-    def store(self):
-        with open('data.json', 'w') as json_file:
+    def store(self,json_path):
+        with open(json_path, 'w') as json_file:
             json_file.write(json.dumps(self.programdata, sort_keys=True, indent=4))
 
 
     #programNode is given by user
-    def programEplain(self,programNode,realctx):
+    def programEplain(self,programNode):
         if programNode != None:
-            ctx = realctx #得到符号表
-            print(self.typeExplain(realctx.find_typedef("i")))
+            v = codegen.CodegenVisitor()
+            self.ctx = v.ctx #得到符号表
             name = str(programNode.identifier.name)
             line_number = int(programNode.position.lineno)
             varlist = []
