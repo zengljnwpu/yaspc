@@ -10,12 +10,12 @@ from __future__ import division
 from __future__ import print_function
 
 import json
-from yaspc.Optimization.BasicBlock import ConstructBasicBlock
-from yaspc.Optimization.BasicBlock import DestructBasicBlock
-from yaspc.Optimization.IR_IO import irParser
-from yaspc.Optimization.DataFlow import ud
-from yaspc.Optimization.Peephole import PeepholeOptimization
-from yaspc.Optimization.Loop import loop
+from Optimization.BasicBlock import ConstructBasicBlock
+from Optimization.BasicBlock import DestructBasicBlock
+from Optimization.IR_IO import irParser
+from Optimization.DataFlow import ud
+from Optimization.Peephole import PeepholeOptimization
+from Optimization.Loop import loop
 
 
 def main():

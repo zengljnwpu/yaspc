@@ -12,10 +12,10 @@ from __future__ import print_function
 
 import json
 
-from yaspc.Optimization.BasicBlock import ConstructBasicBlock
-from yaspc.Optimization.BasicBlock import DestructBasicBlock
-from yaspc.Optimization.IR_IO import irParser
-from yaspc.Optimization.Peephole import PeepholeOptimization
+from Optimization.BasicBlock import ConstructBasicBlock
+from Optimization.BasicBlock import DestructBasicBlock
+from Optimization.IR_IO import irParser
+from Optimization.Peephole import PeepholeOptimization
 
 def test_module():
     '''
