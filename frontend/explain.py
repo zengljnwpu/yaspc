@@ -28,7 +28,7 @@ class explain(object):
 
 
     #programNode is given by user
-    def programEplain(self,programNode):
+    def programExplain(self,programNode):
         if programNode != None:
             v = codegen.CodegenVisitor()
             self.ctx = v.ctx #得到符号表
@@ -116,7 +116,7 @@ class explain(object):
                 if isinstance(funclistNode._children[i],FunctionNode):
                     self.funcExplain(funclist,funclistNode._children[i])
                 else:
-                    self.procExplain(proclist,funclistNode._children[i])
+                    self.procExplain(funclist,funclistNode._children[i])
 
 
 
@@ -142,7 +142,7 @@ class explain(object):
 
     def procExplain(self,proclist,procNode):
         if procNode != None:
-            frocdata = {}
+            procdata = {}
             name = str(procNode.header.identifier.name)
             line_number = int(procNode.position.lineno)
             paralist = []
@@ -213,6 +213,8 @@ class explain(object):
                     self.varExplain(body,exprNode.var_access,value)
             elif isinstance(exprNode,IdentifierNode):#id
                 self.idExplain(body,exprNode,value)
+            elif isinstance(exprNode,TypeConvertNode):
+                self.typeconvertExplain(body,exprNode,value)
             else:#值
                 self.valueExplain(value,exprNode)
 
@@ -294,6 +296,16 @@ class explain(object):
             loaddata = {}
             loadExc(loaddata,line_number,addr,value)
             body.append(loaddata)
+
+
+
+    def typeconvertExplain(self,body,typeconvertNode,value):
+        if typeconvertNode != None:
+            line_number = int(typeconvertNode.position.lineno)
+            valuetype = self.typeExplain(typeconvertNode.type)
+            variable = {}
+            self.exprExplain(body,typeconvertNode.child,variable)
+            self.newuniExplain(body,line_number,"S_CAST",variable,value)
 
 
 
@@ -527,6 +539,11 @@ class explain(object):
         binExc(bindata,line_number,op,left,right,value)
         body.append(bindata)
             
+
+    def newuniExplain(self,body,line_number,op,variable,value):
+        unadata = {}
+        uniExc(unadata,line_number,op,variable,value)
+        body.append(unadata)
 
 
     def newvarExplain(self,value,vartype):

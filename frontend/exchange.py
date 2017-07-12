@@ -180,7 +180,7 @@ def uniExc(unadata,line_number,op,variable,value):
     unadata['op'] = op
     unadata['variable'] = variable
     unadata['value'] = value #此ret为一临时变量或值
-    unadata['name'] = "una"
+    unadata['name'] = "uni"
 
 
 
