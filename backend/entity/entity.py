@@ -1,17 +1,18 @@
-from backend.asm.assembly import *
-from backend.asm.operand import *
-from backend.asm.literal import *
+
+from backend.asm.assembly import Label
+from backend.asm.operand import MemoryReference
+from backend.asm.operand import ImmediateValue
+
 import backend.type.type
 import backend.ir.ir
 
 entity_map = dict()
 
-
 class Entity (object):
-    def __init__(self, priv, type, name):
+    def __init__(self, priv, entity_type, name):
         self._name = name
         self._is_private = priv
-        self._type = backend.type.type.Type.type_factory(type, name)
+        self._type = backend.type.type.Type.type_factory(entity_type, name)
         self.n_refered = 0
         self._mem_ref = None
         self._address = None
@@ -92,8 +93,8 @@ class Entity (object):
 
 
 class Constant (Entity):
-    def __init__(self, type, name, value):
-        super(Constant, self).__init__(True, type, name)
+    def __init__(self, const_type, name, value):
+        super(Constant, self).__init__(True, const_type, name)
         self.__value = int(value)
 
     def is_assignable(self):
@@ -162,8 +163,8 @@ class Function (Entity):
 
 
 class DefinedFuntion (Function):
-    def __init__(self, priv, type, name, params, body, scope):
-        super(DefinedFuntion, self).__init__(priv, type, name)
+    def __init__(self, priv, func_type, name, params, body, scope):
+        super(DefinedFuntion, self).__init__(priv, func_type, name)
         self._params = Params(loc=0, param_descs=params)
         self._body = body
         self._scope = scope
@@ -226,8 +227,8 @@ class UndefinedFunction (Function):
 
 
 class Variable (Entity):
-    def __init__(self, priv, type, name):
-        super(Variable, self).__init__(priv, type, name)
+    def __init__(self, priv, var_type, name):
+        super(Variable, self).__init__(priv, var_type, name)
 
 
 class UndefinedVariable (Variable):
@@ -253,8 +254,8 @@ class UndefinedVariable (Variable):
 
 
 class DefinedVariable (Variable):
-    def __init__(self, priv, type, name, init):
-        super(DefinedVariable, self).__init__(priv, type, name)
+    def __init__(self, priv, defvar_type, name, init):
+        super(DefinedVariable, self).__init__(priv, defvar_type, name)
         self._initializer = init
         self._sequence = -1
         self._symbol = None
@@ -307,8 +308,8 @@ class DefinedVariable (Variable):
 
 
 class Parameter (DefinedVariable):
-    def __init__(self, type, name):
-        super(Parameter, self).__init__(False, type, name, None)
+    def __init__(self, param_type, name):
+        super(Parameter, self).__init__(False, param_type, name, None)
 
     def is_parameter(self):
         return True
@@ -352,12 +353,14 @@ class Params (ParamSlot):
     def parameters(self):
         return self._param_descriptors
 
+    '''
     def parameters_type_ref(self):
         type_refs = []
         for param in self._param_descriptors:
             type_refs.append(param.type_node().type_ref())
         return ParamTypeRefs(self.location, type_refs, self._var_arg)
-
+    '''
+    
     def __eq__(self, other):
         if not isinstance(other, Params):
             return False

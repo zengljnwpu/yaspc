@@ -1,5 +1,6 @@
-from backend.asm.assembly import *
 
+from backend.asm.assembly import Label
+from backend.asm.literal import SuffixedSymbol
 
 class Statistics ():
     def __init__ (self):

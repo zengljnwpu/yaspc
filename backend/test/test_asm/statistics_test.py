@@ -1,5 +1,9 @@
 import unittest
-from backend.asm.statistics import *
+
+from backend.asm.statistics import Statistics
+from backend.sys_dep.x86.register import x86Register
+from backend.asm.literal import UnnamedSymbol
+from backend.asm.assembly import Instruction
 
 class TestStat (unittest.TestCase):
     def test_register (self):

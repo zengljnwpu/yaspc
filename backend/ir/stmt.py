@@ -1,6 +1,5 @@
-from backend.entity.entity import Entity
+
 import backend.ir.expr
-from backend.asm.assembly import *
 
 class Stmt (object):
     def __init__ (self, loc):

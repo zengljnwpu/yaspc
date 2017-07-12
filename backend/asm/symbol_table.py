@@ -1,4 +1,5 @@
-from backend.asm.literal import *
+
+from backend.asm.literal import NamedSymbol
 
 
 class SymbolTable ():
@@ -16,9 +17,9 @@ class SymbolTable ():
         return NamedSymbol(self._new_string())
 
     def symbol_string(self, sym):
-        str = self._map.get(sym)
-        if str:
-            return str
+        sym_str = self._map.get(sym)
+        if sym_str:
+            return sym_str
         else:
             new_str = self._new_string()
             self._map[sym] = new_str

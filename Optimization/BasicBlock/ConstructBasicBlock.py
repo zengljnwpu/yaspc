@@ -27,7 +27,6 @@ def SplitBasicBlock(inst_list, blockDict, labelDict, blockList):
         and we map the label name of labelInst to block num named labelDict
     """
     ''' new the basic block '''
-    block = None
     number = 1
     i = 0
     labelFlag = 0
@@ -200,7 +199,7 @@ def LinkBasicBlock(inst_list, blockDict, labelDict, blockList):
     if DEBUG:
         print("============PredecessorSuccessor==================")
         for ith, inst in enumerate(inst_list):
-            # inst.pos = ith
+            ith
             print(inst.pos, inst)
         for block in blockList:
             print(block.blockNum, ":")

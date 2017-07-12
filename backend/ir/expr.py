@@ -1,8 +1,9 @@
-from backend.asm.operand import *
-from backend.entity.entity import *
-from backend.asm.type import *
-from backend.ir.dumper import *
-from backend.ir.op import *
+
+from backend.asm.literal import IntegerLiteral
+from backend.entity.entity import entity_map
+from backend.entity.entity import Function
+from backend.entity.entity import ImmediateValue
+from backend.ir.op import Op
 import backend.type.type
 
 
@@ -16,8 +17,8 @@ class Expr(object):
         elif value["name"] == "variable*":
             return Addr(type=value["type"], entity=entity_map[value["variable"]])
 
-    def __init__(self, type):
-        self._type = backend.type.type.Type.type_factory(type=type, obj=None)
+    def __init__(self, expr_type):
+        self._type = backend.type.type.Type.type_factory(type=expr_type, obj=None)
 
     def type(self):
         return self._type
@@ -40,8 +41,8 @@ class Expr(object):
     def mem_ref(self):
         raise Exception("__expr#memref called\n")
 
-    def address_node(self, type):
-        raise Exception("unexpected node for LHS: " + str(type))
+    def address_node(self, expr_type):
+        raise Exception("unexpected node for LHS: " + str(expr_type))
 
     def det_entity_force(self):
         return None
@@ -59,8 +60,8 @@ class Expr(object):
 
 
 class Addr(Expr):
-    def __init__(self, type, entity):
-        super(Addr, self).__init__(type)
+    def __init__(self, addr_type, entity):
+        super(Addr, self).__init__(addr_type)
         self.entity = entity
 
     def is_addr(self):
@@ -86,8 +87,8 @@ class Addr(Expr):
 
 
 class Bin(Expr):
-    def __init__(self, type, op, left, right, value):
-        super(Bin, self).__init__(type)
+    def __init__(self, bin_type, op, left, right, value):
+        super(Bin, self).__init__(bin_type)
         self._op = Op.op_factory(op)
         self._left = Expr.expr_factory(left)
         self._right = Expr.expr_factory(right)
@@ -115,8 +116,8 @@ class Bin(Expr):
 
 
 class Call(Expr):
-    def __init__(self, type, expr, args):
-        super(Call, self).__init__(type)
+    def __init__(self, call_type, expr, args):
+        super(Call, self).__init__(call_type)
         self.__expr = Expr.expr_factory(expr)
         self.__args = list()
         for i in args:
@@ -152,8 +153,8 @@ class Call(Expr):
 
 
 class Int(Expr):
-    def __init__(self, type, value):
-        super(Int, self).__init__(type)
+    def __init__(self, int_type, value):
+        super(Int, self).__init__(int_type)
         self._value = value
 
     def value(self):
@@ -176,14 +177,14 @@ class Int(Expr):
 
 
 class Mem(Expr):
-    def __init__(self, type, expr):
-        super(Mem, self).__init__(type)
+    def __init__(self, mem_type, expr):
+        super(Mem, self).__init__(mem_type)
         self._expr = expr
 
     def expr(self):
         return self._expr
 
-    def address_node(self, type):
+    def address_node(self, mem_type):
         return self._expr
 
     def accept(self, visitor):
@@ -194,8 +195,8 @@ class Mem(Expr):
 
 
 class Str(Expr):
-    def __init__(self, type, entry):
-        super(Str, self).__init__(type)
+    def __init__(self, str_type, entry):
+        super(Str, self).__init__(str_type)
         self._entry = entry
 
     def entry(self):
@@ -224,8 +225,8 @@ class Str(Expr):
 
 
 class Uni(Expr):
-    def __init__(self, type, op, expr):
-        super(Uni, self).__init__(type)
+    def __init__(self, uni_type, op, expr):
+        super(Uni, self).__init__(uni_type)
         self._op = op
         self._expr = expr
 
@@ -244,8 +245,8 @@ class Uni(Expr):
 
 
 class Var(Expr):
-    def __init__(self, type, entity):
-        super(Var, self).__init__(type)
+    def __init__(self, var_type, entity):
+        super(Var, self).__init__(var_type)
         self._entity = entity
 
     def is_var(self):
@@ -269,8 +270,8 @@ class Var(Expr):
     def mem_ref(self):
         return self._entity.mem_ref()
 
-    def address_node(self, type):
-        return Addr(type, self._entity)
+    def address_node(self, var_type):
+        return Addr(var_type, self._entity)
 
     def get_entity_force(self):
         return self._entity

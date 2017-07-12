@@ -36,7 +36,6 @@ def test_module():
         print('%3d\t%s'%(inst.pos, str(inst)))
 
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
-    block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
     #ud.ud_set(block_list, var_reduce)
     #ud.constant_propagation(block_list, var_reduce, inst_list)
     #ud.live_variable_analysis(block_list)

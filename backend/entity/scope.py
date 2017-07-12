@@ -1,5 +1,5 @@
-from backend.entity.entity import *
-import backend.type.type
+
+from backend.entity.entity import DefinedVariable
 
 #Used to describe scope of variables
 class LocalScope (object):

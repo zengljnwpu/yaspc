@@ -1,7 +1,12 @@
 import unittest
-from backend.asm.literal import *
-from backend.asm.symbol_table import *
-from backend.asm.statistics import *
+
+from backend.asm.literal import UnnamedSymbol
+from backend.asm.literal import IntegerLiteral
+from backend.asm.literal import Symbol
+from backend.asm.literal import NamedSymbol
+from backend.asm.literal import SuffixedSymbol
+from backend.asm.literal import BaseSymbol
+from backend.asm.statistics import Statistics
 
 class TestInteger(unittest.TestCase):
     def setUp(self):

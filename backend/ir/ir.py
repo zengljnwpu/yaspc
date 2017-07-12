@@ -1,11 +1,10 @@
-from backend.asm.type import *
-from backend.asm.operand import *
-from backend.entity.entity import *
-from backend.asm.type import *
-from backend.ir.dumper import *
-from backend.ir.stmt import *
-from backend.ir.op import *
-from backend.ir.expr import *
+
+from backend.entity.entity import DefinedFuntion
+from backend.ir.dumper import Dumper
+from backend.ir.stmt import Assign
+from backend.ir.stmt import Return
+from backend.ir.expr import Bin
+from backend.ir.expr import Call
 from backend.entity.scope import *
 
 
@@ -107,10 +106,12 @@ class IR ():
 
     #Returns the list of global variables.
     def defined_global_variables (self):
-       #if not self.gvars:
-       #     self.init_variables()
-       # else:
-       #     return self.gvars
+        '''
+        if not self.gvars:
+             self.init_variables()
+         else:
+             return self.gvars
+        '''
         return self.defvars
 
 

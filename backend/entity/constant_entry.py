@@ -1,9 +1,6 @@
-from backend.asm.literal import *
-from backend.asm.operand import *
-
 
 class ConstantEntry (object):
-    def __init__(self, val: str):
+    def __init__(self, val):
         self._value = val
         self._symbol = 0
         self._mem_ref = 0
@@ -17,7 +14,7 @@ class ConstantEntry (object):
             raise Exception ("must not happen: symbol == null")
         return self._symbol
 
-    def set_symbol(self, sym: Symbol):
+    def set_symbol(self, sym):
         self.sym = sym
 
     def mem_ref (self):
@@ -26,13 +23,13 @@ class ConstantEntry (object):
         return self._mem_ref
 
 
-    def set_mem_ref (self, mem: MemoryReference):
+    def set_mem_ref (self, mem):
         self._mem_ref = mem
 
     def address (self):
         return self._address
 
-    def set_address(self, imm: ImmediateValue):
+    def set_address(self, imm):
         self._address = imm
 
 
@@ -43,7 +40,7 @@ class ConstantTable (ConstantEntry):
     def is_empty (self):
         return self._table
 
-    def intern (self, s:str):
+    def intern (self, s):
         ent = self._table.get(s)
         if not ent:
             ent = ConstantEntry (s)

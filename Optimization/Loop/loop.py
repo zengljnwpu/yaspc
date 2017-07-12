@@ -10,7 +10,7 @@ from __future__ import division
 from __future__ import print_function
 
 import copy
-from Optimization.BasicBlock import BasicBlock
+
 from Optimization.DataFlow import ud
 from Optimization.IR_IO import instruction
 
@@ -312,6 +312,7 @@ def do_loop_optimization(block_list, debug_print=True):
         dom_set = D[n]
         for d in dom_set:
             for succ, description in block_list[n].succBasicBlock:
+                description
                 if succ == block_list[d]:
                     count = count + 1
                     print("\nFind a back edge %d -> %d"%(n, d))

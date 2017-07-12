@@ -1,4 +1,4 @@
-from enum import Enum
+
 from backend.asm.operand import Register
 from backend.asm.type import *
 
@@ -16,10 +16,10 @@ class RegisterClass (Enum):
 
 # Describe propertys of x86 Registers
 class x86Register (Register):
-    def __init__(self, _class, type):
+    def __init__(self, _class, reg_type):
         super(x86Register, self).__init__()
         self._class = _class
-        self.type = type
+        self.type = reg_type
 
     def for_type(self, t):
         return x86Register(self._class, t)

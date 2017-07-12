@@ -1,4 +1,7 @@
-from backend.asm.symbol_table import *
+
+from backend.asm.symbol_table import dummy
+from backend.asm.literal import Literal
+from backend.asm.literal import IntegerLiteral
 
 
 class Operand (object):
@@ -143,13 +146,13 @@ class IndirectMemoryReference (MemoryReference):
             return self._offset.compare_to (mem._offset)
 
     def dump (self):
-        str = "(IndirectMemoryReference "
+        temp_str = "(IndirectMemoryReference "
         if self._fixed:
-            str += ""
+            temp_str += ""
         else:
-            str += "*"
-        str = str +self._offset.dump() + " " + self._base.dump() + ")"
-        return str
+            temp_str += "*"
+        temp_str = temp_str +self._offset.dump() + " " + self._base.dump() + ")"
+        return temp_str
 
 
 class DirectMemoryReference (MemoryReference):

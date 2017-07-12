@@ -1,6 +1,14 @@
 import unittest
-from backend.asm.operand import *
-from backend.asm.statistics import *
+
+from backend.asm.operand import ImmediateValue
+from backend.asm.operand import DirectMemoryReference
+from backend.asm.operand import IndirectMemoryReference
+from backend.asm.symbol_table import dummy
+
+from backend.asm.literal import UnnamedSymbol
+from backend.asm.literal import IntegerLiteral
+from backend.asm.statistics import Statistics
+from backend.sys_dep.x86.register import x86Register
 
 class TestImmediate (unittest.TestCase):
     def setUp(self):

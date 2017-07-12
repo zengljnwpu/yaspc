@@ -1,5 +1,6 @@
 import unittest
-from backend.asm.type import *
+
+from backend.asm.type import Type
 
 
 class TypeTest (unittest.TestCase):

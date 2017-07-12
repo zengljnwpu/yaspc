@@ -79,7 +79,7 @@ class Op (Enum):
         elif op == ">=":
                 return Op.U_GTEQ
         else:
-           raise Exception ("unknown binary op: " + op)
+            raise Exception("unknown binary op: " + op)
 
     @staticmethod
     def intern_binary (op, is_signed):
@@ -137,7 +137,7 @@ class Op (Enum):
             else:
                 return Op.U_GTEQ
         else:
-           raise Exception ("unknown binary op: " + op)
+            raise Exception ("unknown binary op: " + op)
 
     @staticmethod
     def intern_unary (op):

@@ -1,5 +1,7 @@
-from backend.asm.literal import *
-from backend.asm.operand import *
+
+
+from backend.asm.literal import UnnamedSymbol
+from backend.asm.operand import DirectMemoryReference
 
 
 class Assembly (object):
@@ -77,8 +79,8 @@ class Instruction (Assembly):
         return self._mnemonic
 
     def is_jump_instruction (self):
-        list = ("jmp", "jz", "jne", "je", "jne")
-        return self._mnemonic in list
+        jump_list = ("jmp", "jz", "jne", "je", "jne")
+        return self._mnemonic in jump_list
 
     def num_operands (self):
         return len (self._operands)
@@ -153,6 +155,7 @@ class Comment (Assembly):
         buf = ""
         for i in range (self._indent_level):
             buf = buf + "  "
+            i
         return buf
 
     def dump(self):

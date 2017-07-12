@@ -166,14 +166,14 @@ class UnnamedSymbol (BaseSymbol):
         return self.cmp(lit)
 
     def cmp(self, i):
-       if isinstance(i, IntegerLiteral):
-           return 1
-       elif isinstance(i, NamedSymbol):
-           return 1
-       elif isinstance(i, UnnamedSymbol):
-           return (str(self) > str(i)) - (str(self) < str(i))
-       else:
-           return 1
+        if isinstance(i, IntegerLiteral):
+            return 1
+        elif isinstance(i, NamedSymbol):
+            return 1
+        elif isinstance(i, UnnamedSymbol):
+            return (str(self) > str(i)) - (str(self) < str(i))
+        else:
+            return 1
 
     def dump(self):
         return "(UnnamedSymbol @" + str(self) + ")"
@@ -181,9 +181,9 @@ class UnnamedSymbol (BaseSymbol):
 
 class SuffixedSymbol (Symbol):
     def __init__(self, base, suffix):
-       super(SuffixedSymbol, self).__init__()
-       self._base = base
-       self._suffix = suffix
+        super(SuffixedSymbol, self).__init__()
+        self._base = base
+        self._suffix = suffix
 
     def is_zero(self):
         return False

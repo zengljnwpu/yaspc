@@ -1,11 +1,19 @@
-from backend.asm.type import *
-from backend.asm.assembly import *
-from backend.asm.literal import *
-from backend.asm.operand import *
-from backend.asm.statistics import *
-from backend.asm.symbol_table import *
-from backend.sys_dep.x86.register import *
 
+from backend.asm.type import Type
+from backend.asm.statistics import Statistics
+from backend.asm.assembly import Comment
+from backend.asm.assembly import Label
+from backend.asm.assembly import Directive
+from backend.asm.assembly import Instruction
+from backend.asm.operand import DirectMemoryReference
+from backend.asm.operand import AbsoluteAddress
+from backend.asm.operand import Operand
+from backend.asm.operand import IndirectMemoryReference
+from backend.asm.literal import Symbol
+from backend.asm.literal import Literal
+from backend.asm.literal import IntegerLiteral
+from backend.sys_dep.x86.register import RegisterClass
+from backend.sys_dep.x86.register import x86Register
 
 # Describe a kind of ASM DSL (Domain Specific Languages) so that it can convert from ASM objects to ASM codes easily
 class AssemblyCode():
@@ -48,8 +56,8 @@ class AssemblyCode():
     def does_uses (self, reg):
         return self._statistics.does_register_used (reg.base_name())
 
-    def comment (self, str):
-        self._assemblies.append (Comment (str, self._comment_indent_level))
+    def comment (self, code_str):
+        self._assemblies.append (Comment (code_str, self._comment_indent_level))
 
     def indent_comment (self):
         self._comment_indent_level += 1
@@ -93,30 +101,30 @@ class AssemblyCode():
             raise Exception ("wrong operand")
 
     def _type_suffix (self, t1, t2 = None):
-        str = ""
+        type_str = ""
         if t1:
-            if t1.size() == Type.INT8.size():
-                str += "b"
-            elif t1.size() == Type.INT16.size():
-                str += "w"
-            elif t1.size() == Type.INT32.size():
-                str += "l"
-            elif t1.size() == Type.INT64.size():
-                str += "q"
+            if t1.size() == Type.INT8:
+                type_str += "b"
+            elif t1.size() == Type.INT16:
+                type_str += "w"
+            elif t1.size() == Type.INT32:
+                type_str += "l"
+            elif t1.size() == Type.INT64:
+                type_str += "q"
             else:
                 raise Exception ("unknown register type: " + t1.size())
         if t2:
             if t2 == Type.INT8:
-                str += "b"
+                type_str += "b"
             elif t2 == Type.INT16:
-                str += "w"
+                type_str += "w"
             elif t2 == Type.INT32:
-                str += "l"
+                type_str += "l"
             elif t2 == Type.INT64:
-                str += "q"
+                type_str += "q"
             else:
                 raise Exception("unknown register type: " + t2.size())
-        return str
+        return type_str
 
     #directives
     def _file (self, name):
@@ -128,9 +136,9 @@ class AssemblyCode():
     def _data (self):
         self._directive("\t.data")
 
-    def _section (self, name, flags = None, type = None, group = None, linkage = None):
-        if flags and type and group and linkage:
-            self._directive("\t.section\t" + name + "," + flags + "," + type + "," + group + "," + linkage)
+    def _section (self, name, flags = None, code_type = None, group = None, linkage = None):
+        if flags and code_type and group and linkage:
+            self._directive("\t.section\t" + name + "," + flags + "," + code_type + "," + group + "," + linkage)
         elif (not flags) and (not type) and (not group) and (not linkage):
             self._directive("\t.section\t" + name)
 
@@ -149,8 +157,8 @@ class AssemblyCode():
     def _align (self, n):
         self._directive("\t.align\t" + str (n))
 
-    def _type (self, sym, type):
-        self._directive("\t.type\t" + sym._name + "," + type)
+    def _type (self, sym, code_type):
+        self._directive("\t.type\t" + sym._name + "," + code_type)
 
     def _size (self, sym, size):
         self._directive("\t.size\t" + sym._name + "," + str (size))
@@ -179,8 +187,8 @@ class AssemblyCode():
         elif isinstance(val, Literal):
             self._directive(".quad\t" + val.to_source())
 
-    def _string(self, str):
-        self._directive("\t.string\t" + str)
+    def _string(self, code_str):
+        self._directive("\t.string\t" + code_str)
 
     def virtual_push(self, reg):
         if self.verbose:
@@ -260,14 +268,14 @@ class AssemblyCode():
 
     def mov (self, src, dest):
         if isinstance(src, x86Register) and isinstance(dest, x86Register):
-            type = self.natural_type
+            code_type = self.natural_type
         elif isinstance(src, Operand) and isinstance(dest, x86Register):
-            type = dest.type
+            code_type = dest.type
         elif isinstance(src, x86Register) and isinstance( dest, Operand):
-            type = src.type
+            code_type = src.type
         else:
             raise Exception ("Wrong src or dest type")
-        self._insn(t = type, op = "mov", a = src, b = dest)
+        self._insn(t = code_type, op = "mov", a = src, b = dest)
 
     #for stack access
     def reloca_table_mov (self, src, dest):
@@ -326,12 +334,12 @@ class VirtualStack ():
         def max_size(self):
             return self.__max
 
-        def extent (self, len):
-            self.__offset += len
+        def extent (self, stack_len):
+            self.__offset += stack_len
             self.__max = max (self.__offset, self.__max)
 
-        def rewind (self, len):
-            self.__offset -= len
+        def rewind (self, stack_len):
+            self.__offset -= stack_len
 
         def top (self):
             mem = self.__reloca_table_mem (-self.__offset, self.__bp())

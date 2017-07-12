@@ -1,11 +1,33 @@
 from __future__ import absolute_import, print_function
 
-from backend.sys_dep.x86.assembly_code import *
-from backend.ir.expr import *
-from backend.ir.op import *
-from backend.ir.stmt import *
+from backend.ir.expr import Str
+from backend.ir.expr import Call
+from backend.ir.expr import Bin
+from backend.ir.expr import Uni
+from backend.ir.expr import Var
+from backend.ir.expr import Int
+from backend.ir.expr import Addr
+from backend.ir.expr import Mem
+from backend.ir.op import Op
+from backend.ir.stmt import Jump
+from backend.ir.stmt import CJump
+from backend.ir.stmt import LabelStmt
+from backend.ir.stmt import Return
+from backend.ir.stmt import ExprStmt
+from backend.ir.stmt import Assign
+from backend.asm.symbol_table import SymbolTable
+from backend.asm.operand import MemoryReference
+from backend.asm.literal import NamedSymbol
 from backend.sys_dep.x86.register import RegisterClass
-
+from backend.sys_dep.x86.register import x86Register
+from backend.asm.type import Type
+from backend.asm.literal import Symbol
+from backend.asm.literal import Literal
+from backend.asm.assembly import Label
+from backend.asm.operand import DirectMemoryReference
+from backend.asm.operand import IndirectMemoryReference
+from backend.asm.operand import ImmediateValue
+from backend.sys_dep.x86.assembly_code import AssemblyCode
 
 class CodeGenerator():
     LABEL_SYMBOL_BASE = ".L"
@@ -24,7 +46,7 @@ class CodeGenerator():
 
     # locate Symbols
     def __locate_symbols(self, ir):
-        const_symbols = SymbolTable(self.CONST_SYMBOL_BASE)
+        # const_symbols = SymbolTable(self.CONST_SYMBOL_BASE)
         # for ent in ir.const_table().entries():
         #    self.__locate_string_literal (ent, const_symbols)
         for var in ir.all_global_variables():
@@ -88,86 +110,86 @@ class CodeGenerator():
 
     # generate Assembly code
     def __generate_assembly_code(self, ir):
-        file = self.__new_assembly_code()
-        file._file(ir.file_name())
+        asm_file = self.__new_assembly_code()
+        asm_file._file(ir.file_name())
         if ir.is_global_variable_defined():
-            self.__generate_data_section(file, ir.defined_global_variables())
+            self.__generate_data_section(asm_file, ir.defined_global_variables())
         # if ir.is_string_literal_defined():
-        #     self.__generate_read_only_data_section (file, ir.const_table())
+        #     self.__generate_read_only_data_section (asm_file, ir.const_table())
         if ir.is_function_defined():
-            self.__generate_text_section(file, ir.defined_funcitons())
+            self.__generate_text_section(asm_file, ir.defined_funcitons())
         # if ir.is_common_symbol_defined():
-        #     self.__generate_common_symbols (file, ir.defined_common_symbols())
+        #     self.__generate_common_symbols (asm_file, ir.defined_common_symbols())
         # if self._options.is_positions_independent():
-        #     self.__PIC_thunk (file, self.__GOT_base_reg())
-        return file
+        #     self.__PIC_thunk (asm_file, self.__GOT_base_reg())
+        return asm_file
 
     def __new_assembly_code(self):
         return AssemblyCode(self._natural_type, self.__STACK_WORD_SIZE,
                             SymbolTable(self.LABEL_SYMBOL_BASE),
                             verbose=False)
 
-    def __generate_data_section(self, file, gvars):
-        file._data()
+    def __generate_data_section(self, asm_file, gvars):
+        asm_file._data()
         for var in gvars:
             sym = self.__global_symbol(var.symbol_string())
             if not var.is_private():
-                file._globl(sym)
-            file._align(var.alignment())
-            file._type(sym, "@object")
-            file._size(sym, var.alloc_size())
-            file.label(sym)
-            self.__generate_immediate(file=file, size=var.type().alloc_size(), node=var.initializer())
+                asm_file._globl(sym)
+            asm_file._align(var.alignment())
+            asm_file._type(sym, "@object")
+            asm_file._size(sym, var.alloc_size())
+            asm_file.label(sym)
+            self.__generate_immediate(file=asm_file, size=var.type().alloc_size(), node=var.initializer())
 
     # generate immediate values for .data section
-    def __generate_immediate(self, file, size, node):
+    def __generate_immediate(self, asm_file, size, node):
         if node["type"] == "INT32":
             expr = int(node["value"])
             if size == 1:
-                file._byte(expr)
+                asm_file._byte(expr)
             elif size == 2:
-                file._value(expr)
+                asm_file._value(expr)
             elif size == 4:
-                file._long(expr)
+                asm_file._long(expr)
             elif size == 8:
-                file._quad(expr)
+                asm_file._quad(expr)
             else:
                 raise ArithmeticError
         elif isinstance(node, str):
             expr = Str(node)
             if size == 4:
-                file._long(expr.symbol())
+                asm_file._long(expr.symbol())
             elif size == 8:
-                file._quad(expr.symbol())
+                asm_file._quad(expr.symbol())
             else:
                 raise ArithmeticError
         else:
             raise ArithmeticError
 
     # #generate .rodata entries (const strings)
-    # def __generate_read_only_data_section (self, file, constants):
-    #     file._section (".rodata")
+    # def __generate_read_only_data_section (self, asm_file, constants):
+    #     asm_file._section (".rodata")
     #     for ent in constants:
-    #         file.label (ent.symbol())
-    #         file._string (ent.value())
+    #         asm_file.label (ent.symbol())
+    #         asm_file._string (ent.value())
 
-    def __generate_text_section(self, file, functions):
-        file._text()
+    def __generate_text_section(self, asm_file, functions):
+        asm_file._text()
         for func in functions:
             sym = self.__global_symbol(func.name())
             if not func.is_private():
-                file._globl(sym)
-            file._type(sym, "@function")
-            file.label(sym)
-            self.__compile_function_body(file, func)
-            file._size(sym, ".-" + sym.to_source())
+                asm_file._globl(sym)
+            asm_file._type(sym, "@function")
+            asm_file.label(sym)
+            self.__compile_function_body(asm_file, func)
+            asm_file._size(sym, ".-" + sym.to_source())
 
-    # def __generate_common_symbols (self, file, variables):
+    # def __generate_common_symbols (self, asm_file, variables):
     #     for var in variables:
     #         sym = self.__global_symbol(var.symbol_string())
     #         if var.is_private():
-    #             file._local (sym)
-    #         file._comm (sym, var.alloc_size(), var.alignment())
+    #             asm_file._local (sym)
+    #         asm_file._comm (sym, var.alloc_size(), var.alignment())
     #
     #
     #          These codes (GOT and PIC) were used to describe functions that used in Dynamic-link library
@@ -176,9 +198,9 @@ class CodeGenerator():
     # #PIC/PIE related constants and codes
     # __GOT = NamedSymbol ("_GLOBAL_OFFSET_TABLE_")
     #
-    # def __load_GOT_base_address (self, file, reg):
-    #     file.call (PIC_thunk_symbol (reg))
-    #     file.add (self.__imm (self.__GOT), reg)
+    # def __load_GOT_base_address (self, asm_file, reg):
+    #     asm_file.call (PIC_thunk_symbol (reg))
+    #     asm_file.add (self.__imm (self.__GOT), reg)
     #
     # def __GOT_base_reg (self):
     #     return self.__bx ()
@@ -209,19 +231,19 @@ class CodeGenerator():
     # # .section NAME, "...M", TYPE, section_group_name, linkage
     # #
     #
-    # def __PIC_thunk (self, file, reg):
+    # def __PIC_thunk (self, asm_file, reg):
     #     sym = self.__PIC_thunk_symbol(reg)
-    #     file._section (".text" + "." + sym.to_source(),\
+    #     asm_file._section (".text" + "." + sym.to_source(),\
     #                    "\"" + PICThunkSectionFlags + "\"",
     #                    SectionType_bits, \
     #                    sym.toSource(), \
     #                    Linkage_linkonce)
-    #     file._globl (sym)
-    #     file._hidden (sym)
-    #     file._type (sym, SymbolType_function)
-    #     file.label (sym)
-    #     file.mov (self.__mem (self.__sp()), reg)
-    #     file.ret()
+    #     asm_file._globl (sym)
+    #     asm_file._hidden (sym)
+    #     asm_file._type (sym, SymbolType_function)
+    #     asm_file.label (sym)
+    #     asm_file.mov (self.__mem (self.__sp()), reg)
+    #     asm_file.ret()
     #
     # # Compile Function
     # #
@@ -261,7 +283,7 @@ class CodeGenerator():
         def frame_size(self):
             return self.save_regs_size() + self.lvar_size + self.temp_size
 
-    def __compile_function_body(self, file, func):
+    def __compile_function_body(self, asm_file, func):
         frame = self.StackFrameInfo()
         self.__locate_parameters(func.parameters())
         frame.lvar_size = self.__locate_local_variables(func.lvar_scope())
@@ -272,7 +294,7 @@ class CodeGenerator():
 
         self.__fix_local_variable_offsets(func.lvar_scope(), frame.lvar_offset())
         self.__fix_temp_varaible_offsets(body, frame.temp_offset())
-        self.__generate_function_body(file, body, frame)
+        self.__generate_function_body(asm_file, body, frame)
 
     def __optimize(self, body):
         # if self._options.optimize_level () < 1:
@@ -314,30 +336,30 @@ class CodeGenerator():
             self.__callee_save_registers_cache = regs
         return self.__callee_save_registers_cache
 
-    def __generate_function_body(self, file, body, frame):
-        file.virtual_stack.reset()
-        self.__prologue(file, frame.save_regs, frame.frame_size())
+    def __generate_function_body(self, asm_file, body, frame):
+        asm_file.virtual_stack.reset()
+        self.__prologue(asm_file, frame.save_regs, frame.frame_size())
         # if self._options.is_positions_independent() and body.does_uses (self.__GOT_base_reg()):
-        #   self.__load_GOT_base_address(file, self.__GOT_base_reg())
-        file.add_all(body.assemblies())
-        self.__epilogue(file, frame.save_regs)
-        file.virtual_stack.fix_offset(0)
+        #   self.__load_GOT_base_address(asm_file, self.__GOT_base_reg())
+        asm_file.add_all(body.assemblies())
+        self.__epilogue(asm_file, frame.save_regs)
+        asm_file.virtual_stack.fix_offset(0)
 
-    def __prologue(self, file, save_regs, frame_size):
-        file.push(self.__bp())
-        file.mov(self.__sp(), self.__bp())
+    def __prologue(self, asm_file, save_regs, frame_size):
+        asm_file.push(self.__bp())
+        asm_file.mov(self.__sp(), self.__bp())
         for reg in save_regs:
-            file.virtual_push(reg)
-        self.__extend_stack(file, frame_size)
+            asm_file.virtual_push(reg)
+        self.__extend_stack(asm_file, frame_size)
 
-    def __epilogue(self, file, saved_regs=list()):
+    def __epilogue(self, asm_file, saved_regs=list()):
         temp_list = saved_regs[:]
         temp_list.reverse()
         for reg in temp_list:
-            file.virtual_pop(reg)
-        file.mov(self.__bp(), self.__sp())
-        file.pop(self.__bp())
-        file.ret()
+            asm_file.virtual_pop(reg)
+        asm_file.mov(self.__bp(), self.__sp())
+        asm_file.pop(self.__bp())
+        asm_file.ret()
 
     __PARAM_START_WORD = 2
 
@@ -349,31 +371,31 @@ class CodeGenerator():
 
     # Allocates _address of local variables, but offset is still not determined, assign unfixed IndirectMemoryReference
     def __locate_local_variables(self, scope, parent_stack_len=0):
-        len = parent_stack_len
+        temp_stack_len = parent_stack_len
         for var in scope.local_variables():
-            len = self.__align_stack(len + var.alloc_size())
-            var.set_mem_ref(self.__reloca_table_mem(-len, self.__bp()))
+            temp_stack_len = self.__align_stack(temp_stack_len + var.alloc_size())
+            var.set_mem_ref(self.__reloca_table_mem(-temp_stack_len, self.__bp()))
 
-        max_len = len
+        max_len = temp_stack_len
         return max_len
 
     def __reloca_table_mem(self, offset, base):
         return IndirectMemoryReference.reloca_table(offset, base)
 
-    def __fix_local_variable_offsets(self, scope, len):
+    def __fix_local_variable_offsets(self, scope, off):
         for var in scope.all_local_variables():
-            var.mem_ref().fix_offset(-len)
+            var.mem_ref().fix_offset(-off)
 
-    def __fix_temp_varaible_offsets(self, asm, len):
-        asm.virtual_stack.fix_offset(-len)
+    def __fix_temp_varaible_offsets(self, asm, off):
+        asm.virtual_stack.fix_offset(-off)
 
-    def __extend_stack(self, file, len):
+    def __extend_stack(self, asm_file, off):
+        if off > 0:
+            asm_file.sub(self.__imm(off), self.__sp())
+
+    def __rewind_stack(self, asm_file, off):
         if len > 0:
-            file.sub(self.__imm(len), self.__sp())
-
-    def __rewind_stack(self, file, len):
-        if len > 0:
-            file.add(self.__imm(len), self.__sp())
+            asm_file.add(self.__imm(off), self.__sp())
 
     # Implements cdecl function call:
     #   All arguments are on stack
@@ -600,7 +622,6 @@ class CodeGenerator():
             self.__as.mov(var.address(), a)
             self.__load(self.__mem(a), dest.for_type(var.type()))
         else:
-            t = var.type()
             self.__load(var.mem_ref(), dest.for_type(var.type()))
 
     # Load the _address of the variable to the register
@@ -616,7 +637,7 @@ class CodeGenerator():
         return x86Register(RegisterClass.AX, t)
 
     def __al(self):
-        return self.__ax(Type.INT8.size())
+        return self.__ax(Type.INT8)
 
     def __bx(self, t=0):
         if t == 0:
@@ -629,7 +650,7 @@ class CodeGenerator():
         return x86Register(RegisterClass.CX, t)
 
     def __cl(self):
-        return self.__cx(Type.INT8.size())
+        return self.__cx(Type.INT8)
 
     def __dx(self, t=0):
         if t == 0:

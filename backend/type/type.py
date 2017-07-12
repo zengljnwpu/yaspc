@@ -4,8 +4,8 @@ class Type (object):
     size_unknown = -1
 
     @staticmethod
-    def type_factory(type, obj):
-        if type == "INT32":
+    def type_factory(t, obj):
+        if t == "INT32":
             return IntegerType(4, False, obj)
 
     def size(self):
@@ -18,6 +18,7 @@ class Type (object):
         return self.alloc_size()
 
     def is_same_type (self, other):
+        other
         return False
 
     def is_void (self):
@@ -68,9 +69,11 @@ class Type (object):
 
     # Ability methods (binary)
     def is_compatible (self, other):
+        other
         return
 
     def is_castable_to (self, target):
+        target
         return
 
     def base_type (self):

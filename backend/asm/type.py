@@ -31,3 +31,4 @@ class Type (Enum):
             return 8
         else:
             raise Exception ("must not happen")
+

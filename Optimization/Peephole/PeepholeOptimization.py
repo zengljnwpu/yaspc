@@ -58,14 +58,14 @@ def control_flow_optimization(block_list, inst_list):
                         if pre_succ[0] == block:
                             if pre_succ[1] == "thenlabel":
                                 preinst.thenlabel = label
-                                change = False
+                                #change = False
                             else:
                                 preinst.elselabel = label
-                                change = False
+                                #change = False
 
     if DEBUG:
         for ith, inst in enumerate(inst_list):
-            #inst.pos = ith
+            ith
             print(inst.pos, inst)
         print ("============Opti:PredecessorSuccessor==================")
         for block in block_list:
