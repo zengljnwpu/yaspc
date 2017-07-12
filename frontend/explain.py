@@ -211,6 +211,8 @@ class explain(object):
                     self.arrayExplain(body,exprNode,value)
                 else:
                     self.varExplain(body,exprNode.var_access,value)
+            elif isinstance(exprNode,VarReferenceNode):
+                self.varExplain(body,exprNode.var_access,value)
             elif isinstance(exprNode,IdentifierNode):#id
                 self.idExplain(body,exprNode,value)
             elif isinstance(exprNode,TypeConvertNode):
@@ -265,7 +267,7 @@ class explain(object):
             self.newvarExplain(value,str(self.typeExplain(uniNode.type)))#生成新的临时变量
             varlist.append(value)
             unidata = {}
-            uniExc(unidata,line_number,op, value,entity)
+            uniExc(unidata,line_number,op,value,entity)
             body.append(unidata)
 
 
@@ -303,6 +305,7 @@ class explain(object):
         if typeconvertNode != None:
             line_number = int(typeconvertNode.position.lineno)
             valuetype = self.typeExplain(typeconvertNode.type)
+            self.newvarExplain(value,valuetype)
             variable = {}
             self.exprExplain(body,typeconvertNode.child,variable)
             self.newuniExplain(body,line_number,"S_CAST",variable,value)
@@ -391,6 +394,9 @@ class explain(object):
                 self.ifExplain(labellist,body,stmtNode,functionname)
             elif isinstance(stmtNode, ForNode):#for
                 self.forExplain(labellist,body,stmtNode,functionname)
+            elif isinstance(stmtNode, FunctionCallNode):
+                value = {}
+                self.funccallExplain(body,stmtNode,value)
 
 
     def retExplain(self,body,retNode):

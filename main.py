@@ -116,7 +116,7 @@ def run(argv=None):
                       args.obj_code or args.asm_code or
                       args.exe)
 
-        if llvm_ir or args.json_frontend or args.json_asm:
+        if llvm_ir or args.json_frontend or args.json_asm or args.tree:
             current_compiler = compiler.Compiler(args.file)
             current_compiler.analyze()
 
