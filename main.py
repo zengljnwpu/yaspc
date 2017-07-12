@@ -147,7 +147,7 @@ def run(argv=None):
         else:
             if args.json_frontend:
                 ir_json = explain.explain()
-                ir_json.programExplain(current_compiler.ast, current_compiler.ctx)
+                ir_json.programExplain(current_compiler.ast)
                 ir_json.store(args.json_frontend)
 
             if args.optimize != 0:
