@@ -42,7 +42,8 @@ class Type(object):
 class IntType(Type):
 
     def __init__(self, lo, hi, width, val=None):
-        Type.__init__(self, "int[%d]" % width)
+        super(Type, self).__init__("int[%d]" % width)
+        # Type.__init__(self, "int[%d]" % width)
 
         if width <= 0:
             raise SymtabException('Invalid integer width %d', width)
@@ -64,9 +65,11 @@ class IntType(Type):
 class UIntType(IntType):
 
     def __init__(self, width, val=None):
+        
         lo = 0
         hi = (2 ** width) - 1
-        IntType.__init__(self, lo, hi, width, val)
+        super(UIntType, self).__init__(lo, hi, width, val)
+        # IntType.__init__(self, lo, hi, width, val)
         Type.__init__(self, "uint[%d]" % width)
 
 
@@ -75,7 +78,8 @@ class SIntType(IntType):
     def __init__(self, width, val=None):
         lo = -(2 ** (width - 1))
         hi = (2 ** (width - 1)) - 1
-        IntType.__init__(self, lo, hi, width, val)
+        super(SIntType, self).__init__(lo, hi, width, val)
+        # IntType.__init__(self, lo, hi, width, val)
         Type.__init__(self, "sint[%d]" % width)
 
 
@@ -99,7 +103,8 @@ class IntRangeType(IntType):
             else:
                 width = 8
 
-        IntType.__init__(self, lo_, hi_, width)
+        super(IntRangeType, self).__init__(lo_, hi_, width)
+        # IntType.__init__(self, lo_, hi_, width)
         Type.__init__(self, "range[%d..%d]" % (lo_, hi_))
 
 
@@ -119,8 +124,9 @@ class EnumType(IntType):
                 width = 16
             else:
                 width = 8
-
-        IntType.__init__(self, lo, hi, width)
+        
+        super(EnumType, self).__init__(lo, hi, width)
+        # IntType.__init__(self, lo, hi, width)
         Type.__init__(self, "enum[%d..%d]" % (lo, hi))
 
 
@@ -130,7 +136,8 @@ class BoolType(IntType):
         lo = 0
         hi = 1
         width = 1
-        IntType.__init__(self, lo, hi, width, val)
+        super(BoolType, self).__init__(lo, hi, width, val)
+        # IntType.__init__(self, lo, hi, width, val)
         Type.__init__(self, "bool")
 
 
@@ -144,8 +151,9 @@ class CharType(Type):
         self.signed = False
         self.unsigned = True
         self.value = val
-
-        Type.__init__(self, "char")
+        
+        super(CharType, self).__init__("char")
+        # Type.__init__(self, "char")
 
 
 class CharRangeType(CharType):
@@ -156,8 +164,9 @@ class CharRangeType(CharType):
         self.width = 8
         self.signed = False
         self.unsigned = True
-
-        Type.__init__(self, "range[%c..%c]" % (self.lo, self.hi))
+        
+        super(CharRangeType, self).__init__("range[%c..%c]" % (self.lo, self.hi))
+        # Type.__init__(self, "range[%c..%c]" % (self.lo, self.hi))
 
 
 class RealType(Type):
@@ -165,33 +174,38 @@ class RealType(Type):
     def __init__(self, width=32):
         self.width = width
 
-        Type.__init__(self, "real[%d]" % width)
+        super(RealType, self).__init__("real[%d]" % width)
+        # Type.__init__(self, "real[%d]" % width)
 
 
 class FloatType(RealType):
 
     def __init__(self):
-        RealType.__init__(self, 32)
+        super(FloatType, self).__init__(32)
+        # RealType.__init__(self, 32)
 
 
 class DoubleType(RealType):
 
     def __init__(self):
-        RealType.__init__(self, 64)
+        super(DoubleType, self).__init__(64)
+        # RealType.__init__(self, 64)
 
 
 class NamedType(Type):
 
     def __init__(self, name):
         self.name = name
-        Type.__init__(self, name)
+        super(NamedType, self).__init__(name)
+        # Type.__init__(self, name)
 
 
 class DeferredType(NamedType):
     # Type required when named types are used
     # before being defined.
     def __init__(self, name):
-        NamedType.__init__(self, name)
+        super(DeferredType, self).__init__(name)
+        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -206,7 +220,8 @@ class ArrayType(Type):
         self.element = element_ty
         self.range = range_ty
 
-        Type.__init__(self)
+        super(ArrayType, self).__init__()
+        # Type.__init__(self)
 
     @property
     def id(self):
@@ -228,7 +243,8 @@ class StringType(ArrayType):
         element_ty = CharType()
         range_ty = IntRangeType(0, length - 1)
 
-        ArrayType.__init__(self, element_ty, range_ty)
+        super(StringType, self).__init__(element_ty, range_ty)
+        # ArrayType.__init__(self, element_ty, range_ty)
 
 
 class SetType(Type):
@@ -237,7 +253,9 @@ class SetType(Type):
         assert_is_type(element_ty)
 
         self.element = element_ty
-        Type.__init__(self)
+        
+        super(SetType, self).__init__()
+        # Type.__init__(self)
 
     @property
     def id(self):
@@ -252,19 +270,22 @@ class EmptySetType(Type):
 
     def __init__(self):
         self.value = 0
-        Type.__init__(self, "emptyset")
+        super(EmptySetType, self).__init__("emptyset")
+        # Type.__init__(self, "emptyset")
 
 
 class VoidType(Type):
 
     def __init__(self):
-        Type.__init__(self, "void")
+        super(VoidType, self).__init__("void")
+        # Type.__init__(self, "void")
 
 
 class AnyType(Type):
 
     def __init__(self):
-        Type.__init__(self, "any")
+        super(AnyType, self).__init__("any")
+        # Type.__init__(self, "any")
 
 
 class ReferenceType(Type):
@@ -273,7 +294,9 @@ class ReferenceType(Type):
         assert_is_type(referee_ty)
 
         self.referee = referee_ty
-        Type.__init__(self)
+        
+        super(ReferenceType, self).__init__()
+        # Type.__init__(self)
 
     @property
     def id(self):
@@ -286,7 +309,9 @@ class PointerType(Type):
         assert_is_type(pointee_ty)
 
         self.pointee = pointee_ty
-        Type.__init__(self)
+        
+        super(PointerType, self).__init__()
+        # Type.__init__(self)
 
     @property
     def id(self):
@@ -308,7 +333,8 @@ class FunctionType(NamedType):
         self.scope_level = scope_level
         self.scope_hook = None
 
-        NamedType.__init__(self, name)
+        super(FunctionType, self).__init__(name)
+        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -322,7 +348,8 @@ class ParameterType(NamedType):
 
         self.type = ty
 
-        NamedType.__init__(self, name)
+        super(ParameterType, self).__init__(name)
+        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -339,7 +366,8 @@ class RecordType(NamedType):
         self.fields = list()
         self.variant = None
 
-        NamedType.__init__(self, name)
+        super(RecordType, self).__init__(name)
+        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -356,7 +384,8 @@ class VariantType(NamedType):
         self.cases = list()
         self.selector = None
 
-        NamedType.__init__(self, name)
+        super(VariantType, self).__init__(name)
+        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -386,8 +415,9 @@ class FieldType(NamedType):
 
         self.type = ty
         self.index = None
-
-        NamedType.__init__(self, name)
+        
+        super(FieldType, self).__init__(name)
+        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -403,7 +433,8 @@ class ScopeHookType(NamedType):
     def __init__(self, name):
         self.fields = list()
 
-        NamedType.__init__(self, name)
+        super(ScopeHookType, self).__init__(name)
+        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -418,7 +449,9 @@ class ScopeFieldType(FieldType):
         self.type = ty
         self.index = None
 
-        NamedType.__init__(self, name)
+        super(ScopeFieldType, self).__init__(name)
+        # NamedType.__init__(self, name)
+        
 
     @property
     def id(self):
@@ -435,7 +468,9 @@ class FileType(Type):
         assert_is_type(component_ty)
 
         self.component_ty = component_ty
-        Type.__init__(self)
+        
+        super(FileType, self).__init__()
+        # Type.__init__(self)
 
     @property
     def id(self):
