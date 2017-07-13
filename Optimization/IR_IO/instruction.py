@@ -10,9 +10,9 @@ class Entity(object):
     """The struct of operand and return value
         entity has two type: value, variable
     """
-    def __init__(self, entity_object, entity_type):
-        self.object = entity_object
-        self.type = entity_type
+    def __init__(self, object, type):
+        self.object = object
+        self.type = type
     def __str__(self):
         pass
     def to_dict(self):
@@ -35,9 +35,9 @@ class Value(Entity):
             "value": 2
         }
     """
-    def __init__(self, obj, val_type, value):
-        super(Value, self).__init__(obj, val_type)
-        assert obj == 'value', 'type error!'
+    def __init__(self, object, type, value):
+        super(Value, self).__init__(object, type)
+        assert object == 'value', 'type error!'
         self.value = value
 
     def __str__(self):
@@ -59,9 +59,9 @@ class Variable(Entity):
             "is_private": false
         }
     """
-    def __init__(self, obj, var_type, name, is_private=False, const=False):
-        super(Variable, self).__init__(obj, var_type)
-        assert obj == 'variable', 'type error!'
+    def __init__(self, object, type, name, is_private=False, const=False):
+        super(Variable, self).__init__(object, type)
+        assert object == 'variable', 'type error!'
         self.name = name
         self.is_private = is_private
         self.const = const
@@ -92,8 +92,8 @@ class Instruction(object):
         object: For Instruction is 'instruction'
         pos: the line number in three address codes of one body
     """
-    def __init__(self, name, context=None, line_number=0, pos=0, obj='instruction'):
-        self.object = obj
+    def __init__(self, name, context=None, line_number=0, pos=0, object='instruction'):
+        self.object = object
         self.name = name
         self.context = context
         self.line_number = line_number
