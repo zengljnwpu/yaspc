@@ -8,43 +8,47 @@ from backend.ir.expr import Call
 from backend.entity.scope import *
 
 
-def import_ir (data):
+def import_ir(data, asm_file):
     def_vars = list()
     def_funs = list()
 
     for i in data["variablelist"]:
-        t = DefinedVariable (name = i["name"], type = i["type"], priv = i["is_private"], init = i["value"])
+        t = DefinedVariable(
+            name=i["name"], type=i["type"], priv=i["is_private"], init=i["value"])
         def_vars.append(t)
 
     for i in data["functionlist"]:
-        t = DefinedFuntion (priv = False, body = i["body"], name = i["name"], params = i["parameterlist"], type = i["type"], scope= LocalScope (i["variablelist"]))
+        t = DefinedFuntion(priv=False, body=i["body"], name=i["name"],
+                           params=i["parameterlist"], type=i["type"], scope=LocalScope(i["variablelist"]))
         def_funs.append(t)
 
-    ir = IR (source = "test.asm", defuns = def_funs, defvars = def_vars, constant_table = None, funcdecls = None, scope = None)
+    ir = IR(source=asm_file, defuns=def_funs, defvars=def_vars,
+            constant_table=None, funcdecls=None, scope=None)
     return ir
 
-def inst_factory (insn):
+
+def inst_factory(insn):
     if insn["name"] == "store":
-        return Assign (loc= insn["line_number"], lhs= insn["address"], rhs= insn["value"])
+        return Assign(loc=insn["line_number"], lhs=insn["address"], rhs=insn["value"])
     elif insn["name"] == "return":
-        return Return (loc = insn ["line_number"], expr= insn["expr"])
+        return Return(loc=insn["line_number"], expr=insn["expr"])
     elif insn["name"] == "bin":
-        return Bin (left= insn["left"], right= insn["right"], op= insn["op"], type= insn["type"], value= insn["value"])
+        return Bin(left=insn["left"], right=insn["right"], op=insn["op"], type=insn["type"], value=insn["value"])
     elif insn["name"] == "call":
-        return Call (args= insn["args"], expr= insn["expr"], type= insn["type"])
+        return Call(args=insn["args"], expr=insn["expr"], type=insn["type"])
     else:
-        raise Exception ("Feature not implemented")
+        raise Exception("Feature not implemented")
 
 
 # This class were used to import IR from json text
 class IR ():
-    def __init__ (self,
-                  source,
-                  defvars,
-                  defuns,
-                  funcdecls,
-                  constant_table,
-                  scope):
+    def __init__(self,
+                 source,
+                 defvars,
+                 defuns,
+                 funcdecls,
+                 constant_table,
+                 scope):
         self.source = source
         self.defvars = defvars
         self.defuns = defuns
@@ -54,16 +58,16 @@ class IR ():
         self.gvars = []
         self.comms = []
 
-    def file_name (self):
+    def file_name(self):
         return self.source
 
-    def location (self):
+    def location(self):
         return self.source
 
-    def defined_variables (self):
+    def defined_variables(self):
         return self.defvars
 
-    def is_function_defined (self):
+    def is_function_defined(self):
         if self.defuns:
             return True
         else:
@@ -72,10 +76,10 @@ class IR ():
     def defined_funcitons(self):
         return self.defuns
 
-    def scope (self):
+    def scope(self):
         return self.scope
 
-    def all_functions (self):
+    def all_functions(self):
         result = []
         if self.defuns:
             result.extend(self.defuns)
@@ -83,7 +87,7 @@ class IR ():
             result.extend(self.funcdecls)
         return result
 
-    def init_variables (self):
+    def init_variables(self):
         self.comms = []
         self.comms = []
         for var in self.scope.defined_glabal_scope_variables():
@@ -92,20 +96,19 @@ class IR ():
             else:
                 self.comms.append(var)
 
-
     #a list of all defined/declared global-scope variables
-    def all_global_variables (self):
+    def all_global_variables(self):
         #return self.scope.all_global_variables()
         return self.defvars
 
-    def is_global_variable_defined (self):
+    def is_global_variable_defined(self):
         if self.defined_global_variables:
             return True
         else:
             return False
 
     #Returns the list of global variables.
-    def defined_global_variables (self):
+    def defined_global_variables(self):
         '''
         if not self.gvars:
              self.init_variables()
@@ -114,14 +117,13 @@ class IR ():
         '''
         return self.defvars
 
-
     def is_common_symbol_defined(self):
         if self.defined_common_symbols():
             return True
         else:
             return False
 
-    def defined_common_symbols (self):
+    def defined_common_symbols(self):
         if not self.comms:
             self.init_variables()
         else:
@@ -133,19 +135,11 @@ class IR ():
         else:
             return False
 
-    def const_table (self):
+    def const_table(self):
         return self.constant_table
 
-    def dump (self):
+    def dump(self):
         d = Dumper()
-        d.print_class (self, self.source)
-        d.print_vars ("variables", self.defvars)
-        d.print_funs ("function", self.defuns)
-
-
-
-
-
-
-
-
+        d.print_class(self, self.source)
+        d.print_vars("variables", self.defvars)
+        d.print_funs("function", self.defuns)

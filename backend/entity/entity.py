@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from backend.asm.assembly import Label
 from backend.asm.operand import MemoryReference
@@ -8,53 +9,69 @@ import backend.ir.ir
 
 entity_map = dict()
 
-class Entity (object):
-    def __init__(self, priv, entity_type, name):
+
+class Entity(object):
+    """ 实体类 """
+
+    def __init__(self, priv, type, name):
         self._name = name
         self._is_private = priv
-        self._type = backend.type.type.Type.type_factory(entity_type, name)
+        self._type = backend.type.type.Type.type_factory(type, name)
         self.n_refered = 0
         self._mem_ref = None
         self._address = None
         entity_map[self._name] = self
 
     def name(self):
+        """ 获得名字 """
         return self._name
 
     def symbol_string(self):
+        """ 符号串字符串 """
         return self._name
 
     def is_defined(self):
+        """ 是否已定义 """
         return
 
     def is_initialized(self):
+        """ 是否已初始化 """
         return
 
     def is_constant(self):
+        """ 是否是常量 """
         return False
 
     def value(self):
+        """ 求值 """
         raise Exception("Entity#_value")
 
     def is_parameter(self):
+        """ 是否是形参 """
         return False
 
     def is_private(self):
+        """ 是否是私有 """
         return self._is_private
 
     def type(self):
+        """ 取类型 """
         return self._type
 
     def alloc_size(self):
+        """ 取分配的大小 """
         return self.type().alloc_size()
 
     def alignment(self):
+        """ 空间分配的对齐大小 """
         return self.type().alignment()
 
     def refered(self):
+        """ 被引用 """
         self.n_refered += 1
 
     def is_refered(self):
+        """ 是否被引用 """
         return self.n_refered > 0
 
     def mem_ref(self):
@@ -93,8 +110,8 @@ class Entity (object):
 
 
 class Constant (Entity):
-    def __init__(self, const_type, name, value):
-        super(Constant, self).__init__(True, const_type, name)
+    def __init__(self, type, name, value):
+        super(Constant, self).__init__(True, type, name)
         self.__value = int(value)
 
     def is_assignable(self):
@@ -122,8 +139,8 @@ class Constant (Entity):
 
 
 class Function (Entity):
-    def __init__(self, priv, t, name):
-        super(Function, self).__init__(priv, t, name)
+    def __init__(self, priv, type, name):
+        super(Function, self).__init__(priv, type, name)
         self._calling_symbol = None
         self._label = None
 
@@ -163,8 +180,8 @@ class Function (Entity):
 
 
 class DefinedFuntion (Function):
-    def __init__(self, priv, func_type, name, params, body, scope):
-        super(DefinedFuntion, self).__init__(priv, func_type, name)
+    def __init__(self, priv, type, name, params, body, scope):
+        super(DefinedFuntion, self).__init__(priv, type, name)
         self._params = Params(loc=0, param_descs=params)
         self._body = body
         self._scope = scope
@@ -206,8 +223,8 @@ class DefinedFuntion (Function):
 
 
 class UndefinedFunction (Function):
-    def __init__(self, t, name, params):
-        super(UndefinedFunction, self).__init__(False, t, name)
+    def __init__(self, type, name, params):
+        super(UndefinedFunction, self).__init__(False, type, name)
         self._params = params
 
     def parameters(self):
@@ -227,13 +244,13 @@ class UndefinedFunction (Function):
 
 
 class Variable (Entity):
-    def __init__(self, priv, var_type, name):
-        super(Variable, self).__init__(priv, var_type, name)
+    def __init__(self, priv, type, name):
+        super(Variable, self).__init__(priv, type, name)
 
 
 class UndefinedVariable (Variable):
-    def __init__(self, t, name):
-        super(UndefinedVariable, self).__init__(False, t, name)
+    def __init__(self, type, name):
+        super(UndefinedVariable, self).__init__(False, type, name)
 
     def is_defined(self):
         return False
@@ -254,8 +271,8 @@ class UndefinedVariable (Variable):
 
 
 class DefinedVariable (Variable):
-    def __init__(self, priv, defvar_type, name, init):
-        super(DefinedVariable, self).__init__(priv, defvar_type, name)
+    def __init__(self, priv, type, name, init):
+        super(DefinedVariable, self).__init__(priv, type, name)
         self._initializer = init
         self._sequence = -1
         self._symbol = None
@@ -308,8 +325,8 @@ class DefinedVariable (Variable):
 
 
 class Parameter (DefinedVariable):
-    def __init__(self, param_type, name):
-        super(Parameter, self).__init__(False, param_type, name, None)
+    def __init__(self, type, name):
+        super(Parameter, self).__init__(False, type, name, None)
 
     def is_parameter(self):
         return True
@@ -360,7 +377,7 @@ class Params (ParamSlot):
             type_refs.append(param.type_node().type_ref())
         return ParamTypeRefs(self.location, type_refs, self._var_arg)
     '''
-    
+
     def __eq__(self, other):
         if not isinstance(other, Params):
             return False

@@ -17,17 +17,13 @@ class NodeVisitor(object):
 
     def missing_visit(self, node, arg=None):
         for c in node.children:
-            if not isinstance(c, ast.Node):
-                continue
-
-            self.default_visit(c, arg)
+            if isinstance(c, ast.Node):
+                self.default_visit(c, arg)
 
     def default_visit(self, node, arg=None):
         for c in filter(None, node.children):
-            if not isinstance(c, ast.Node):
-                continue
-
-            c.accept(self, arg)
+            if isinstance(c, ast.Node):
+                c.accept(self, arg)
 
 
 class DefaultVisitor(NodeVisitor):
@@ -57,46 +53,46 @@ class PrintVisitor(NodeVisitor):
         self.level = 0
 
     def visit_VarDeclListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_StatementListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_ConstListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_FunctionListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_ParameterListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_ArgumentListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_IdentifierListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_TypeDefListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_RecordSectionListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_CaseListElementListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_CaseConstListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_LabelListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_SetMemberListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def visit_VariantListNode(self, node, arg=None):
-        NodeVisitor.default_visit(self, node)
+        NodeVisitor.default_visit(self, node, arg)
 
     def default_visit(self, node, arg=None):
         self.print_node(node)
