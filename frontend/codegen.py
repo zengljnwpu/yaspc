@@ -1147,6 +1147,7 @@ class CodegenVisitor(visitor.DefaultVisitor):
         self.ctx.exit_scope()
 
     def visit_FunctionHeadNode(self, node, arg=None):
+        
         assert (isinstance(node, ast.FunctionHeadNode) or
                 isinstance(node, ast.ProcedureHeadNode))
 

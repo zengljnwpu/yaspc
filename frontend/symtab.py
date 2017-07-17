@@ -3,7 +3,7 @@ Symbol table for frontend.
 '''
 from __future__ import absolute_import, print_function
 
-from frontend.typesys import * #@UnusedWildImport
+from frontend.typesys import Type
 
 class SymtabException(Exception):
     pass
@@ -16,7 +16,7 @@ def assert_is_value(value):
 
 class Value(object):
     def __init__(self, handle, ty):
-        # assert_is_type(ty)
+        Type.assert_is_type(ty)
 
         self.handle = handle
         self.type = ty
@@ -46,7 +46,7 @@ class GotoBlock(object):
 class Symbol(object):
 
     def __init__(self, name, ty, handle=None):
-        #assert_is_type(ty)
+        Type.assert_is_type(ty)
 
         self.name = name
         self.type = ty
