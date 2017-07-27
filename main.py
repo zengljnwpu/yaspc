@@ -19,7 +19,7 @@ from frontend import explain
 
 from backend.ir.ir import import_ir
 from backend.sys_dep.x86.code_generator import CodeGenerator
-from backend.asm.type import Type
+from backend.asm.inttype import Type
 
 from Optimization import do_optimization
 

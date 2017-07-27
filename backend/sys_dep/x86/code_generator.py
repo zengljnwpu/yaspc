@@ -20,7 +20,7 @@ from backend.asm.operand import MemoryReference
 from backend.asm.literal import NamedSymbol
 from backend.sys_dep.x86.register import RegisterClass
 from backend.sys_dep.x86.register import x86Register
-from backend.asm.type import Type
+from backend.asm.inttype import IntType
 from backend.asm.literal import Symbol
 from backend.asm.literal import Literal
 from backend.asm.assembly import Label
@@ -637,7 +637,7 @@ class CodeGenerator():
         return x86Register(RegisterClass.AX, t)
 
     def __al(self):
-        return self.__ax(Type.INT8)
+        return self.__ax(IntType.INT8)
 
     def __bx(self, t=0):
         if t == 0:
@@ -650,7 +650,7 @@ class CodeGenerator():
         return x86Register(RegisterClass.CX, t)
 
     def __cl(self):
-        return self.__cx(Type.INT8)
+        return self.__cx(IntType.INT8)
 
     def __dx(self, t=0):
         if t == 0:

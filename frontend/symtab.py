@@ -4,15 +4,7 @@ Symbol table for frontend.
 from __future__ import absolute_import, print_function
 
 from frontend.typesys import Type
-
-class SymtabException(Exception):
-    pass
-
-
-def assert_is_value(value):
-    if not isinstance(value, Value):
-        raise SymtabException("Invalid value '%s'", value)
-
+from frontend.exception import SymtabException
 
 class Value(object):
     def __init__(self, handle, ty):
@@ -23,6 +15,11 @@ class Value(object):
 
     def __str__(self):
         return str(self.type)
+    
+    @staticmethod
+    def assert_is_value(value):
+        if not isinstance(value, Value):
+            raise SymtabException("Invalid value '%s'", value)
 
 
 class VariableValue(Value):

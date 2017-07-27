@@ -103,7 +103,10 @@ class Type (object):
 
 
 class IntegerType (Type):
+    ''' 整型类型 '''
+    
     def __init__ (self, size, is_signed, name):
+        ''' 构造函数，大小，是否有符号，名字 '''
         super (IntegerType, self).__init__()
         self._size = size
         self._is_signed = is_signed
@@ -132,7 +135,8 @@ class IntegerType (Type):
     def __eq__(self, other):
         if not isinstance(other, IntegerType): return False
         else:
-            if self._name == other._name and self._is_signed == other._is_signed and self._name == other._name:
+            if self._name == other._name and \
+                self._is_signed == other._is_signed and self._name == other._name:
                 return True
             else:
                 return False

@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Type (Enum):
+class IntType (Enum):
     INT8 = 1
     INT16 = 2
     INT32 = 4

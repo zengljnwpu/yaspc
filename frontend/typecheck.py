@@ -337,6 +337,7 @@ class ConstantEvalVisitor(visitor.DefaultVisitor):
         return op(expr)
 
     def visit_OpNode(self, node, arg=None):
+        
         assert isinstance(node, ast.OpNode)
 
         if node.name == '+':
@@ -371,6 +372,7 @@ class ConstantEvalVisitor(visitor.DefaultVisitor):
         raise NodeException(node, "unknown binary operator '%s'" % node.name)
 
     def visit_BinaryOpNode(self, node, arg=None):
+        
         assert isinstance(node, ast.BinaryOpNode)
 
         left = node.left.accept(self)
@@ -387,6 +389,7 @@ class ConstantEvalVisitor(visitor.DefaultVisitor):
         return op(left, right)
 
     def visit_RangeNode(self, node, arg=None):
+        
         assert isinstance(node, ast.RangeNode)
 
         node.start = node.start.accept(self, arg)

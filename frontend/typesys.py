@@ -8,10 +8,10 @@ from __future__ import absolute_import, print_function
 import math
 import sys
 
-from frontend.symtab import SymtabException
+from frontend.exception import SymtabException
 
 class Type(object):
-
+    """ PASCAL类型抽象类 """
     def __init__(self, identifier=None):
         self.identifier = identifier
         self.handle = None
@@ -42,16 +42,23 @@ class Type(object):
     
 # abstract class
 class IntType(Type):
-
+    """ 整型类型 """
+    
     def __init__(self, lo, hi, width, val=None, identifier=None):
-        
+        '''
+        @param lo : lowest number
+        @param hi : highest number
+        @param width: bit numbers
+        @param val : value
+        @param idenntifier: ID
+        '''
         if width <= 0:
             raise SymtabException('Invalid integer width %d', width)
         
-        if id:
-            super(Type, self).__init__(identifier)
+        if identifier:
+            super(IntType, self).__init__(identifier)
         else:
-            super(Type, self).__init__("int[%d]" % width)
+            super(IntType, self).__init__("int[%d]" % width)
         
         self.lo = lo
         self.hi = hi
@@ -60,15 +67,18 @@ class IntType(Type):
 
     @property
     def signed(self):
+        ''' 是否有符号 '''
         return self.lo < 0
 
     @property
     def unsigned(self):
+        ''' 是否无符号 '''
         return self.lo >= 0
 
 
 class UIntType(IntType):
-
+    """ 无符号整数 """
+    
     def __init__(self, width, val=None):
         
         lo = 0
@@ -77,7 +87,8 @@ class UIntType(IntType):
         super(UIntType, self).__init__(lo, hi, width, val, "uint[%d]" % width)
 
 class SIntType(IntType):
-
+    """ 有符号整数 """
+    
     def __init__(self, width, val=None):
         lo = -(2 ** (width - 1))
         hi = (2 ** (width - 1)) - 1
@@ -86,7 +97,8 @@ class SIntType(IntType):
 
 
 class IntRangeType(IntType):
-
+    """ 序列 """
+    
     def __init__(self, lo, hi, width=None):
         lo = int(lo)
         hi = int(hi)
@@ -109,11 +121,13 @@ class IntRangeType(IntType):
 
 
 class EnumType(IntType):
-
+    """ 枚举类型 """
+    
     def __init__(self, names, width=None):
         assert len(names) > 0
 
         self.names = names
+        
         lo = 0
         hi = len(names) - 1
 
@@ -129,7 +143,8 @@ class EnumType(IntType):
 
 
 class BoolType(IntType):
-
+    """ 布尔类型 """
+    
     def __init__(self, val=None):
         lo = 0
         hi = 1
@@ -139,10 +154,13 @@ class BoolType(IntType):
 
 
 class CharType(Type):
-
+    """ 字符类型 """
+    
     def __init__(self, val=None):
-        self.hi = 255
+        
         self.lo = 0
+        self.hi = 255
+        
         self.width = 8
         self.value = None
         self.signed = False
@@ -315,7 +333,6 @@ class FunctionType(NamedType):
         self.scope_hook = None
 
         super(FunctionType, self).__init__(name)
-        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -330,7 +347,6 @@ class ParameterType(NamedType):
         self.type = ty
 
         super(ParameterType, self).__init__(name)
-        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -348,7 +364,6 @@ class RecordType(NamedType):
         self.variant = None
 
         super(RecordType, self).__init__(name)
-        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -366,7 +381,6 @@ class VariantType(NamedType):
         self.selector = None
 
         super(VariantType, self).__init__(name)
-        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -398,7 +412,6 @@ class FieldType(NamedType):
         self.index = None
         
         super(FieldType, self).__init__(name)
-        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -415,7 +428,6 @@ class ScopeHookType(NamedType):
         self.fields = list()
 
         super(ScopeHookType, self).__init__(name)
-        # NamedType.__init__(self, name)
 
     @property
     def id(self):
@@ -431,7 +443,6 @@ class ScopeFieldType(FieldType):
         self.index = None
 
         super(ScopeFieldType, self).__init__(name)
-        # NamedType.__init__(self, name)
         
 
     @property
@@ -445,10 +456,10 @@ class ScopeFieldType(FieldType):
 
 class FileType(Type):
 
-    def __init__(self, component_ty):
-        Type.assert_is_type(component_ty)
+    def __init__(self, component):
+        Type.assert_is_type(component)
 
-        self.component = component_ty
+        self.component = component
         
         super(FileType, self).__init__()
 

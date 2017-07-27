@@ -1,5 +1,5 @@
 
-from backend.asm.type import Type
+from backend.asm.inttype import IntType
 from backend.asm.statistics import Statistics
 from backend.asm.assembly import Comment
 from backend.asm.assembly import Label
@@ -103,24 +103,24 @@ class AssemblyCode():
     def _type_suffix (self, t1, t2 = None):
         type_str = ""
         if t1:
-            if t1.size() == Type.INT8:
+            if t1.size() == IntType.INT8:
                 type_str += "b"
-            elif t1.size() == Type.INT16:
+            elif t1.size() == IntType.INT16:
                 type_str += "w"
-            elif t1.size() == Type.INT32:
+            elif t1.size() == IntType.INT32:
                 type_str += "l"
-            elif t1.size() == Type.INT64:
+            elif t1.size() == IntType.INT64:
                 type_str += "q"
             else:
                 raise Exception ("unknown register type: " + t1.size())
         if t2:
-            if t2 == Type.INT8:
+            if t2 == IntType.INT8:
                 type_str += "b"
-            elif t2 == Type.INT16:
+            elif t2 == IntType.INT16:
                 type_str += "w"
-            elif t2 == Type.INT32:
+            elif t2 == IntType.INT32:
                 type_str += "l"
-            elif t2 == Type.INT64:
+            elif t2 == IntType.INT64:
                 type_str += "q"
             else:
                 raise Exception("unknown register type: " + t2.size())

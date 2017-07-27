@@ -131,3 +131,4 @@ ENV/
 frontend/lextable.py
 frontend/parsetable.py
 
+.settings

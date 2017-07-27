@@ -1,5 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
+
 """
 Created on Fri May 12 14:38:08 2017
 
@@ -38,106 +40,106 @@ def SplitBasicBlock(inst_list, blockDict, labelDict, blockList):
     :type blockList: list 
     :param blockList: a list of basic block
     """
-
-    ''' new the basic block '''
-    number = 1
-    i = 0
+    
     labelFlag = 0
 
     ''' add the ENTRY block '''
-    block = BasicBlock.BasicBlock()
-    block.blockNum = 0
+    block = BasicBlock.BasicBlock(0)
     blockList.append(block)
 
+    ''' 第一个指令所在的块 '''
+    block = BasicBlock.BasicBlock(1)
+    blockList.append(block)
+    blockDict[1] = block
+    
+    ''' 下一个指令的块号 '''
+    number = 2
+        
+    i = 0
     for inst in inst_list:
         i += 1
+        
+        new_block = False
+        new_inst = True
+        
         if i == 1:
             """the first instruction of program"""
-            block = BasicBlock.BasicBlock(number)
-            number += 1
-            blockList.append(block)
-            blockDict[block.blockNum] = block
-
+            
             if isinstance(inst, instruction.LabelInst):
-                """ the first instruction is a label
-                    and label is branch destination
-                    and not a successive label inst
-                    map label to block no.
-                """
-                labelDict[inst.labelname] = block.blockNum
+                """ 当前指令是Label指令，要注意的是后续的也有可能还是Label指令，要特殊处理 """
                 labelFlag = 1
-                continue
-
-            if isinstance(inst, instruction.CJumpInst):
-                """ the first instruction is a conditional inst
-                    malloc a new block for the following insts
+                new_inst = False
+  
+            elif isinstance(inst, instruction.CJumpInst):
+                """ 
+                当前指令的条件跳转指令，跳转的目的指令是下一个基本块的开始指令，
+                同时改指令的下一条指令也是新的基本块的开始指令 
                 """
-                block.instList.append(inst)
-
-                block = BasicBlock.BasicBlock(number)
-                number += 1
-                blockList.append(block)
-                blockDict[block.blockNum] = block
-
+                
+                new_block = True
                 labelFlag = 0
 
-                continue
-
-            if isinstance(inst, instruction.JumpInst):
-                """ non-conditional branch inst, the next inst do not belong to block"""
-                block.instList.append(inst)
+            elif isinstance(inst, instruction.JumpInst):
+                """ 
+                当前指令是无条件跳转指令，跳转的目的指令是一个新基本块的开始指令，
+                而下一个指令不一定是新基本块的开始指令
+                """
                 block = None
                 labelFlag = 0
-
-                continue
+            
         else:
-            # i!=0  not the first instruction
+            """ 不是第一条指令 """
             if isinstance(inst, instruction.LabelInst):
-                """ the label instruction, map the label to number of block"""
+                """ 
+                当前指令是Label指令，
+                若前面的指令不是Label指令，则很大可能(但不是一定)本Lable指令是新基本块的开始，可新创建一个基本块；
+                若前面的指令是Label指令，只需要在Label一览中记录即可
+                """
                 if labelFlag == 0:
-                    block = BasicBlock.BasicBlock(number)
-                    number += 1
-                    blockList.append(block)
-
-                blockDict[block.blockNum] = block
-                labelDict[inst.labelname] = block.blockNum
-                # if block != None: block.instList.append(inst)
-                # print inst.label
-
+                    new_block = True
+                
                 labelFlag = 1
+                
+                new_inst = False
                 continue
-
-            if isinstance(inst, instruction.CJumpInst):
-                """the conditional branch inst"""
-                if block != None:
-                    block.instList.append(inst)
-
-                # print "gotoLabel", inst.gotoLabel
-                block = BasicBlock.BasicBlock(number)
-                number += 1
-                blockList.append(block)
-
-                blockDict[block.blockNum] = block
-
+            elif isinstance(inst, instruction.CJumpInst):
+                """ 
+                当前指令是有条件跳转指令
+                """
+                new_block = True
                 labelFlag = 1
-                continue
 
-            if isinstance(inst, instruction.JumpInst) or isinstance(inst, instruction.RetureInst):
-                """ non-conditional branch inst, the next inst do not belong to block"""
-                if block != None: block.instList.append(inst)
+            elif isinstance(inst, instruction.JumpInst) or isinstance(inst, instruction.RetureInst):
+                """
+                当前指令是无条件跳转指令，下一条指令可能不是新基本块的开始 
+                """
+                
                 # print "gotoLabel", inst.gotoLabel
                 block = None
                 labelFlag = 0
-                continue
+        
         # end if i==0
-        if block != None:
+        
+        if new_inst and block is not None:
             """add the inst to current block, unless the block is not none"""
-            block.instList.append(inst)
+            block.add(inst)
             labelFlag = 0
+                    
+        if new_block:
+            ''' 如果需要新追加一个基本块，则分配一个 '''
+            
+            block = BasicBlock.BasicBlock(number)
+            blockList.append(block)
+            blockDict[number] = block
+            
+            if labelFlag:
+                labelDict[inst.labelname] = number
+                
+            number += 1
 
+            
     ''' add the EXIT block to blockList'''
-    block = BasicBlock.BasicBlock()
-    block.blockNum = -1
+    block = BasicBlock.BasicBlock(-1)
     blockList.append(block)
 
     if DEBUG:
@@ -153,9 +155,11 @@ def SplitBasicBlock(inst_list, blockDict, labelDict, blockList):
 
 
 def LinkBasicBlock(inst_list, blockDict, labelDict, blockList):
-    """Link basic block among each other 
+    """
+    Link basic block among each other 
+    
     For every block in block list, 
-    the last instruction must be a JumpInst, CJumpInst, or ReturnInst
+        the last instruction must be a JumpInst, CJumpInst, or ReturnInst
     so we can index labelDict by label name to get the succBasicBlock' blockNum,
     and index blockDict by the blockNum to get the block,
     then we can get preBasicBlock of the succBasicBlock
@@ -175,52 +179,83 @@ def LinkBasicBlock(inst_list, blockDict, labelDict, blockList):
 
     for i, block in enumerate(blockList):
         '''add jump target for every block'''
-        if i == 0:
-            """ the succblock of ENTRY is 1th block"""
-            block.succBasicBlock.add((blockList[1], "follow"))
-            blockList[1].preBasicBlock.add(block)
+        
+        if block.blockNum == 0:
+            """ 第一个基本块肯定是Entry块，后续的肯定是第一个基本块 """
+            block.add_succ((blockList[1], "follow"))
+            blockList[1].add_prev(block)
             continue
-        if i == len(blockList) - 1:
+        elif block.blockNum == -1:
+            """ 最后一个尾基本块 """
             break
+        
+        """ 其它正常指令的基本块 """
+        
+        """ 查看基本块的最后一条指令 """
         inst = block.instList[-1]
 
         if isinstance(inst, instruction.JumpInst):
             """non-conditional inst, the succblock is only label successor"""
+            
+            """ 取得当前指令跳转的目标，查找目标地址指令 """
             number = labelDict[inst.label]
+            if number is None:
+                """ 如果不存在，则弹出异常，这说明指令序列有问题 """
+                break
+            
             jumpBlock = blockDict[number]
-            jumpBlock.preBasicBlock.add(block)
-            block.succBasicBlock.add((jumpBlock, "label"))
+            jumpBlock.add_prev(block)
+            block.add_succ((jumpBlock, "label"))
             continue
 
         if isinstance(inst, instruction.CJumpInst):
-            '''conditional inst, the succblock is label successor and next block'''
+            '''
+            当前指令为有条件跳转指令，后继有两个，一个为真(thenLabel)，一个为假(elseLabel),
+            前序一个
+            '''
+            
+            """ 取得当前指令跳转的目标(真和假共两个，thenLabel, elseLabel)，查找目标地址指令 """
             """ then label """
             then_number = labelDict[inst.thenlabel]
+            if then_number is None:
+                """ 如果不存在，则弹出异常，这说明指令序列有问题 """
+                break
+            
             # successor
             cjumpBlock = blockDict[then_number]
-            block.succBasicBlock.add((cjumpBlock, "thenlabel"))
+            block.add_succ((cjumpBlock, "thenlabel"))
             # pre
-            cjumpBlock.preBasicBlock.add(block)
+            cjumpBlock.add_prev(block)
 
             """ else label """
             else_number = labelDict[inst.elselabel]
+            if else_number is None:
+                """ 如果不存在，则弹出异常，这说明指令序列有问题 """
+                break
+            
             # successor
             cjumpBlock = blockDict[else_number]
-            block.succBasicBlock.add((cjumpBlock, "elselabel"))
+            block.add_succ((cjumpBlock, "elselabel"))
             # pre
-            cjumpBlock.preBasicBlock.add(block)
+            cjumpBlock.add_prev(block)
 
             continue
 
         if isinstance(inst, instruction.RetureInst):
+            """ 
+            当前指令为返回指令，其后继块为尾部块(-1) 
+            """
             jumpBlock = blockList[-1]
-            jumpBlock.preBasicBlock.add(block)
-            block.succBasicBlock.add((jumpBlock, "return"))
+            jumpBlock.add_prev(block)
+            block.add_succ((jumpBlock, "return"))
             continue
 
-        if i + 1 < len(blockList) - 1:
-            block.succBasicBlock.add((blockList[i + 1], "follow"))
-            blockList[i + 1].preBasicBlock.add(block)
+        """ 
+        其它指令为顺序执行相关的指令，当前基本块的后继是下一个基本块，后继的前一个基本块为当前block
+        此时，这里的i值肯定不是是最后一个，因最后一个是尾部Block
+        """
+        block.add_succ((blockList[i + 1], "follow"))
+        blockList[i + 1].add_prev(block)
 
     if DEBUG:
         print("============PredecessorSuccessor==================")

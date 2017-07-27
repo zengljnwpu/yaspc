@@ -10,18 +10,23 @@ class Entity(object):
     """The struct of operand and return value
         entity has two type: value, variable
     """
+
     def __init__(self, object, type):
         self.object = object
         self.type = type
+
     def __str__(self):
         pass
+    
     def to_dict(self):
         """json format
         """
         pass
+    
     def is_variable(self):
         """if entity type is variable return true"""
         return self.object == "variable"
+    
     def is_value(self):
         """if entity type is value return true"""
         return self.object == "value"
@@ -36,8 +41,9 @@ class Value(Entity):
         }
     """
     def __init__(self, object, type, value):
-        super(Value, self).__init__(object, type)
         assert object == 'value', 'type error!'
+        
+        super(Value, self).__init__(object, type)
         self.value = value
 
     def __str__(self):

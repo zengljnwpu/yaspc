@@ -26,14 +26,26 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+class Variable(object):
+    def __init__(self, var_name, var_type, is_const, is_private, init_val = None, line_num = None):
+        self.name = var_name
+        self.type = var_type
+        self.is_const = is_const
+        self.is_private = is_private
+        self.init_val = init_val
+        self.line_num = line_num
+    
+        
 class VariableList(object):
-    """see this file's doc string
+    """
+    变量列表
     """
     def __init__(self):
         self.dict = dict()
 
     def update_according_to_varlist(self, varlist):
-        """varlist : function or program variable list
+        """
+        varlist : function or program variable list
         """
         for item in varlist:
             var_name = item["variablename"]
