@@ -9,6 +9,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+# 将yaspc所在路径加入path，确保import能正常运行
+import sys
+sys.path.append('../..')
+
 from Optimization.BasicBlock import ConstructBasicBlock
 from Optimization.BasicBlock import DestructBasicBlock
 from Optimization.IR_IO import irParser
