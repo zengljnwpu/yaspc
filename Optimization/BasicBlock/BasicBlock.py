@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-
 # -*- coding: utf-8 -*-
+
 """
 Created on Fri May 12 10:54:38 2017
 
@@ -41,6 +41,10 @@ class BasicBlock:
         ''' 为基本块增加指令 '''
         self.instList.append(inst)
         
+    def get_inst_number(self):
+        """ return the amount of instructions"""
+        return len(self.instList)
+
     def get_first_inst(self):
         """ return first instruction """
         if len(self.instList) >= 1:

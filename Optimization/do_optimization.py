@@ -119,7 +119,8 @@ def optimize_exec(input_file_name, output_file_name, \
     log.i('optimization', '\nWelcome!')
     log.i('optimization', 'INPUT: %s \tOUTPUT %s' %
           (input_file_name, output_file_name))
-    log.i('optimization', 'Selction: \n\toptimize control flow: %s' % control_flow)
+    log.i('optimization', 'Selction: ')
+    log.i('optimization', '\toptimize control flow: %s' % control_flow)
     log.i('optimization', '\toptimize reach defination: %s' % reach_defination)
     log.i('optimization', '\toptimize loop: %s\n' % optimize_loop)
 
