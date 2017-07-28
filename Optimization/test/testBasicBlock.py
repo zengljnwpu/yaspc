@@ -42,6 +42,7 @@ def main():
     # for inst in inst_list:
     #     print(inst.pos, inst)
     print('\nConstrusting basicblock...')
+    ConstructBasicBlock.set_debug_print(True)
     block_list = ConstructBasicBlock.ConstructBlockList(inst_list)
     if False:
         print('\noptimizing control flow...')

@@ -15,7 +15,13 @@ from Optimization.IR_IO import instruction
 from Optimization.BasicBlock import BasicBlock
 from Optimization.Peephole import PeepholeOptimization
 
-DEBUG = True
+DEBUG = False
+
+def set_debug_print(debug_print):
+    """set DEBUG
+    """
+    global DEBUG
+    DEBUG = debug_print
 
 
 def SplitBasicBlock(inst_list, blockDict, labelDict, blockList):
@@ -242,6 +248,7 @@ def ConstructBlockList(inst_list):
 
     SplitBasicBlock(inst_list, blockDict, labelDict, blockList)
     LinkBasicBlock(inst_list, blockDict, labelDict, blockList)
+    blockList = PeepholeOptimization.dead_code_elimination(blockList)
 
     return blockList
 
