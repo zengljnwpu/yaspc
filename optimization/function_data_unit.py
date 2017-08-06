@@ -356,3 +356,12 @@ class FunctionDataUnit(object):
             # 显示当前块的前序基本块
             for preblock in block.preBasicBlock:
                 print("preblock", preblock.blockNum)
+
+    def instList_renumbering(self):
+        '''numbering for instruction list again
+        '''
+        if self.instList is None:
+            print("Error: instList is None.")
+            return
+        for ith, inst in enumerate(self.instList):
+            inst.pos = ith + 1
