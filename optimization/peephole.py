@@ -28,7 +28,7 @@ class ControlFlowOptimizer(function_optimizer.FunctionOptimizer):
 
     def __get_used_labels(self):
         ''' 遍历所有的指令查找跳转的Label一览 '''
-        inst_list = self.get_func_data().instList
+        inst_list = self.data_unit.get_inst_list()
 
         used_labels = set()
 
@@ -43,7 +43,7 @@ class ControlFlowOptimizer(function_optimizer.FunctionOptimizer):
 
     def remove_unused_label(self):
         """remove unused label"""
-        inst_list = self.get_func_data().instList
+        inst_list = self.data_unit.get_inst_list()
 
         # remove a JumpInst if its target is followed label
         new_inst_list = []
@@ -62,7 +62,7 @@ class ControlFlowOptimizer(function_optimizer.FunctionOptimizer):
         inst_list = new_inst_list
 
         # 遍历所有的指令查找跳转的Label一览
-        used_label_set = self.get_used_labels(inst_list)
+        used_label_set = self.__get_used_labels()
 
         # remove unused label
         new_inst_list = []
@@ -88,7 +88,7 @@ class ControlFlowOptimizer(function_optimizer.FunctionOptimizer):
         """删除到达不了的基本块
         返回更新过的block_list
         """
-        block_list = self.
+        block_list = self.data_unit.get_block_list()
         # 循环直到找不到死节点为止
         loop_change_flag = True
         while loop_change_flag:
