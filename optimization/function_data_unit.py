@@ -27,10 +27,81 @@ class FunctionDataUnit(object):
     FunctionDataUnit class
     """
     def __init__(self):
-        self.blockList = None
-        self.instList = None
-        self.var_reduce = None
-        self.labelList = None
+        # protected:
+        # 基本块列表
+        # block_list 和 _inst_list 当一个存在的时候，另一个必须为None
+        self._block_list = None
+        # 指令列表
+        self._inst_list = None
+        # 变量信息字典
+        # key: variable name
+        # value: var_type
+        #        is_private : True/False
+        #        const : True/False
+        #        line_number
+        #        initvalue
+        #        var_reduce
+        self._var_table = dict()
+
+    def set_inst_list(self, inst_list):
+        """重置指令列表，并清空基本块列表
+        """
+        self._inst_list = inst_list
+        self._block_list = None
+
+    def get_inst_list(self):
+        """返回指令列表，指令列表为None时返回None
+        """
+        if self._inst_list is None:
+            print("Error: instList is None.")
+            return None
+        return self._inst_list
+
+    def set_block_list(self, block_list):
+        """重置基本块列表，并清空指令列表
+        """
+        self._block_list = block_list
+        self._inst_list = None
+
+    def get_block_list(self):
+        """返回基本块列表，基本块列表为None时返回None
+        """
+        if self._block_list is None:
+            print("Error: blockList is None.")
+            return None
+        return None
+
+    def set_var_table(self, var_table):
+        self._var_table = var_table
+
+    def get_var_table(self):
+        return self._var_table
+
+    def add_var_info(self, var_name, var_info_dict):
+        """为变量信息表添加信息
+        """
+        if var_name not in self._var_table:
+            self._var_table[var_name] = dict()
+
+        for key in var_info_dict:
+            if key == "var_type":
+                self._var_table[var_name][key] = var_info_dict[key]
+            elif key == "is_private":
+                self._var_table[var_name][key] = var_info_dict[key]
+            elif key == "const":
+                self._var_table[var_name][key] = var_info_dict[key]
+            elif key == "line_number":
+                self._var_table[var_name][key] = var_info_dict[key]
+            elif key == "initvalue":
+                self._var_table[var_name][key] = var_info_dict[key]
+            elif key == "var_reduce":
+                self._var_table[var_name][key] = var_info_dict[key]
+
+    def get_var_info(self, var_name, property_name):
+        """从变量信息表得到指定变量信息
+        """
+        if var_name in self._var_table:
+            return self._var_table[var_name][property_name]
 
     def __SplitBasicBlock(self, inst_list, blockDict, labelDict, blockList):
         """Split instructions into different basic block
@@ -247,15 +318,15 @@ class FunctionDataUnit(object):
         labelDict = {}      # key is the label of instruction, and map to block object
         blockList = []
 
-        if self.instList is None:
+        if self._inst_list is None:
             print("Error: instList is None.")
             return
 
-        self.__SplitBasicBlock(self.instList, blockDict, labelDict, blockList)
-        self.__LinkBasicBlock(self.instList, blockDict, labelDict, blockList)
+        self.__SplitBasicBlock(self._inst_list, blockDict, labelDict, blockList)
+        self.__LinkBasicBlock(self._inst_list, blockDict, labelDict, blockList)
 
-        self.blockList = blockList
-        self.instList = None
+        self._block_list = blockList
+        self._inst_list = None
 
 
     def __BlockList_to_InstList(self, block_list):
@@ -315,34 +386,41 @@ class FunctionDataUnit(object):
                 labellist.append({"object": "label", "name": name, "pos": pos})
         return labellist
 
+    def get_labellist(self):
+        """获得labellist
+        """
+        return self.__generate_labellist(self._inst_list)
+
     def DestructBlockList(self):
         """Destruct basic block list
         """
 
-        if self.blockList is None:
+        if self._block_list is None:
             print("Error: blockList is None.")
             return
 
-        self.instList = self.__BlockList_to_InstList(self.blockList)
-        self.labelList = self.__generate_labellist(self.instList)
-
-        self.blockList = None
+        self._inst_list = self.__BlockList_to_InstList(self._block_list)
+        self._block_list = None
 
 
     def show_instructions(self):
-        if self.instList is None:
+        """显示指令列表
+        """
+        if self._inst_list is None:
             print("Error: instList is None.")
             return
-        for ith, inst in enumerate(self.instList):
+        for ith, inst in enumerate(self._inst_list):
             ith
             print(inst.pos, inst)
 
     def show_basic_blocks(self):
-        if self.blockList is None:
+        """显示基本块列表
+        """
+        if self._block_list is None:
             print("Error: blockList is None.")
             return
 
-        for block in self.blockList:
+        for block in self._block_list:
             print(block.blockNum, ":")
 
             # 显示该块的所有指令
@@ -357,11 +435,11 @@ class FunctionDataUnit(object):
             for preblock in block.preBasicBlock:
                 print("preblock", preblock.blockNum)
 
-    def instList_renumbering(self):
-        '''numbering for instruction list again
+    def instlist_renumbering(self):
+        '''给指令列表中的指令pos重新编号
         '''
-        if self.instList is None:
+        if self._inst_list is None:
             print("Error: instList is None.")
             return
-        for ith, inst in enumerate(self.instList):
+        for ith, inst in enumerate(self._inst_list):
             inst.pos = ith + 1

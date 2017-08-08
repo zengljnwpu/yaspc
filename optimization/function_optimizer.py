@@ -28,19 +28,16 @@ class FunctionOptimizer(object):
     """FunctionOptimizer basic class
     """
     def __init__(self):
-        self.__data_unit = function_data_unit.FunctionDataUnit()
+        self.data_unit = function_data_unit.FunctionDataUnit()
 
-    def set_func_data(self, func_data_unit):
-        self.__data_unit = func_data_unit
-
-    def get_func_data(self):
-        return self.__data_unit
-    
     def analysis_reach_definition(self):
         """分析到达定值
         """
-        self.__data_unit.var_reduce = self.__reach_def_iteration(self.__data_unit.blockList)
-        self.__ud_set(self.__data_unit.blockList, self.__data_unit.var_reduce)
+        blockList = self.data_unit.get_block_list()
+        var_reduce = self.__reach_def_iteration(blockList)
+        for key in var_reduce:
+            self.data_unit.add_var_info(key, {"var_reduce":var_reduce[key]})
+        self.__ud_set(blockList, var_reduce)
 
     def __ud_set(self, block_list, var_reduce):
         """Calculates the "use-define" chain of variables in each instruction.
@@ -268,7 +265,7 @@ class FunctionOptimizer(object):
         Note: add live_def_set, live_use_set, live_in_set,
                 and live_out_set which type is a set for every block
         """
-        block_list = self.__data_unit.blockList
+        block_list = self.data_unit.get_block_list()
 
         for block in block_list:
             # live_def_set: a set with variable which is defined in the block and not used before the definition
