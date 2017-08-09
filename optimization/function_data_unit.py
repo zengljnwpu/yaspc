@@ -373,23 +373,6 @@ class FunctionDataUnit(object):
                 print('%3d\t%s'%(inst.pos, str(inst)))
         return inst_list
 
-    def __generate_labellist(self, inst_list):
-        """遍历instruction list获得labellist
-        格式举例：
-        "labellist": [{ "object": "label",  "name": "forstartlabel1",  "pos": 2 }, ...]
-        """
-        labellist = []
-        for inst in inst_list:
-            if isinstance(inst, instruction.LabelInst):
-                name = inst.labelname
-                pos = inst.pos
-                labellist.append({"object": "label", "name": name, "pos": pos})
-        return labellist
-
-    def get_labellist(self):
-        """获得labellist
-        """
-        return self.__generate_labellist(self._inst_list)
 
     def DestructBlockList(self):
         """Destruct basic block list
@@ -409,9 +392,8 @@ class FunctionDataUnit(object):
         if self._inst_list is None:
             print("Error: instList is None.")
             return
-        for ith, inst in enumerate(self._inst_list):
-            ith
-            print(inst.pos, inst)
+        for inst in self._inst_list:
+            print('%3d\t%s' % (inst.pos, str(inst))
 
     def show_basic_blocks(self):
         """显示基本块列表

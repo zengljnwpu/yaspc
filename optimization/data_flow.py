@@ -30,9 +30,9 @@ class DataFlowOptimizer(function_optimizer.FunctionOptimizer):
         """Do the constant value propagation
         """
         self.analysis_reach_definition()
-        block_list = self.get_func_data().blockList
-        var_reduce = self.get_func_data().var_reduce
-        inst_list = self.get_func_data().instList
+        block_list = self.data_unit.blockList
+        var_reduce = self.data_unit.var_reduce
+        inst_list = self.data_unit.instList
         self.__constant_propagation(block_list, var_reduce, inst_list)
 
     def __constant_propagation(self, block_list, var_reduce, inst_list):
