@@ -393,7 +393,7 @@ class FunctionDataUnit(object):
             print("Error: instList is None.")
             return
         for inst in self._inst_list:
-            print('%3d\t%s' % (inst.pos, str(inst))
+            print('%3d\t%s' % (inst.pos, str(inst)))
 
     def show_basic_blocks(self):
         """显示基本块列表
