@@ -99,6 +99,10 @@ class ProgramOptimizer(object):
             func_end = line_no
 
             #将函数加入函数列表
+            if DEBUG:
+                for line in lines[func_start:func_end]:
+                    print(line.strip())
+
             opt_manager = optimization_manager.FunctionOptimizationManager()
             self.__function_list.append(opt_manager)
             opt_manager.decode_function_tac(lines[func_start:func_end])

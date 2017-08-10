@@ -33,7 +33,7 @@ class FunctionOptimizationManager(object):
         # 存储优化用到的数据
         self.__data_unit = function_data_unit.FunctionDataUnit()
         # 存储function的完整的json格式的IR
-        self.__function_json = dict()
+        self.__function_json = None
         self.__data_flow_opt = data_flow.DataFlowOptimizer()
         self.__control_flow_opt = peephole.ControlFlowOptimizer()
         # TODO: add loop_opt
@@ -41,7 +41,9 @@ class FunctionOptimizationManager(object):
     def optimize(self, control_flow, reach_defination, optimize_loop):
         """optimize a function
         """
+        print('\n\noptimization:', '\nOptimize function %s ...'%self.__function_json['name'])
         if DEBUG:
+            print('optimization:', "Instruction list:")
             self.__data_unit.show_instructions()
 
         # 初始化优化器
@@ -220,8 +222,17 @@ class FunctionOptimizationManager(object):
     def decode_function_tac(self, function_tac):
         """decode function, TAC format
         """
+        self.__function_json = dict()
+        split = re.split(r'\s+', function_tac[0])
+        assert split[0] == 'function'
+        self.__function_json['name'] = split[1]
+        # TODO: function parameterlist is not support now
+        if DEBUG:
+            print('\nDecode function %s:'%self.__function_json['name'])
         inst_list = self.__decode_tac_list(function_tac[1:])
         self.__data_unit.set_inst_list(inst_list)
+        if DEBUG:
+            self.__data_unit.show_instructions()
 
     @classmethod
     def __decode_tac_list(cls, tac_list):
@@ -231,6 +242,7 @@ class FunctionOptimizationManager(object):
         inst_list = []
         for ith, inst_dict in enumerate(tac_list):
             inst = cls.__parse_single_inst_from_tac(inst_dict)
+            # print(inst)
             if inst is None:
                 continue
             inst.pos = ith + 1
@@ -276,8 +288,6 @@ class FunctionOptimizationManager(object):
         elif split[0] == 'uni':
             variable = cls.__get_entity_from_str(split[2])
             value = cls.__get_entity_from_str(split[3])
-            print(variable)
-            print(value)
             if variable is None or value is None:
                 print('wrong uni instruction: %s'%inst_string)
                 return None

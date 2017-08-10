@@ -1,0 +1,26 @@
+function udtest
+store var:i val:1
+store var:j val:1
+store var:a val:2
+bin  SUB var:i var:i var:i
+bin  ADD var:a var:i var:j
+bin  ADD var:j var:i var:a
+bin  ADD var:i var:a var:i
+bin  ADD var:i var:a var:c
+label_definition label1
+bin  ADD val:1 val:1 var:c
+bin  ADD var:i var:i var:i
+bin  ADD var:j var:i var:j
+cjump   var:%1 ifthenlabel1 ifelselabel1
+label_definition ifthenlabel1
+bin  ADD var:j var:i var:a
+jump label2
+label_definition label2
+label_definition ifelselabel1
+bin  ADD var:j var:i var:i
+bin  ADD var:c var:c var:c2
+cjump   var:%2 ifthenlabel2 ifelselabel2
+label_definition ifthenlabel2
+return  var:g
+label_definition ifelselabel2
+jump label1

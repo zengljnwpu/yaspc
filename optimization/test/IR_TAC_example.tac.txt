@@ -1,0 +1,25 @@
+# one comment
+# e.g.
+#   cjump   cond thenlabel elselabel
+#   jump    label
+#   label_definition      labelname
+#   variable_definition   variablename var_type
+#   load    adress value
+#   store   adress value
+#   bin     op left right value
+#   uni     op variable value
+#   call    functionname parameterlist value
+#   return  ret
+function main
+label_definition label1
+variable_definition   a int32
+uni     NOT var:a var:a
+cjump   var:a label1 label2
+jump    label2
+label_definition      label2
+variable_definition   var:b int32
+load    var:b var:a
+store   var:b var:a
+bin     ADD var:a var:b var:%1
+call    function1 var:a,var:b var:ret1
+return  var:ret1

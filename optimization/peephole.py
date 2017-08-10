@@ -106,4 +106,5 @@ class ControlFlowOptimizer(function_optimizer.FunctionOptimizer):
                         continue
                 new_block_list.append(block)
             block_list = new_block_list
-        return block_list
+        #return block_list
+        self.data_unit.set_block_list(block_list)

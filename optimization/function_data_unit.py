@@ -69,7 +69,7 @@ class FunctionDataUnit(object):
         if self._block_list is None:
             print("Error: blockList is None.")
             return None
-        return None
+        return self._block_list
 
     def set_var_table(self, var_table):
         self._var_table = var_table
@@ -175,16 +175,15 @@ class FunctionDataUnit(object):
         block = basicblock.BasicBlock(-1)
         blockList.append(block)
 
-        if DEBUG:
-            print("===================BasicBlock==================")
-            for block in blockList:
-                print(block.blockNum, ":")
-                for inst in block.instList:
-                    print("\t", inst.pos, inst)
-            print("===================LabelDict===================")
-            for key, val in labelDict.items():
-                print(key, val)
-            print("===============================================")
+        # print("===================BasicBlock==================")
+        # for block in blockList:
+        #     print(block.blockNum, ":")
+        #     for inst in block.instList:
+        #         print("\t", inst.pos, inst)
+        # print("===================LabelDict===================")
+        # for key, val in labelDict.items():
+        #     print(key, val)
+        # print("===============================================")
 
 
     def __LinkBasicBlock(self, inst_list, blockDict, labelDict, blockList):
@@ -290,21 +289,20 @@ class FunctionDataUnit(object):
             block.add_succ((blockList[i + 1], "follow"))
             blockList[i + 1].add_prev(block)
 
-        if DEBUG:
-            print("============PredecessorSuccessor==================")
-            for ith, inst in enumerate(inst_list):
-                ith
-                print(inst.pos, inst)
-            for block in blockList:
-                print(block.blockNum, ":")
-                for inst in block.instList:
-                    print("\t", inst)
-                if len(block.succBasicBlock) != 0:
-                    for succblock in block.succBasicBlock:
-                        print("succblock: %d:%s" % (succblock[0].blockNum, str(succblock[1])))
-                if len(block.preBasicBlock) != 0:
-                    for preblock in block.preBasicBlock:
-                        print("preblock", preblock.blockNum)
+        # print("============PredecessorSuccessor==================")
+        # for ith, inst in enumerate(inst_list):
+        #     ith
+        #     print(inst.pos, inst)
+        # for block in blockList:
+        #     print(block.blockNum, ":")
+        #     for inst in block.instList:
+        #         print("\t", inst)
+        #     if len(block.succBasicBlock) != 0:
+        #         for succblock in block.succBasicBlock:
+        #             print("succblock: %d:%s" % (succblock[0].blockNum, str(succblock[1])))
+        #     if len(block.preBasicBlock) != 0:
+        #         for preblock in block.preBasicBlock:
+        #             print("preblock", preblock.blockNum)
 
 
     def ConstructBlockList(self):
@@ -327,6 +325,9 @@ class FunctionDataUnit(object):
 
         self._block_list = blockList
         self._inst_list = None
+
+        if DEBUG:
+            self.show_basic_blocks()
 
 
     def __BlockList_to_InstList(self, block_list):
@@ -367,10 +368,10 @@ class FunctionDataUnit(object):
         # pos需要重新编号，以便于之后生成labellist
         for ith, inst in enumerate(inst_list):
                 inst.pos = ith + 1
-        if DEBUG:
-            print ("============LinearInstructionList==================")
-            for inst in inst_list:
-                print('%3d\t%s'%(inst.pos, str(inst)))
+        # if DEBUG:
+        #     print ("============LinearInstructionList==================")
+        #     for inst in inst_list:
+        #         print('%3d\t%s'%(inst.pos, str(inst)))
         return inst_list
 
 
@@ -385,6 +386,9 @@ class FunctionDataUnit(object):
         self._inst_list = self.__BlockList_to_InstList(self._block_list)
         self._block_list = None
 
+        if DEBUG:
+            self.show_instructions()
+
 
     def show_instructions(self):
         """显示指令列表
@@ -392,8 +396,11 @@ class FunctionDataUnit(object):
         if self._inst_list is None:
             print("Error: instList is None.")
             return
+        print("+===================== Instruction List =============================+")
         for inst in self._inst_list:
-            print('%3d\t%s' % (inst.pos, str(inst)))
+            disp_str = '%3d    %s' % (inst.pos, str(inst))
+            print('| %-67s|'%disp_str)
+        print("+====================================================================+")
 
     def show_basic_blocks(self):
         """显示基本块列表
@@ -402,20 +409,28 @@ class FunctionDataUnit(object):
             print("Error: blockList is None.")
             return
 
+        print("+======================= BasicBlock List ============================+")
         for block in self._block_list:
-            print(block.blockNum, ":")
-
-            # 显示该块的所有指令
-            for inst in block.instList:
-                print("\t", inst)
-
-            # 显示当前块的后继基本块
-            for succblock in block.succBasicBlock:
-                print("succblock: %d:%s" % (succblock[0].blockNum, str(succblock[1])))
+            print("+ B%-3d --------------------------------------------------------------+"%block.blockNum)
 
             # 显示当前块的前序基本块
             for preblock in block.preBasicBlock:
-                print("preblock", preblock.blockNum)
+                print("| preblock: %-56s |" % str(preblock.blockNum))
+            #print("|-------------------------------------------------------------------|")
+
+            # 显示该块的所有指令
+            for inst in block.instList:
+                disp_str = "%3d  %s"%(inst.pos, str(inst))
+                print("|        %-60s|"%disp_str)
+            #print("|-------------------------------------------------------------------|")
+
+            # 显示当前块的后继基本块
+            for succblock in block.succBasicBlock:
+                disp_str = "%d:%s" % (succblock[0].blockNum, str(succblock[1]))
+                print("| succblock: %-55s |"%disp_str)
+            print("+--------------------------------------------------------------------+")
+        print("+====================================================================+")
+
 
     def instlist_renumbering(self):
         '''给指令列表中的指令pos重新编号

@@ -69,7 +69,7 @@ variable_definition   var:b int32
 load    var:b var:a
 store   var:b var:a
 bin     ADD var:a var:b var:%1
-call    function1 a,b var:ret1
+call    function1 var:a,var:b var:ret1
 return  var:ret1
 
 function function1 var:a var:b
