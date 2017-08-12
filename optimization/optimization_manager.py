@@ -16,6 +16,7 @@ from optimization import function_data_unit
 from optimization import function_optimizer
 from optimization import data_flow
 from optimization import peephole
+from optimization import loop
 
 DEBUG = False
 
@@ -35,20 +36,22 @@ class FunctionOptimizationManager(object):
         self.__function_json = None
         self.__data_flow_opt = data_flow.DataFlowOptimizer()
         self.__control_flow_opt = peephole.ControlFlowOptimizer()
-        # TODO: add loop_opt
+        self.__loop_opt = loop.LoopOptimizer()
 
     def optimize(self, control_flow, reach_defination, optimize_loop):
         """optimize a function
         """
         function_name = self.__function_json['name']
-        print('\n\nopt-manager:', 'Optimize function %s ...'%function_name)
+
         if DEBUG:
+            print('\n\nopt-manager:', 'Optimize function %s ...'%function_name)
             print('opt-manager:', "Instruction list:")
             self.__data_unit.show_instructions()
 
         # 初始化优化器
         self.__data_flow_opt.data_unit = self.__data_unit
         self.__control_flow_opt.data_unit = self.__data_unit
+        self.__loop_opt.data_unit = self.__data_unit
 
         # 划分基本块
         if DEBUG:
@@ -77,7 +80,7 @@ class FunctionOptimizationManager(object):
         if optimize_loop:
             if DEBUG:
                 print('\nopt-manager:', 'Analyzing loop...')
-            # TODO: complete it
+            self.__loop_opt.do_loop_optimization()
 
         # 基本块转换为指令序列
         if DEBUG:

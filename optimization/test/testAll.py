@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Author : axiqia, lzc80234@qq.com (liuzhaoci)
-# Created : 2017/5/12
+# Created : 2017/8/12
 '''
 测试并演示所有优化部分
 '''
@@ -30,7 +30,7 @@ def main():
 
     prog_opt = program_optimizer.ProgramOptimizer()
     prog_opt.read_tac(input_file_name)
-    prog_opt.optimize(control_flow=True, reach_defination=FalseS, optimize_loop=False)
+    prog_opt.optimize(control_flow=True, reach_defination=True, optimize_loop=True)
     # prog_opt.write('/tmp/out.txt')
 
 if __name__ == '__main__':
