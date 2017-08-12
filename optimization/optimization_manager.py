@@ -10,7 +10,6 @@ from __future__ import division
 from __future__ import print_function
 
 import re
-import json
 
 from optimization import instruction
 from optimization import function_data_unit
@@ -41,9 +40,10 @@ class FunctionOptimizationManager(object):
     def optimize(self, control_flow, reach_defination, optimize_loop):
         """optimize a function
         """
-        print('\n\noptimization:', '\nOptimize function %s ...'%self.__function_json['name'])
+        function_name = self.__function_json['name']
+        print('\n\nopt-manager:', 'Optimize function %s ...'%function_name)
         if DEBUG:
-            print('optimization:', "Instruction list:")
+            print('opt-manager:', "Instruction list:")
             self.__data_unit.show_instructions()
 
         # 初始化优化器
@@ -52,8 +52,11 @@ class FunctionOptimizationManager(object):
 
         # 划分基本块
         if DEBUG:
-            print('optimization:', '\nConstrusting basicblock...')
+            print('\nopt-manager:', 'Construsting basicblock...')
         self.__data_unit.ConstructBlockList()
+        if DEBUG:
+            print('opt-manager:', 'Basicblock List:')
+            self.__data_unit.show_basic_blocks()
 
         # 消除到达不了的代码，否则后面分析循环会出错
         self.__control_flow_opt.dead_code_elimination()
@@ -61,25 +64,32 @@ class FunctionOptimizationManager(object):
         # 若控制流指定时，则进行控制流优化
         if control_flow:
             if DEBUG:
-                print('optimization', '\nOptimizing control flow...')
+                print('\nopt-manager:', 'Optimizing control flow...')
             #self.__control_flow_opt.control_flow_optimization()
 
         # 若数据流指定时，则进行数据流优化
         if reach_defination:
             if DEBUG:
-                print('optimization', '\nAnalyzing reach defination...')
+                print('\nopt-manager:', 'Analyzing reach defination...')
             self.__data_flow_opt.do_constant_propagation()
 
         # 若指定循环优化，则进行循环优化
         if optimize_loop:
             if DEBUG:
-                print('optimization', '\nAnalyzing loop...')
+                print('\nopt-manager:', 'Analyzing loop...')
             # TODO: complete it
 
         # 基本块转换为指令序列
+        if DEBUG:
+            print('\nopt-manager:', 'Destructing basicblock...')
         self.__data_unit.DestructBlockList()
         # 转换过程中可能生成无用label，故删去
         self.__control_flow_opt.remove_unused_label()
+        if DEBUG:
+            self.__data_unit.show_instructions()
+        
+        if DEBUG:
+            print('opt-manager:', 'Finish optimization of function %s\n'%function_name)
 
 
 #######################################
@@ -107,10 +117,12 @@ class FunctionOptimizationManager(object):
         labellist_json = self.__generate_labellist_json(inst_list)
 
         if DEBUG:
-            print('optimization:', "============LinearInstructionList==================")
+            print('\nfunction-encoder:', "Encode Function %s..."%self.__function_json["name"])
+            print('function-encoder:', "LinearInstructionList:")
             self.__data_unit.show_instructions()
-            print('optimization:', "=================LabelList=========================")
-            print('optimization:', json.dumps(labellist_json, sort_keys=True, indent=2))
+            print('function-encoder:', "=================LabelList=========================")
+            for label in labellist_json:
+                print('    ', label)
 
         self.__function_json['body'] = body_json
         self.__function_json['labellist'] = labellist_json

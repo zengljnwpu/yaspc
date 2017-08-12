@@ -71,6 +71,20 @@ class FunctionDataUnit(object):
             return None
         return self._block_list
 
+    def get_inst_by_pos(self, pos):
+        """根据pos信息查找指令，
+        注意，如果指令被重新编号，之前计算出的pos即失效
+        """
+        if self._inst_list is not None:
+            for inst in self._inst_list:
+                if inst.pos == pos:
+                    return inst
+        if self._block_list is not None:
+            for block in self._block_list:
+                for inst in block.instList:
+                    if inst.pos == pos:
+                        return inst
+
     def set_var_table(self, var_table):
         self._var_table = var_table
 
@@ -327,6 +341,7 @@ class FunctionDataUnit(object):
         self._inst_list = None
 
         if DEBUG:
+            print("@ FunctionDataUnit:ConstructBlockList()")
             self.show_basic_blocks()
 
 
@@ -387,6 +402,7 @@ class FunctionDataUnit(object):
         self._block_list = None
 
         if DEBUG:
+            print("@ FunctionDataUnit:DestructBlockList()")
             self.show_instructions()
 
 
@@ -396,11 +412,11 @@ class FunctionDataUnit(object):
         if self._inst_list is None:
             print("Error: instList is None.")
             return
-        print("+===================== Instruction List =============================+")
+        print("    +===================== Instruction List =============================+")
         for inst in self._inst_list:
             disp_str = '%3d    %s' % (inst.pos, str(inst))
-            print('| %-67s|'%disp_str)
-        print("+====================================================================+")
+            print('    | %-67s|'%disp_str)
+        print("    +====================================================================+")
 
     def show_basic_blocks(self):
         """显示基本块列表
@@ -409,27 +425,31 @@ class FunctionDataUnit(object):
             print("Error: blockList is None.")
             return
 
-        print("+======================= BasicBlock List ============================+")
+        print("    +======================= BasicBlock List ============================+")
         for block in self._block_list:
-            print("+ B%-3d --------------------------------------------------------------+"%block.blockNum)
+            print("    + B%-3d --------------------------------------------------------------+"%block.blockNum)
 
             # 显示当前块的前序基本块
             for preblock in block.preBasicBlock:
-                print("| preblock: %-56s |" % str(preblock.blockNum))
+                print("    | preblock: %-56s |" % str(preblock.blockNum))
             #print("|-------------------------------------------------------------------|")
 
             # 显示该块的所有指令
             for inst in block.instList:
                 disp_str = "%3d  %s"%(inst.pos, str(inst))
-                print("|        %-60s|"%disp_str)
+                print("    |        %-60s|"%disp_str)
             #print("|-------------------------------------------------------------------|")
 
             # 显示当前块的后继基本块
             for succblock in block.succBasicBlock:
                 disp_str = "%d:%s" % (succblock[0].blockNum, str(succblock[1]))
-                print("| succblock: %-55s |"%disp_str)
-            print("+--------------------------------------------------------------------+")
-        print("+====================================================================+")
+                print("    | succblock: %-55s |"%disp_str)
+
+            if block.blockNum == -1:
+                print("    +====================================================================+")
+            else:
+                print("    +--------------------------------------------------------------------+")
+
 
 
     def instlist_renumbering(self):

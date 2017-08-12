@@ -51,6 +51,8 @@ class FunctionOptimizer(object):
         
         Note: add left_ud, right_ud or var_ud properties which is a set of for every instruction
             var_ud is a list of set (block.in_set & var_reduce before this instruction in this block)
+            会给指令增加 left_ud, right_ud 或 var_ud属性，这几个属性都是set类型，记录了到达该指令的定值位置，
+            定值位置用inst.pos表示
         """
         for (block_index, block) in enumerate(block_list):
             if block_index == 0 or block_index == len(block_list)-1:
@@ -60,7 +62,7 @@ class FunctionOptimizer(object):
             for inst in block.instList:
                 # BinaryInst
                 if isinstance(inst, instruction.BinaryInst):
-                    """ Regardless of whether he operand is constant or variable,
+                    """ Regardless of whether the operand is constant or variable,
                         a property right_ud is added to the instruction dynamically
                     """
                     inst.left_ud = []

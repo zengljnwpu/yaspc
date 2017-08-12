@@ -18,8 +18,8 @@ from optimization import program_optimizer
 # 为了演示，将下列模块DEBUG输出打开
 from optimization import function_data_unit
 from optimization import optimization_manager
-function_data_unit.set_debug_print(True)
-function_data_unit.set_debug_print(True)
+optimization_manager.set_debug_print(True)
+function_data_unit.set_debug_print(False)
 
 def main():
     '''
@@ -30,8 +30,8 @@ def main():
 
     prog_opt = program_optimizer.ProgramOptimizer()
     prog_opt.read_tac(input_file_name)
-    prog_opt.optimize(control_flow=True, reach_defination=True, optimize_loop=True)
-    prog_opt.write('/tmp/out.txt')
+    prog_opt.optimize(control_flow=True, reach_defination=FalseS, optimize_loop=False)
+    # prog_opt.write('/tmp/out.txt')
 
 if __name__ == '__main__':
     main()

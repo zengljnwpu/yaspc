@@ -18,8 +18,8 @@ from optimization import program_optimizer
 # 为了演示，将下列模块DEBUG输出打开
 from optimization import function_data_unit
 from optimization import optimization_manager
-function_data_unit.set_debug_print(True)
-function_data_unit.set_debug_print(True)
+function_data_unit.set_debug_print(False)
+optimization_manager.set_debug_print(True)
 
 def test_module():
     '''
