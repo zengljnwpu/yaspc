@@ -77,6 +77,61 @@ class ControlFlowOptimizer(function_optimizer.FunctionOptimizer):
 
         return new_inst_list
 
+    @classmethod
+    def __replace_preblock_target(cls, block, label, new_succ):
+        '''
+        遍历其前序基本块，修改其后继为new_succ
+        查看前序基本块的最后指令，
+            若最后的指令为无条件跳转指令，则跳转的Label修改为当前基本块中指令的Label
+            若最后的指令为有条件跳转指令，则更改其中为当前指令Label的分支Label
+
+        '''
+
+        for preblock in block.preBasicBlock:
+            preinst = preblock.instList[-1]
+            if isinstance(preinst, instruction.JumpInst):
+                preinst.label = label
+                # TODO:
+            elif isinstance(preinst, instruction.CJumpInst):
+                for pre_succ in preblock.succBasicBlock:
+                    if pre_succ[0] == block:
+                        if pre_succ[1] == "thenlabel":
+                            preinst.thenlabel = label
+                        else:
+                            preinst.elselabel = label
+
+    @classmethod
+    def __control_flow_optimization(cls, block_list):
+        """控制流优化
+        """
+
+        for block in block_list[::-1]:
+            """
+                find unconditional jump instruction and has been labeled
+            """
+            if len(block.instList) == 1 and isinstance(block.instList[0], instruction.JumpInst):
+                ''' 当前基本块中只有一条指令并且该指令为无条件跳转指令
+                '''
+
+                ''' 取当前无条件跳转指令的转向Label和唯一后继 '''
+                label = block.instList[0].label
+                unique_succ = block.get_succ_unique_block()
+
+                '''
+                不妨设当前基本块为B2，前驱为B1(可能有多个,记为B1',B1'')，后继为B3(只有一个)
+                1. 遍历其前序基本块，查看前序基本块的最后指令
+                 *若B1最后的指令为无条件跳转指令，则跳转的Label修改为当前基本块B2中指令的Label
+                 *若B1最后的指令为有条件跳转指令，则更改其中为当前指令Label的分支Label
+                2. 修改前序基本块的后继，将出现的B2改为B3，接着：
+                 *在B2中的前驱中删掉B1
+                 *在B3的前驱中加上B1
+                这样，B1到达B2的弧被改成B1到B3
+                处理了当前基本块B2所有前驱后，B2变得不可达，调用dead_code_elimination删除它
+                '''
+                cls.__replace_preblock_target(block, label, unique_succ)
+                # TODO:
+
+
     def control_flow_optimization(self):
         """控制流优化
         注意：做完控制流优化后基本块需要重新构建

@@ -174,7 +174,7 @@ class FunctionDataUnit(object):
                 blockList.append(block)
                 blockDict[block_number] = block
                 block = None
-            
+
             else:
                 """ 对于普通指令，直接添加就好
                 """
@@ -354,18 +354,18 @@ class FunctionDataUnit(object):
             # ENTRY BLOCK
             if curblock.blockNum == 0:
                 continue
-            
+
             # 先给所有block入口加label，之后可以在窥孔优化中删除
             block_label_inst = curblock.gen_block_label_inst()
             inst_list.append(block_label_inst)
-            
+
             # EXIT BLOCK
             if curblock.blockNum == -1:
                 continue
-            
+
             # 根据最后一条语句做判断
             inst_list.extend(curblock.instList)
-            
+
             # make a shallow copy 防止修改对原来的指令造成影响
             last_inst = copy.copy(curblock.get_last_inst())
             if isinstance(last_inst, instruction.CJumpInst):

@@ -11,12 +11,18 @@ from optimization import instruction
 class BasicBlock(object):
     """
     Basic block class
+    这个类几乎没有封装，当成结构体用了。。。
     """
+    # 设计的很糟糕，建议专门设计一个图的数据结构来存block
     def __init__(self, number=0):
-        ''' 前序基本块集合 '''
+        ''' 前序基本块集合
+        集合中保存的是BasicBlock对象
+        '''
         self.preBasicBlock = set()
 
-        ''' 后继基本块集合 '''
+        ''' 后继基本块集合
+        集合中保存的是元组(BasicBlock对象, 描述字符串<"thenlabel"/"elselabel"/"label"/"return"/ "follow">)
+        '''
         self.succBasicBlock = set()
 
         ''' 基本块号 '''
@@ -29,11 +35,15 @@ class BasicBlock(object):
         self.var_list = set()
 
     def add_succ(self, element):
-        ''' 为基本块增加后继 '''
+        ''' 为基本块增加后继
+        element 是 (BasicBlock对象, 描述字符串<"thenlabel"/"elselabel"/"label"/"follow"/"return">)
+        '''
         self.succBasicBlock.add(element)
 
     def add_prev(self, element):
-        ''' 为基本块增加前序 '''
+        ''' 为基本块增加前序
+        element 是 BasicBlock对象
+        '''
         self.preBasicBlock.add(element)
 
     def add_inst(self, inst):
@@ -80,10 +90,30 @@ class BasicBlock(object):
             label_name = 'LabelBlock%d' % self.blockNum
         return label_name
 
+    def set_succ_block_by_str(self, discription, block):
+        """根据描述找到对应的后继基本块，并用block替换
+        描述字符串包括"thenlabel"/"elselabel"/"label"/"follow"/"return"
+        """
+        for succ_block in self.succBasicBlock:
+            if succ_block[1] == discription:
+                succ_block = block
+
+    def get_succ_block_by_str(self, discription):
+        """根据描述找到对应的后继基本块，并用返回它
+        描述字符串包括"thenlabel"/"elselabel"/"label"/"follow"/"return"
+        """
+        for succ_block in self.succBasicBlock:
+            if succ_block[1] == discription:
+                return succ_block[0]
+
+    def set_succ_then_block(self, block):
+        """如果最后一条指令是条件跳转，找到then对应的后继基本块，并用block替换
+        """
+        if isinstance(self.get_last_inst(), instruction.CJumpInst):
+            self.set_succ_block_by_str('thenlabel', block)
+
     def get_succ_then_block(self):
-        """if last instruction is cjump,
-            return then block
-            else return None
+        """如果最后一条指令是条件跳转，返回then对应的基本块
         """
         if isinstance(self.get_last_inst(), instruction.CJumpInst):
             for succ_block in self.succBasicBlock:
@@ -91,6 +121,12 @@ class BasicBlock(object):
                     return succ_block[0]
 
         return None
+
+    def set_succ_else_block(self, block):
+        """如果最后一条指令是条件跳转，找到else对应的后继基本块，并用block替换
+        """
+        if isinstance(self.get_last_inst(), instruction.CJumpInst):
+            self.set_succ_block_by_str('elselabel', block)
 
     def get_succ_else_block(self):
         """if last instruction is cjump,
@@ -104,14 +140,20 @@ class BasicBlock(object):
 
         return None
 
+    def set_succ_unique_block(self, block):
+        """如果只有一个后继，找到对应的后继基本块，并用block替换
+        """
+        if len(self.succBasicBlock) == 1:
+            unique_succ = tuple(self.succBasicBlock)[0]
+            unique_succ[0] = block
+
     def get_succ_unique_block(self):
         """if there is only one succBlock
             return the unique block
             else return None
         """
         if len(self.succBasicBlock) == 1:
-            # there is a little danteng
-            unique_succ_block = [item for item in self.succBasicBlock][0][0]
+            unique_succ_block = tuple(self.succBasicBlock)[0][0]
             return unique_succ_block
 
         return None
