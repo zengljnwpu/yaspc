@@ -12,9 +12,9 @@ from __future__ import print_function
 
 import json
 
-import Optimization.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
-import Optimization.BasicBlock.DestructBasicBlock as DestructBasicBlock
-import Optimization.IR_IO.irParser as irParser
+import optimization.BasicBlock.ConstructBasicBlock as ConstructBasicBlock
+import optimization.BasicBlock.DestructBasicBlock as DestructBasicBlock
+import optimization.IR_IO.irParser as irParser
 
 def test_module():
     '''

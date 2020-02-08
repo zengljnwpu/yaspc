@@ -14,12 +14,12 @@ from __future__ import print_function
 import json
 
 from frontend import log
-from Optimization.BasicBlock import ConstructBasicBlock
-from Optimization.BasicBlock import DestructBasicBlock
-from Optimization.IR_IO import irParser
-from Optimization.Peephole import PeepholeOptimization
-from Optimization.DataFlow import ud
-from Optimization.Loop import loop
+from optimization.BasicBlock import ConstructBasicBlock
+from optimization.BasicBlock import DestructBasicBlock
+from optimization.IR_IO import irParser
+from optimization.Peephole import PeepholeOptimization
+from optimization.DataFlow import ud
+from optimization.Loop import loop
 
 def optimize_a_function(function_json, control_flow=False, \
     reach_defination=False, optimize_loop=False, debug_print=True):

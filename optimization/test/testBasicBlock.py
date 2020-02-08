@@ -13,12 +13,12 @@ from __future__ import print_function
 import sys
 sys.path.append('../..')
 
-from Optimization.BasicBlock import ConstructBasicBlock
-from Optimization.BasicBlock import DestructBasicBlock
-from Optimization.IR_IO import irParser
-from Optimization.DataFlow import ud
-from Optimization.Peephole import PeepholeOptimization
-from Optimization.Loop import loop
+from optimization.BasicBlock import ConstructBasicBlock
+from optimization.BasicBlock import DestructBasicBlock
+from optimization.IR_IO import irParser
+from optimization.DataFlow import ud
+from optimization.Peephole import PeepholeOptimization
+from optimization.Loop import loop
 
 
 def main():

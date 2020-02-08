@@ -21,7 +21,7 @@ from backend.ir.ir import import_ir
 from backend.sys_dep.x86.code_generator import CodeGenerator
 from backend.asm.inttype import Type
 
-from Optimization import do_optimization
+from optimization import do_optimization
 
 __version__ = 0.4
 __date__ = '2017-06-02'

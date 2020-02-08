@@ -11,9 +11,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from Optimization.IR_IO import instruction
-from Optimization.BasicBlock import BasicBlock
-from Optimization.Peephole import PeepholeOptimization
+from optimization.IR_IO import instruction
+from optimization.BasicBlock import BasicBlock
+from optimization.Peephole import PeepholeOptimization
 
 DEBUG = False
 

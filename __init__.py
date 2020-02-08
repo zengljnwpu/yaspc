@@ -5,7 +5,7 @@
 #from __future__ import absolute_import
 #from __future__ import division
 #from __future__ import print_function
-# import all packages from Optimization
+# import all packages from optimization
 # pylint: disable=wildcard-import
-#from yaspc.Optimization import *
+#from yaspc.optimization import *
 # pylint: enable=wildcard-import

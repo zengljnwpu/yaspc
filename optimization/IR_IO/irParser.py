@@ -11,7 +11,7 @@ from __future__ import division
 from __future__ import print_function
 
 import re
-from Optimization.IR_IO import instruction
+from optimization.IR_IO import instruction
 
 ##################################################################
 # TAC IR Format:

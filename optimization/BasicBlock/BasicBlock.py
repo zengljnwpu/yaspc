@@ -7,7 +7,7 @@ Created on Fri May 12 10:54:38 2017
 @author: hellolzc axiqia
 """
 
-from Optimization.IR_IO import instruction
+from optimization.IR_IO import instruction
 
 class BasicBlock:
     """
