@@ -1,4 +1,3 @@
-function udtest
 store var:i val:1
 store var:j val:1
 store var:a val:2
