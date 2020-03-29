@@ -6,7 +6,7 @@ data.json
 *.swp
 
 # vscode
-.vscode/*
+# .vscode/*
 
 # pycharm
 .idea/*

@@ -162,7 +162,7 @@ class Compiler(object):
         if out == '-':
             os.write(sys.stdout.fileno(), asm)
         else:
-            f = open(out, "wb")
+            f = open(out, "w")
             f.write(asm)
             f.close()
 

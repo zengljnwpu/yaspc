@@ -19,7 +19,7 @@ from frontend import explain
 
 from backend.ir.ir import import_ir
 from backend.sys_dep.x86.code_generator import CodeGenerator
-from backend.asm.inttype import Type
+from backend.asm.inttype import IntType
 
 from optimization import do_optimization
 
@@ -147,7 +147,7 @@ def json_backend(input_file, output_file):
         json_ir = import_ir(json_file_data, output_file)
 
         # 对JSON文件格式的IR进行后端处理，产生汇编代码
-        asm = CodeGenerator(None, Type.INT32)
+        asm = CodeGenerator(None, IntType.INT32)
         json_new_file = asm.generate(json_ir)
 
         json_file_str = json_new_file.to_source()
